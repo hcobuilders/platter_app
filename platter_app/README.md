@@ -2,7 +2,7 @@
 
 Preconstruction command center for LEMA. Projects, scope, ITB, subcontractor planroom, bid leveling, budget.
 
-**Status:** Step 1 of 8 — wireframes. Batches 1–2 drawn, 3–6 remaining. No application code yet.
+**Status:** Step 1 of 8 — wireframes. Batches 1–3 drawn and current against v1.1 tokens, 4–6 remaining. No application code yet.
 
 ---
 
@@ -19,12 +19,11 @@ Open the HTML files directly in a browser — no build step.
 ```
 design/
   tokens/
-    tokens.css          ← single source of truth for all design values
+    tokens.css          ← single source of truth for all design values (v1.1)
     tokens.json         ← same tokens, portable to Figma variables / Tailwind
-    legacy-aliases.css  ← temporary; delete per E-26→E-30 (see file header)
   identity/             ← logo, palette, type, radius scale
   system/               ← living component reference, 20 components
-  wireframes/           ← annotated wireframes, one file per batch
+  wireframes/           ← annotated wireframes, one file per batch (1, 2, 3 drawn)
 docs/                   ← decisions, plan, handoff
 ```
 
@@ -32,16 +31,13 @@ docs/                   ← decisions, plan, handoff
 
 ## Next task
 
-**Apply staged edits E-01 → E-30 before drawing Batch 3.** They are listed in `DECISION_LOG.md` § 2b and have not been applied to any file. They cover:
+**Batch 4 — ITB & sub-facing planroom** (priority #2 per D-07 — `STEP1_PLAN.md` §B, screens 4.1–4.10).
 
-- Cooler grey/white surface layering; stronger orange accent (`#FF9F1C`, pending confirmation)
-- Type scale up one step; chips move from mono to condensed Archivo
-- Project card fixes: footer render, padding under dates, fixed 4-column date grid, pinned footer
-- Field-level privacy classification driving both screen-share redaction and planroom visibility
-- Flags as a Settings-managed controlled vocabulary
-- Project number format `YY-###`
+Staged edits E-01 → E-12 and E-20 → E-30 are applied across `tokens.css`/`.json`, `design-system.html`, `identity.html`, `mark.svg`, and Batches 1–2. `legacy-aliases.css` is gone — every file now references `tokens.css` directly. Batch 3 (project workspace + scope tool, 3.1–3.7) is drawn fresh against v1.1, no retrofit needed. What's still open:
 
-Applying E-26 → E-30 should also regenerate `identity.html` and `batch-1-intake-parse.html` against `tokens.css` directly, which is what makes `legacy-aliases.css` deletable.
+- **E-13 → E-19 (privacy/redaction requirements, `YY-###` project number format) were never recovered.** The S7 changelog claims they were staged, but the entries were never written into `DECISION_LOG.md` §2b, and the original chat that would have them isn't reachable from this session. Owner elected to drop rather than reconstruct (S8). Treat field-level privacy/redaction as **undefined**, not implemented, despite E-21/E-22/E-23 referencing it.
+- Q-13 (which historical project seeds the database) is still open — doesn't block wireframes, blocks Step 3.
+- Batch 3 introduces two obligations for Batch 5 (bid tab/budget): render the seven scope-line kind badges, and resolve exclusion cross-references (where excluded scope actually landed).
 
 ---
 

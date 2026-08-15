@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platter — Batch 3 Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(1100px 620px at 86% -10%,rgba(34,124,157,.24),transparent 62%),radial-gradient(820px 520px at 2% 104%,rgba(23,195,178,.1),transparent 60%);background-attachment:fixed}
+.doc{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.rail{border-right:1px solid var(--border-invert);padding:24px 0 80px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.rail .brand{display:flex;align-items:center;gap:10px;padding:0 20px 22px}
+.rail .brand b{font:700 20px/1 var(--font-display);letter-spacing:-.04em}
+.rail h4{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:16px 20px 8px;margin:0}
+.rail a{display:block;padding:8px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:14px;border-left:2px solid transparent}
+.rail a:hover{color:var(--text-invert);background:var(--bg-shell-raised)}
+.rail a.on{color:var(--text-invert);border-left-color:var(--accent-fill);background:var(--bg-shell-raised)}
+.rail a i{font-style:normal;font:400 11px var(--font-data);color:var(--accent-fill);margin-right:8px}
+main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
+.hdr{border-bottom:1px solid var(--border-invert);padding-bottom:22px}
+.eyebrow{font:500 10.5px/1 var(--font-data);letter-spacing:.15em;text-transform:uppercase;color:var(--accent-fill);margin:0 0 9px}
+.hdr h1{font:700 clamp(32px,5.2vw,49px)/1 var(--font-display);letter-spacing:-.035em;margin:0}
+.hdr p{color:var(--text-invert-dim);max-width:68ch;margin:14px 0 0}
+.screen{margin-top:62px;scroll-margin-top:20px}
+.screen>header{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--border-invert);padding-bottom:12px;margin-bottom:16px}
+.screen>header .no{font:400 12px var(--font-data);color:var(--accent-fill)}
+.screen>header h2{font:600 22px/1.1 var(--font-display);letter-spacing:-.02em;margin:0}
+.screen>header .job{color:var(--text-invert-dim);font-size:13px;flex-basis:100%;max-width:74ch}
+.tabs{display:flex;gap:3px;flex-wrap:wrap;margin:0 0 14px;padding:3px;background:var(--bg-shell-raised);border-radius:var(--r-pill);width:fit-content}
+.tabs button{all:unset;cursor:pointer;padding:7px 15px;font:500 10.5px/1 var(--font-data);letter-spacing:.07em;text-transform:uppercase;color:var(--text-invert-dim);border-radius:var(--r-pill)}
+.tabs button:hover{color:var(--text-invert)}
+.tabs button[aria-selected=true]{background:var(--accent-fill);color:var(--accent-on);font-weight:700}
+.tabs button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.frame{background:var(--bg-surface);color:var(--text);border-radius:var(--r-xl);overflow:hidden;position:relative;box-shadow:var(--e-3)}
+.state{display:none}.state.on{display:block}
+.body{padding:22px}
+.ann{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 26px}
+.ann ol{margin:0;padding:0}
+.ann li{list-style:none;display:grid;grid-template-columns:22px 1fr;gap:9px;padding:8px 0;font-size:13px;color:var(--text-invert-dim);border-top:1px solid var(--border-invert)}
+.ann b{color:var(--text-invert);font-weight:600}
+.pin{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--accent-fill);color:var(--accent-on);font:700 10px var(--font-data);margin-top:1px}
+.pin.onf{position:absolute;z-index:6;box-shadow:0 0 0 2.5px var(--bg-surface),0 2px 6px rgba(14,31,39,.3)}
+.callout{border-left:2px solid var(--accent-line);padding:2px 0 2px 16px;margin:26px 0 0;color:var(--text-invert-dim);font-size:14px;max-width:74ch}
+.callout b{color:var(--text-invert)}
+.lbl{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
+
+/* ── app chrome (project-scoped topnav, D-34: logo left, center = project) ── */
+.topnav{background:var(--bg-shell);color:var(--text-invert);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:11px 18px;gap:16px}
+.topnav .left{display:flex;gap:10px;align-items:center}
+.topnav .center{display:flex;gap:12px;align-items:center;justify-self:center}
+.topnav .right{display:flex;gap:16px;align-items:center;justify-self:end}
+.topnav .logo{display:flex;align-items:center;gap:8px}
+.topnav .crumb{font:400 11px/1 var(--font-data);color:var(--text-invert-faint)}
+.topnav .pname{font:600 15px/1 var(--font-display);letter-spacing:-.02em}
+.topnav nav{display:flex;gap:17px;font:500 10.5px/1 var(--font-data);letter-spacing:.09em;text-transform:uppercase;color:var(--text-invert-dim)}
+.avatar{width:27px;height:27px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 10.5px var(--font-data);color:#fff}
+
+/* ── project-scoped left rail ── */
+.wshell{display:grid;grid-template-columns:198px 1fr;min-height:520px}
+.pnav{border-right:1px solid var(--border);padding:14px 0}
+.pnav a{display:flex;align-items:center;gap:9px;padding:9px 16px;font:500 12.5px/1 var(--font-body);color:var(--text-dim);text-decoration:none;border-left:2px solid transparent}
+.pnav a.on{color:var(--text);border-left-color:var(--accent-strong);background:var(--bg-inset);font-weight:600}
+.pnav a:hover{color:var(--text);background:var(--bg-inset)}
+.pnav a .dot2{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;flex:none}
+.pnav a.on .dot2{opacity:1;background:var(--accent-strong)}
+.pnav .grp{font:500 9.5px/1 var(--font-data);letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);padding:14px 16px 6px}
+.pnav a.ph2{opacity:.45;cursor:default}
+.pnav a.ph2 .tag2{margin-left:auto;font:500 8.5px/1 var(--font-data);letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint)}
+.wmain{padding:20px 22px}
+
+/* ── chip / status (E-29) ── */
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x);border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);white-space:nowrap}
+.chip--acc{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
+.chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
+.chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
+.chip--dgr{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
+.st{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x) var(--chip-pad-y) 11px;border-radius:var(--r-pill);background:var(--bg-inset);color:var(--text-dim)}
+.st i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.st--bid{background:var(--info-wash);color:var(--info-text)}
+.st--ok{background:var(--success-wash);color:var(--success-text)}
+
+/* ── kind badges (scope_line_item.kind) ── */
+.kb{display:inline-flex;align-items:center;font-family:var(--font-display);font-weight:600;font-size:10.5px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:.05em;text-transform:uppercase;
+  padding:4px 9px;border-radius:var(--r-xs);white-space:nowrap}
+.kb--inc{background:var(--success-wash);color:var(--success-text)}
+.kb--exc{background:var(--danger-wash);color:var(--danger-text)}
+.kb--alt{background:var(--info-wash);color:var(--info-text)}
+.kb--allow{background:var(--accent-wash);color:var(--accent-text)}
+.kb--unit{background:var(--bg-inset);color:var(--text-dim)}
+.kb--clar{background:var(--bg-inset);color:var(--text-dim)}
+.kb--va{border:1px dashed var(--border-strong);color:var(--text-dim)}
+.ll{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-display);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--danger-text);padding:2px 0}
+
+/* ── buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 14px/1 var(--font-body);padding:10px 17px;min-height:36px;
+  border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text);cursor:pointer}
+.btn--pri{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
+.btn--acc{background:linear-gradient(135deg,var(--c-apricot-300),var(--accent-strong));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--gh{background:transparent;border-color:transparent;color:var(--text-dim)}
+.btn--sm{padding:6px 13px;min-height:29px;font-size:12px}
+
+/* ── table ── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised);border-radius:var(--r-md);overflow:hidden}
+.tbl th{font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;
+  padding:11px 12px;border-bottom:1px solid var(--border-strong);background:var(--bg-inset);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border-hairline);vertical-align:top}
+.tbl th.n,.tbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.tbl tbody tr:hover{background:var(--accent-wash)}
+.tbl tr.is-sel{background:var(--accent-wash);box-shadow:inset 3px 0 0 var(--accent-line)}
+.tbl tr.is-ll td:first-child{box-shadow:inset 3px 0 0 var(--danger-fill)}
+
+/* ── provenance row (parsed proposals) ── */
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none}
+.dot--hi{background:var(--success-fill)}.dot--mid{background:var(--accent-fill)}.dot--lo{background:var(--danger-fill)}
+.prov{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:start;padding:11px 12px;
+  border-bottom:1px solid var(--border-hairline);border-left:2px solid transparent}
+.prov:hover{background:var(--bg-surface-raised)}
+.prov .val{font:500 14px/1.35 var(--font-body)}
+.prov .src{font:400 11px/1.4 var(--font-data);color:var(--text-dim);margin-top:4px}
+.prov .src u{text-decoration:none;border-bottom:1px dotted var(--border-strong);cursor:pointer}
+
+/* ── cards / popover ── */
+.card{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);padding:16px}
+.pop{position:absolute;z-index:8;background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--e-3);padding:6px;min-width:220px}
+.pop button{all:unset;display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;cursor:pointer;padding:10px 11px;border-radius:var(--r-sm);font-size:13px;color:var(--text)}
+.pop button:hover{background:var(--accent-wash);color:var(--accent-text)}
+.pop .ic{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.pop hr{border:none;border-top:1px solid var(--border-hairline);margin:5px 4px}
+.pop .sec{font:500 9px/1 var(--font-data);letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);padding:9px 11px 5px}
+
+/* ── workflow chooser ── */
+.wgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.wcard{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;cursor:pointer;
+  transition:transform var(--dur-base) var(--ease-out),box-shadow var(--dur-base),border-color var(--dur-base)}
+.wcard:hover{transform:translateY(-4px);box-shadow:var(--e-3);border-color:var(--accent-line)}
+.wcard.is-sel{border-color:var(--accent-strong);box-shadow:0 0 0 3px var(--accent-wash)}
+.wcard .ic{width:30px;height:30px;fill:none;stroke:var(--accent-text);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-bottom:12px}
+.wcard h4{font:600 17px/1.2 var(--font-display);margin:0 0 6px}
+.wcard p{font-size:12.5px;color:var(--text-dim);margin:0 0 14px;line-height:1.5}
+.wcard .for{font:500 10px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);padding-top:12px;border-top:1px solid var(--border-hairline)}
+
+/* ── spec / file tree ── */
+.tree{font:400 12.5px/2 var(--font-data)}
+.tree div{color:var(--text-dim)}
+.tree div b{color:var(--text);font-weight:500}
+.tree .new{color:var(--success-text)}
+.tree .row{display:flex;align-items:center;gap:8px;padding:3px 6px;border-radius:var(--r-xs);cursor:pointer}
+.tree .row:hover{background:var(--bg-inset)}
+.tree .row.is-sel{background:var(--accent-wash);color:var(--accent-text)}
+
+/* ── timeline ── */
+.tl{display:flex;gap:0;overflow-x:auto;padding:8px 4px}
+.tl .pt{flex:none;width:150px;position:relative;padding-top:22px}
+.tl .pt::before{content:"";position:absolute;top:5px;left:0;right:0;height:2px;background:var(--border-strong)}
+.tl .pt::after{content:"";position:absolute;top:0px;left:0;width:12px;height:12px;border-radius:50%;background:var(--bg-inset);border:2px solid var(--border-strong)}
+.tl .pt.done::after{background:var(--success-fill);border-color:var(--success-fill)}
+.tl .pt.now::after{background:var(--accent-strong);border-color:var(--accent-strong);box-shadow:0 0 0 4px var(--accent-wash)}
+.tl .pt b{display:block;font-size:12.5px;margin-bottom:2px}
+.tl .pt span{display:block;font:400 11px var(--font-data);color:var(--text-dim)}
+
+/* ── empty ── */
+.empty{border:2px dashed var(--border-strong);border-radius:var(--r-xl);padding:44px 24px;text-align:center;background:rgba(255,255,255,.5)}
+.empty h4{font:600 18px/1.2 var(--font-display);margin:0 0 6px}
+.empty p{margin:0 0 16px;font-size:12.5px;color:var(--text-dim)}
+
+/* ── command bar ── */
+.cmd{background:var(--bg-shell);border-top:1px solid rgba(0,0,0,.5);padding:10px 18px;display:flex;align-items:center;gap:12px;font:400 12.5px/1 var(--font-data);color:var(--text-invert-dim)}
+.cmd .sl{color:var(--accent-fill);font-weight:700}
+.cmd kbd{border:1px solid var(--border-invert);border-radius:var(--r-xs);padding:3px 6px;font-size:10px}
+@media(max-width:900px){.doc{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border-invert)}.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.wgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<aside class="rail">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
+    <b>Platter</b>
+  </div>
+  <h4>Batch 3 — Project workspace &amp; scope</h4>
+  <a href="#s31"><i>3.1</i>Project dashboard</a>
+  <a href="#s32"><i>3.2</i>Quick action popover</a>
+  <a href="#s33"><i>3.3</i>Scope workflow chooser</a>
+  <a href="#s34"><i>3.4</i>Flow 1 · deep AI parse</a>
+  <a href="#s35"><i>3.5</i>Flow 2 · spec-driven</a>
+  <a href="#s36"><i>3.6</i>Flow 3 · manual</a>
+  <a href="#s37"><i>3.7</i>Scope worksheet</a>
+  <h4>Done</h4>
+  <a href="#" style="opacity:.4"><i>1.x</i>Intake &amp; parse</a>
+  <a href="#" style="opacity:.4"><i>2.x</i>Dashboard &amp; shell</a>
+  <h4>Next</h4>
+  <a href="#" style="opacity:.4"><i>4.x</i>ITB &amp; planroom</a>
+</aside>
+
+<main>
+  <div class="hdr">
+    <p class="eyebrow">Step 1 · Wireframes · Batch 3 of 6</p>
+    <h1>Project workspace &amp; scope</h1>
+    <p>Where a draft project becomes a scoped one. The workspace is the project's home — nav, dates, activity, the four quick actions — and the scope tool is the fork point: three ways to get from "we won the walk" to a worksheet of priced line items, converging on one shared table.</p>
+  </div>
+
+<!-- ═══════ 3.1 ═══════ -->
+<section class="screen" id="s31">
+  <header><span class="no">3.1</span><h2>Project dashboard</h2>
+    <span class="job">One job: land inside a project and know its state in one glance — what's next, what changed, what needs a decision. Logo moves left here (D-34); the center belongs to the project.</span></header>
+
+  <div class="tabs" role="tablist" data-g="a">
+    <button role="tab" aria-selected="true" data-t="a1">Full nav</button>
+    <button role="tab" aria-selected="false" data-t="a2">Collapsed · glyph cloud</button>
+    <button role="tab" aria-selected="false" data-t="a3">Mini map + renderings</button>
+    <button role="tab" aria-selected="false" data-t="a4">Timeline</button>
+    <button role="tab" aria-selected="false" data-t="a5">Edit history</button>
+  </div>
+
+  <div class="frame">
+    <div class="topnav">
+      <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n1" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n1)"/></g></svg></div><span class="crumb">/ Files /</span></div>
+      <div class="center"><span class="pname">West Henry Logistics</span><span class="chip chip--info">26-085</span></div>
+      <div class="right"><nav><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav><div class="avatar">JL</div></div>
+    </div>
+
+    <!-- a1 full nav -->
+    <div class="state on" id="a1">
+      <div class="wshell">
+        <nav class="pnav">
+          <a class="on" href="#"><span class="dot2"></span>Overview</a>
+          <a href="#"><span class="dot2"></span>Scope</a>
+          <a href="#"><span class="dot2"></span>ITB</a>
+          <a href="#"><span class="dot2"></span>Planroom</a>
+          <a href="#"><span class="dot2"></span>Bid tab</a>
+          <a href="#"><span class="dot2"></span>Budget</a>
+          <a href="#"><span class="dot2"></span>Documents</a>
+          <div class="grp">Phase 2</div>
+          <a class="ph2" href="#">Subcontracts<span class="tag2">Step 7</span></a>
+          <a class="ph2" href="#">Submittals<span class="tag2">Step 7</span></a>
+        </nav>
+        <div class="wmain" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">1</span>
+          <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+                <div><div class="lbl" style="margin-bottom:4px">Address</div><div style="font-size:14px">4400 SW 20th Ave, Ocala, FL 34474</div></div>
+                <span class="st st--bid"><i></i>Bidding</span>
+              </div>
+              <div style="display:flex;gap:26px;margin-top:16px;flex-wrap:wrap">
+                <div><div class="lbl">Owner</div><div style="font-size:13px;margin-top:3px">Marion Co. Board of Commissioners</div></div>
+                <div><div class="lbl">Delivery</div><div style="font-size:13px;margin-top:3px">Hard bid</div></div>
+                <div><div class="lbl">Packages</div><div style="font-size:13px;margin-top:3px" class="mono">17 · 3 unscoped</div></div>
+              </div>
+            </div>
+            <div class="card" style="position:relative">
+              <span class="pin onf" style="right:8px;top:8px">2</span>
+              <div class="lbl" style="margin-bottom:8px">Quick actions</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <span class="btn btn--sm" style="justify-content:flex-start">Log comm</span>
+                <span class="btn btn--sm" style="justify-content:flex-start">Add sub</span>
+                <span class="btn btn--sm" style="justify-content:flex-start">Planroom ↗</span>
+                <span class="btn btn--sm" style="justify-content:flex-start">Edit details</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:16px;position:relative">
+            <span class="pin onf" style="left:-9px;top:8px">3</span>
+            <div class="lbl" style="margin-bottom:8px">Key dates</div>
+            <div class="tl">
+              <div class="pt done"><b>ITB out</b><span>08/04</span></div>
+              <div class="pt done"><b>Site walk</b><span>08/21 · mandatory</span></div>
+              <div class="pt now"><b>Addenda cutoff</b><span>09/05</span></div>
+              <div class="pt"><b>Bids due</b><span>09/14 · 2:00 PM</span></div>
+              <div class="pt"><b>Award target</b><span>10/01</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- a2 collapsed glyph cloud -->
+    <div class="state" id="a2">
+      <div style="max-width:620px;margin:0 auto;padding:40px 20px;text-align:center;position:relative">
+        <span class="pin onf" style="left:50%;top:0;transform:translateX(-50%)">4</span>
+        <p style="font-size:12.5px;color:var(--text-dim);margin-bottom:22px">iPad-width: the project nav collapses from a fixed rail into a floating cloud of glyphs, reachable from anywhere without a persistent sidebar tax.</p>
+        <div style="display:inline-flex;gap:10px;flex-wrap:wrap;justify-content:center;background:var(--bg-shell);padding:14px;border-radius:var(--r-xl);box-shadow:var(--e-4)">
+          <div class="avatar" style="background:var(--accent-strong);color:var(--accent-on);width:40px;height:40px">Ov</div>
+          <div class="avatar" style="background:var(--bg-shell-raised);width:40px;height:40px">Sc</div>
+          <div class="avatar" style="background:var(--bg-shell-raised);width:40px;height:40px">IT</div>
+          <div class="avatar" style="background:var(--bg-shell-raised);width:40px;height:40px">Pl</div>
+          <div class="avatar" style="background:var(--bg-shell-raised);width:40px;height:40px">Bd</div>
+          <div class="avatar" style="background:var(--bg-shell-raised);width:40px;height:40px">Bu</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- a3 mini map + renderings -->
+    <div class="state" id="a3">
+      <div class="wshell">
+        <nav class="pnav"><a class="on" href="#"><span class="dot2"></span>Overview</a><a href="#"><span class="dot2"></span>Scope</a><a href="#"><span class="dot2"></span>ITB</a><a href="#"><span class="dot2"></span>Planroom</a><a href="#"><span class="dot2"></span>Bid tab</a><a href="#"><span class="dot2"></span>Budget</a><a href="#"><span class="dot2"></span>Documents</a></nav>
+        <div class="wmain">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="card" style="padding:0;overflow:hidden">
+              <div class="lbl" style="padding:12px 14px 0">Site</div>
+              <div style="height:140px;margin:10px 14px 14px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--c-cerulean-100),var(--c-sea-100));display:grid;place-items:center;color:var(--text-faint);font-size:12px">map tile · 4400 SW 20th Ave</div>
+            </div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div class="lbl" style="padding:12px 14px 0">Renderings · 3</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 14px 14px">
+                <div style="height:100px;border-radius:var(--r-sm);background:var(--bg-inset)"></div>
+                <div style="height:100px;border-radius:var(--r-sm);background:var(--bg-inset)"></div>
+                <div style="height:100px;border-radius:var(--r-sm);background:var(--bg-inset)"></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:12.5px;color:var(--text-dim);margin-top:14px">Pulled from uploaded architectural sheets and any renderings dropped at intake — not required, shown when available.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- a4 timeline (full width) -->
+    <div class="state" id="a4">
+      <div class="wshell">
+        <nav class="pnav"><a class="on" href="#"><span class="dot2"></span>Overview</a><a href="#"><span class="dot2"></span>Scope</a><a href="#"><span class="dot2"></span>ITB</a><a href="#"><span class="dot2"></span>Planroom</a><a href="#"><span class="dot2"></span>Bid tab</a><a href="#"><span class="dot2"></span>Budget</a><a href="#"><span class="dot2"></span>Documents</a></nav>
+        <div class="wmain" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">5</span>
+          <div class="lbl" style="margin-bottom:10px">Full schedule — 8 milestones</div>
+          <div class="tl" style="padding:10px 4px 4px">
+            <div class="pt done"><b>ITB out</b><span>08/04</span></div>
+            <div class="pt done"><b>RFI cutoff</b><span>08/14</span></div>
+            <div class="pt done"><b>Site walk</b><span>08/21 · mandatory</span></div>
+            <div class="pt now"><b>Addenda cutoff</b><span>09/05</span></div>
+            <div class="pt"><b>Bids due</b><span>09/14 · 2:00 PM</span></div>
+            <div class="pt"><b>Leveling</b><span>09/15–09/19</span></div>
+            <div class="pt"><b>Award target</b><span>10/01</span></div>
+            <div class="pt"><b>NTP</b><span>10/15</span></div>
+          </div>
+          <p style="font-size:12.5px;color:var(--text-dim);margin-top:16px">Every date on the card and in the dashboard countdown reads from this same list — one calendar, several views.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- a5 edit history -->
+    <div class="state" id="a5">
+      <div class="wshell">
+        <nav class="pnav"><a class="on" href="#"><span class="dot2"></span>Overview</a><a href="#"><span class="dot2"></span>Scope</a><a href="#"><span class="dot2"></span>ITB</a><a href="#"><span class="dot2"></span>Planroom</a><a href="#"><span class="dot2"></span>Bid tab</a><a href="#"><span class="dot2"></span>Budget</a><a href="#"><span class="dot2"></span>Documents</a></nav>
+        <div class="wmain" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">6</span>
+          <div class="lbl" style="margin-bottom:8px">Edit history — audit_event</div>
+          <div>
+            <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">submission_due changed 09/07 → 09/14</div><div class="src">field · <u>Addendum_02.pdf p.1</u></div></div><span style="font:400 11px var(--font-data);color:var(--text-dim)">R. Harper · 2d ago</span></div>
+            <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">Package 9A merged into 26B</div><div class="src">bid_package · manual</div></div><span style="font:400 11px var(--font-data);color:var(--text-dim)">R. Harper · 3d ago</span></div>
+            <div class="prov"><span class="dot dot--mid" style="margin-top:5px"></span><div><div class="val">Flag "Schedule required" added</div><div class="src">flag · <u>Div 01 32 00 p.3</u> · 0.92</div></div><span style="font:400 11px var(--font-data);color:var(--text-dim)">parse · 6d ago</span></div>
+            <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">Project created from 34 documents</div><div class="src">draft · deep parse</div></div><span style="font:400 11px var(--font-data);color:var(--text-dim)">R. Harper · 6d ago</span></div>
+          </div>
+          <p style="font-size:12.5px;color:var(--text-dim);margin-top:14px">Every mutation stamps <span class="mono">created_by</span> per D-09 — 3 users, no roles, but nothing is anonymous.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd"><span class="sl">/</span> Type a command or a project number <kbd style="margin-left:auto">/</kbd></div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Overview is the answer to "what's the state of this project,"</b> not a form. Address, owner, delivery method and package count — the things you'd otherwise hunt for in Procore.</span></li>
+    <li><span class="pin">2</span><span><b>Quick actions surface the four things done from outside their own tool</b> — logging a call, adding a sub, jumping to the planroom, editing details. Opens the popover in 3.2.</span></li>
+    <li><span class="pin">3</span><span><b>Key dates repeat the dashboard card's countdown</b> in context, with "now" marked distinctly from "done" and "upcoming."</span></li>
+  </ol><ol>
+    <li><span class="pin">4</span><span><b>iPad collapses the rail to a glyph cloud,</b> the same demotion pattern as the command bar (D-35) — persistent chrome is a worse trade than a floating summon on a touch device.</span></li>
+    <li><span class="pin">5</span><span><b>Full timeline is the same data as the card countdown</b> and the overview strip, just zoomed out to all eight milestones instead of the next one.</span></li>
+    <li><span class="pin">6</span><span><b>Edit history reuses the provenance row</b> (D-26) even for non-AI edits — a human edit and a parsed one look the same shape, just with a name instead of a confidence dot.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 3.2 ═══════ -->
+<section class="screen" id="s32">
+  <header><span class="no">3.2</span><h2>Quick action popover</h2>
+    <span class="job">One job: do the four things you'd otherwise leave the project to do, without leaving it.</span></header>
+
+  <div class="tabs" role="tablist" data-g="b">
+    <button role="tab" aria-selected="true" data-t="b1">Menu</button>
+    <button role="tab" aria-selected="false" data-t="b2">Log comm — inline</button>
+    <button role="tab" aria-selected="false" data-t="b3">Add sub — inline</button>
+  </div>
+
+  <div class="frame"><div class="body" style="min-height:320px">
+    <div class="state on" id="b1">
+      <div style="max-width:280px;position:relative">
+        <span class="pin onf" style="right:-9px;top:6px">1</span>
+        <div class="pop" style="position:static;box-shadow:var(--e-2)">
+          <div class="sec">Quick actions</div>
+          <button><svg class="ic" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/></svg>Log communication</button>
+          <button><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>Add subcontractor</button>
+          <button><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>Open planroom ↗</button>
+          <button><svg class="ic" viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/></svg>Edit project details</button>
+        </div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:210px;max-width:64ch">Reachable from the overview card and, per the command registry (R-05), from <span class="mono">/ 26-085</span> anywhere in the app.</p>
+    </div>
+
+    <div class="state" id="b2">
+      <div style="max-width:360px;position:relative">
+        <span class="pin onf" style="left:-9px;top:8px">2</span>
+        <div class="card">
+          <div class="lbl" style="margin-bottom:10px">Log communication</div>
+          <div style="display:flex;gap:6px;margin-bottom:10px"><span class="chip chip--acc">Call</span><span class="chip">Email</span><span class="chip">Site visit</span><span class="chip">Note</span></div>
+          <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--bg-surface-raised);padding:10px 12px;font-size:13px;color:var(--text-faint);margin-bottom:12px">Called Gulf Steel re: 5A pricing timeline…</div>
+          <div style="display:flex;justify-content:flex-end;gap:8px"><span class="btn btn--sm btn--gh">Cancel</span><span class="btn btn--sm btn--acc">Save</span></div>
+        </div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:16px;max-width:64ch">Stays inline, not a modal — the point of a quick action is that it doesn't cost you the page you were on.</p>
+    </div>
+
+    <div class="state" id="b3">
+      <div style="max-width:360px;position:relative">
+        <span class="pin onf" style="left:-9px;top:8px">3</span>
+        <div class="card">
+          <div class="lbl" style="margin-bottom:10px">Add subcontractor to project</div>
+          <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--bg-surface-raised);padding:10px 12px;font-size:13px;color:var(--text-faint);margin-bottom:10px">Search by name, trade or license…</div>
+          <div class="prov" style="border-bottom:none;padding:6px 0"><span class="dot dot--hi" style="margin-top:3px"></span><div><div class="val" style="font-size:13px">Bayline Concrete</div><div class="src">Concrete · FL Lic. #CGC1521 · rated 4.6</div></div><span class="btn btn--sm">Add</span></div>
+        </div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:16px;max-width:64ch">Adding here associates a sub with the project generally, ahead of inviting them to a specific package in Batch 4.</p>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Four actions, no more.</b> This is the set that's genuinely faster inline than navigating to its own tool — everything else earns a full page.</span></li>
+    <li><span class="pin">2</span><span><b>Log comm captures the minimum</b> — type and a note — because the alternative to a 5-second log is no log at all.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Add sub searches the org's shared subcontractor database</b> (out of scope for Batch 3, introduced properly in Batch 4) rather than starting a new record from nothing.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 3.3 ═══════ -->
+<section class="screen" id="s33">
+  <header><span class="no">3.3</span><h2>Scope tool — workflow chooser</h2>
+    <span class="job">One job: let the fastest path win without forcing it. Three ways in, one worksheet out.</span></header>
+
+  <div class="frame"><div class="body">
+    <div class="wgrid">
+      <div class="wcard is-sel">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+        <h4>Deep AI parse</h4>
+        <p>Reads every uploaded spec and drawing, proposes a full package list with budget estimates and schedule flags for review.</p>
+        <div class="for">Best for · full spec set already uploaded</div>
+      </div>
+      <div class="wcard">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M4 4h11l5 5v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M8 12h8M8 16h5"/></svg>
+        <h4>Spec-driven</h4>
+        <p>Browse the spec index yourself, pick sections, and let Platter propose packages from what you selected — a middle path.</p>
+        <div class="for">Best for · known scope, partial spec</div>
+      </div>
+      <div class="wcard">
+        <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+        <h4>Manual</h4>
+        <p>Work side-by-side with the drawing set and build the worksheet by hand, package by package, line by line.</p>
+        <div class="for">Best for · negotiated work, no formal spec</div>
+      </div>
+    </div>
+    <p style="font-size:12.5px;color:var(--text-dim);margin-top:18px;max-width:74ch">All three write to the same <span class="mono">scope_line_item</span> table (R-01) — the choice only changes how the first draft gets there. Switching flows mid-package is always available; nothing is a one-way door.</p>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Deep parse is pre-selected</b> because it's priority #1 (D-07) and the fastest path when the documents support it — but selection is a click away from any card, never a wizard you're locked into.</span></li>
+    <li><span class="pin">2</span><span><b>"Best for" replaces a recommendation engine.</b> Plain criteria the estimator can judge themselves beats a black-box suggestion for a decision this consequential.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 3.4 ═══════ -->
+<section class="screen" id="s34">
+  <header><span class="no">3.4</span><h2>Flow 1 — Deep AI parse</h2>
+    <span class="job">One job: turn a spec set into a reviewable slate of packages with budget and schedule attached, in one pass.</span></header>
+
+  <div class="tabs" role="tablist" data-g="c">
+    <button role="tab" aria-selected="true" data-t="c1">Running</button>
+    <button role="tab" aria-selected="false" data-t="c2">Proposed packages</button>
+    <button role="tab" aria-selected="false" data-t="c3">Accept / reject</button>
+  </div>
+
+  <div class="frame"><div class="body">
+    <div class="state on" id="c1">
+      <div style="max-width:520px;position:relative">
+        <span class="pin onf" style="left:-9px;top:8px">1</span>
+        <div class="lbl" style="margin-bottom:10px">Reading Project Manual Div 00–33 · 1,284 pages</div>
+        <div style="height:6px;background:var(--border);border-radius:var(--r-pill);overflow:hidden;margin-bottom:16px"><div style="height:100%;width:71%;background:linear-gradient(90deg,var(--c-apricot-300),var(--accent-strong));border-radius:var(--r-pill)"></div></div>
+        <div style="font-size:13px">
+          <div style="padding:7px 0;border-bottom:1px solid var(--border-hairline)"><span class="dot dot--hi" style="margin-right:8px"></span>11 packages proposed so far</div>
+          <div style="padding:7px 0;border-bottom:1px solid var(--border-hairline)"><span class="dot dot--hi" style="margin-right:8px"></span>Budget estimates attached to 8</div>
+          <div style="padding:7px 0;border-bottom:1px solid var(--border-hairline)"><span class="dot dot--mid" style="margin-right:8px"></span>2 schedule flags detected</div>
+          <div style="padding:7px 0;color:var(--text-dim)"><span class="dot" style="border:1.5px solid var(--border-strong);margin-right:8px"></span>Reading Division 26…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state" id="c2">
+      <div style="position:relative">
+        <span class="pin onf" style="left:-9px;top:8px">2</span>
+        <table class="tbl">
+          <thead><tr><th>Code</th><th>Package</th><th class="n">Budget est.</th><th>Schedule</th><th class="n">Conf.</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">3A</td><td>Concrete</td><td class="n mono">$1,350,000</td><td><span style="color:var(--text-faint)">—</span></td><td class="n"><span class="dot dot--hi"></span> 0.93</td></tr>
+            <tr><td class="mono">5A</td><td>Structural Steel</td><td class="n mono">$1,980,000</td><td><span class="chip chip--dgr">Long lead 12wk</span></td><td class="n"><span class="dot dot--hi"></span> 0.91</td></tr>
+            <tr><td class="mono">9A</td><td>Drywall &amp; Framing</td><td class="n mono">$640,000</td><td><span style="color:var(--text-faint)">—</span></td><td class="n"><span class="dot dot--mid"></span> 0.78</td></tr>
+            <tr><td class="mono">26A</td><td>Electrical</td><td class="n mono">$3,500,000</td><td><span class="chip chip--dgr">Schedule required</span></td><td class="n"><span class="dot dot--hi"></span> 0.95</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:14px;max-width:70ch">Budget estimate is the "deep parse" state of D-31's ladder — cerulean on the card until verified. Schedule flags come from the same Div 01 32 00 detection as E-04.</p>
+    </div>
+
+    <div class="state" id="c3">
+      <div style="position:relative">
+        <span class="pin onf" style="left:-9px;top:8px">3</span>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+          <span class="lbl" style="margin:0">17 packages proposed</span>
+          <span class="btn btn--sm btn--acc">Accept all high-confidence · 14</span>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Code</th><th>Package</th><th class="n">Budget est.</th><th class="n">Conf.</th><th></th></tr></thead>
+          <tbody>
+            <tr><td class="mono">3A</td><td>Concrete</td><td class="n mono">$1,350,000</td><td class="n"><span class="dot dot--hi"></span> 0.93</td><td><span class="chip chip--ok">Accepted</span></td></tr>
+            <tr class="is-sel"><td class="mono">9A</td><td>Drywall &amp; Framing</td><td class="n mono">$640,000</td><td class="n"><span class="dot dot--mid"></span> 0.78</td><td><span class="btn btn--sm btn--acc">Accept</span> <span class="btn btn--sm btn--gh">Reject</span></td></tr>
+            <tr><td class="mono">26B</td><td>Fire Alarm</td><td class="n mono">$210,000</td><td class="n"><span class="dot dot--lo"></span> 0.61</td><td><span class="btn btn--sm">Merge into 26A</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:14px;max-width:70ch">Rejecting a package discards it. Accepting creates the package, provisions its SharePoint folder (D-15), and seeds an empty scope worksheet — the handoff into 3.7.</p>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Same "found so far" pattern as Batch 1 intake</b> (1.2) — the wait becomes evidence, not a spinner, and low-confidence items front-load rather than surprise later.</span></li>
+    <li><span class="pin">2</span><span><b>Budget and schedule ride along with the package,</b> not as a separate pass — this is the obligation D-31 and E-04 create for this exact screen.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Bulk-accept is scoped to confidence, not all-or-nothing.</b> High-confidence packages clear in one click; the ones that need a human stay individually actionable.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 3.5 ═══════ -->
+<section class="screen" id="s35">
+  <header><span class="no">3.5</span><h2>Flow 2 — Spec-driven</h2>
+    <span class="job">One job: let the estimator pick the sections that matter and have Platter draft from exactly those, no more.</span></header>
+
+  <div class="tabs" role="tablist" data-g="d">
+    <button role="tab" aria-selected="true" data-t="d1">Spec index</button>
+    <button role="tab" aria-selected="false" data-t="d2">Package proposal</button>
+    <button role="tab" aria-selected="false" data-t="d3">Requirement fill</button>
+  </div>
+
+  <div class="frame"><div class="body">
+    <div class="state on" id="d1">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">1</span>
+          <div class="lbl" style="margin-bottom:8px">Div 03 — Concrete</div>
+          <div class="tree">
+            <div class="row is-sel"><span class="chip chip--ok" style="padding:2px 7px">✓</span>03 10 00 — Concrete Forming</div>
+            <div class="row is-sel"><span class="chip chip--ok" style="padding:2px 7px">✓</span>03 20 00 — Concrete Reinforcing</div>
+            <div class="row"><span style="width:17px;display:inline-block"></span>03 30 00 — Cast-in-Place Concrete</div>
+            <div class="row"><span style="width:17px;display:inline-block"></span>03 41 00 — Precast Structural</div>
+          </div>
+        </div>
+        <div>
+          <div class="lbl" style="margin-bottom:8px">Selected — 2 sections</div>
+          <div style="font-size:13px;color:var(--text-dim);line-height:1.7">03 10 00 · 03 20 00</div>
+          <div style="margin-top:16px"><span class="btn btn--acc">Propose package from selection</span></div>
+        </div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:16px;max-width:70ch">Checking sections rather than a whole division keeps the proposal tight — form and reinforcing without cast-in-place, because that's being self-performed.</p>
+    </div>
+
+    <div class="state" id="d2">
+      <div style="max-width:520px;position:relative">
+        <span class="pin onf" style="left:-9px;top:8px">2</span>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+            <div><div class="lbl">Proposed package</div><div style="font:600 18px var(--font-display);margin-top:4px">3B — Concrete Formwork &amp; Reinforcing</div></div>
+            <span class="chip chip--info">03 10 00 · 03 20 00</span>
+          </div>
+          <p style="font-size:12.5px;color:var(--text-dim);margin:12px 0 16px">6 requirement candidates found in the selected sections — inclusions, one allowance, one submittal trigger.</p>
+          <div style="display:flex;gap:8px"><span class="btn btn--sm btn--gh">Edit sections</span><span class="btn btn--sm btn--acc">Create package &amp; fill requirements</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state" id="d3">
+      <div style="position:relative">
+        <span class="pin onf" style="left:-9px;top:8px">3</span>
+        <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">Rebar per ASTM A615, Grade 60</div><div class="src">inclusion · <u>03 20 00 p.2</u> · 0.95</div></div><span class="kb kb--inc">Inclusion</span></div>
+        <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">Formwork release agent — Owner-approved list only</div><div class="src">clarification · <u>03 10 00 p.4</u> · 0.88</div></div><span class="kb kb--clar">Clarification</span></div>
+        <div class="prov"><span class="dot dot--mid" style="margin-top:5px"></span><div><div class="val">Allowance — $8,000 for embed plate adjustments</div><div class="src">allowance · <u>03 20 00 p.6</u> · 0.79</div></div><span class="kb kb--allow">Allowance</span></div>
+        <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">Mill certs required before placement</div><div class="src">submittal_required · <u>03 20 00 p.3</u> · 0.91</div></div><span class="kb kb--unit">Submittal</span></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:14px;max-width:70ch">Same provenance row as everywhere else (D-26) — the kind badge is the only thing that changes shape across the app's AI-derived surfaces.</p>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Checkbox-per-section, not per-division.</b> The proposal is only as broad as the selection — no surprise scope creeping in from an unchecked sibling section.</span></li>
+    <li><span class="pin">2</span><span><b>The package is named and coded before it's created,</b> editable in the same step — nothing is silently auto-committed.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Requirement fill is a confirmation queue,</b> identical in shape to Batch 1's field review — the trust mechanism travels with the data, not just the intake screen.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 3.6 ═══════ -->
+<section class="screen" id="s36">
+  <header><span class="no">3.6</span><h2>Flow 3 — Manual</h2>
+    <span class="job">One job: give an estimator building scope from a drawing set by eye the fastest possible hand-entry path, with the source always in view.</span></header>
+
+  <div class="frame"><div class="body" style="padding:0">
+    <div style="display:grid;grid-template-columns:.9fr 1.1fr;min-height:420px">
+      <div style="background:var(--bg-shell-hover);padding:16px;position:relative">
+        <span class="pin onf" style="left:8px;top:8px">1</span>
+        <div class="lbl" style="color:var(--text-invert-dim);margin-bottom:10px">Drawings &amp; files</div>
+        <div class="tree" style="color:var(--text-invert-dim)">
+          <div class="row" style="color:inherit">▾ <b style="color:var(--text-invert)">A-Series Architectural</b></div>
+          <div class="row is-sel" style="padding-left:26px">A-201 · Floor Plan Level 1</div>
+          <div class="row" style="padding-left:26px">A-301 · Building Elevations</div>
+          <div class="row" style="color:inherit">▾ <b style="color:var(--text-invert)">S-Series Structural</b></div>
+          <div class="row" style="padding-left:26px">S-101 · Foundation Plan</div>
+        </div>
+        <div style="margin-top:16px;background:#fff;border-radius:var(--r-xs);padding:16px;font-size:10.5px;color:rgba(14,31,39,.7);line-height:1.7;position:relative;min-height:180px">
+          <div style="font-weight:700;color:var(--text);margin-bottom:8px">A-201 · FLOOR PLAN LEVEL 1</div>
+          <div style="height:130px;border:1.5px dashed var(--border-strong);border-radius:var(--r-xs);display:grid;place-items:center;color:var(--text-faint)">drawing region</div>
+          <div style="position:absolute;left:70px;top:96px;width:60px;height:38px;border:2px solid var(--accent-strong);background:var(--accent-wash);border-radius:2px"></div>
+        </div>
+      </div>
+      <div style="padding:16px;position:relative">
+        <span class="pin onf" style="left:8px;top:8px">2</span>
+        <div class="lbl" style="margin-bottom:8px">Package 12A — Millwork</div>
+        <table class="tbl">
+          <thead><tr><th style="width:36px">#</th><th>Description</th><th style="width:90px">Kind</th><th class="n" style="width:60px">Qty</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">1</td><td>Reception desk, custom laminate</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">1 EA</td></tr>
+            <tr class="is-sel"><td class="mono">2</td><td>Break room casework, per region selected</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">18 LF</td></tr>
+            <tr><td class="mono">+</td><td colspan="3" style="color:var(--text-faint)">Click a region on the drawing to add a line</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>The drawing pane is the same source-highlight component</b> from Batch 1's parse review (1.3) — selecting a region on the left populates a line on the right, the same gesture inverted.</span></li>
+  </ol><ol>
+    <li><span class="pin">2</span><span><b>Every manually-drawn line still lands in the shared worksheet table</b> (3.7) — manual entry isn't a separate data shape, it's just a different way of filling the same rows.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 3.7 ═══════ -->
+<section class="screen" id="s37">
+  <header><span class="no">3.7</span><h2>Scope worksheet</h2>
+    <span class="job">One job: the single table every flow feeds and the atom every downstream workflow reads (R-01). If this table is right, six later screens fall out of it for free.</span></header>
+
+  <div class="tabs" role="tablist" data-g="e">
+    <button role="tab" aria-selected="true" data-t="e1">Table view</button>
+    <button role="tab" aria-selected="false" data-t="e2">Line item editor</button>
+    <button role="tab" aria-selected="false" data-t="e3">Kind badges</button>
+    <button role="tab" aria-selected="false" data-t="e4">Long-lead flag</button>
+    <button role="tab" aria-selected="false" data-t="e5">Empty package</button>
+  </div>
+
+  <div class="frame"><div class="body">
+    <div class="state on" id="e1">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <span class="lbl" style="margin:0">3A — Concrete · 8 lines</span>
+        <span class="btn btn--sm">＋ Add line</span>
+      </div>
+      <table class="tbl">
+        <thead><tr><th style="width:34px">#</th><th>CSI</th><th>Description</th><th>Kind</th><th class="n">Qty</th><th style="width:70px">Unit</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="mono">1</td><td class="mono">03 30 00</td><td>Cast-in-place foundation walls</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">1,240</td><td class="mono">CY</td><td></td></tr>
+          <tr><td class="mono">2</td><td class="mono">03 30 00</td><td>Slab on grade, 6" reinforced</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">42,000</td><td class="mono">SF</td><td></td></tr>
+          <tr><td class="mono">3</td><td class="mono">03 30 00</td><td>Waterproofing membrane at grade</td><td><span class="kb kb--exc">Exclusion</span></td><td class="n mono">—</td><td class="mono">—</td><td><span class="btn btn--sm" style="padding:3px 9px">↗ 7A</span></td></tr>
+          <tr><td class="mono">4</td><td class="mono">03 30 00</td><td>Alternate — polished slab finish</td><td><span class="kb kb--alt">Alternate</span></td><td class="n mono">42,000</td><td class="mono">SF</td><td></td></tr>
+          <tr><td class="mono">5</td><td class="mono">03 30 00</td><td>Allowance — unforeseen rock excavation</td><td><span class="kb kb--allow">Allowance</span></td><td class="n mono">$25,000</td><td class="mono">LS</td><td></td></tr>
+          <tr><td class="mono">6</td><td class="mono">03 30 00</td><td>Concrete pumping over 80ft</td><td><span class="kb kb--unit">Unit price</span></td><td class="n mono">TBD</td><td class="mono">CY</td><td></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:14px;max-width:74ch">Exclusions link forward to the package that owns them (waterproofing → 7A) so a reviewer never has to wonder whether excluded scope is covered somewhere else.</p>
+    </div>
+
+    <div class="state" id="e2">
+      <div style="max-width:560px">
+        <div class="lbl" style="margin-bottom:10px">Edit line 2</div>
+        <div class="card">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div><div class="lbl">CSI code</div><div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-family:var(--font-data);font-size:13px;margin-top:5px">03 30 00</div></div>
+            <div><div class="lbl">Kind</div><div style="margin-top:5px"><span class="kb kb--inc">Inclusion</span> <span style="font-size:11px;color:var(--text-faint)">▾ change</span></div></div>
+          </div>
+          <div class="lbl">Description</div>
+          <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;margin:5px 0 12px">Slab on grade, 6" reinforced</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+            <div><div class="lbl">Qty</div><div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-family:var(--font-data);font-size:13px;margin-top:5px" class="n">42,000</div></div>
+            <div><div class="lbl">Unit</div><div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-family:var(--font-data);font-size:13px;margin-top:5px">SF</div></div>
+            <div><div class="lbl">Long lead</div><div style="margin-top:8px"><span style="width:34px;height:20px;border-radius:var(--r-pill);background:var(--border-strong);display:inline-block;position:relative"></span></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between"><span class="btn btn--sm btn--gh" style="color:var(--danger-text)">Delete line</span><span class="btn btn--sm btn--acc">Save</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state" id="e3">
+      <div class="lbl" style="margin-bottom:10px">All seven kinds</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <span class="kb kb--inc">Inclusion</span><span class="kb kb--exc">Exclusion</span><span class="kb kb--alt">Alternate</span>
+        <span class="kb kb--allow">Allowance</span><span class="kb kb--unit">Unit price</span><span class="kb kb--clar">Clarification</span><span class="kb kb--va">VA option</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:16px;max-width:70ch">Sea green and grapefruit are deliberately reused from D-19's confirmed/flagged vocabulary — inclusion reads as settled, exclusion reads as a flag. The other five are neutral; kind alone doesn't carry urgency.</p>
+    </div>
+
+    <div class="state" id="e4">
+      <table class="tbl">
+        <thead><tr><th style="width:34px">#</th><th>Description</th><th>Kind</th><th></th></tr></thead>
+        <tbody>
+          <tr class="is-ll"><td class="mono">1</td><td>Structural steel package, mill order</td><td><span class="kb kb--inc">Inclusion</span></td><td><span class="ll">⏱ Long lead · 12 wk</span></td></tr>
+          <tr><td class="mono">2</td><td>Miscellaneous steel, field measured</td><td><span class="kb kb--inc">Inclusion</span></td><td></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:14px;max-width:70ch">Long-lead is carried on the left edge like every other row-state flag (D-28) — the grapefruit inset, not a fill, so it doesn't fight the row's own text.</p>
+    </div>
+
+    <div class="state" id="e5">
+      <div class="empty">
+        <h4>Package created, no scope yet</h4>
+        <p>26B — Fire Alarm was accepted from the parse but has no line items. Pull from the spec, draw manually, or paste from a takeoff.</p>
+        <div style="display:flex;gap:8px;justify-content:center"><span class="btn btn--acc">Add first line</span><span class="btn btn--gh">Import from spec</span></div>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>This is the atom.</b> Every column here is a field on <span class="mono">scope_line_item</span> — the same row a sub prices in the planroom, compares in the bid tab, and rolls up in the budget.</span></li>
+    <li><span class="pin">2</span><span><b>The editor is a form, not a modal takeover</b> — kind, quantity and the long-lead toggle are all one save away, matching the density an estimator actually works at.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Seven kinds, one shared visual grammar.</b> No new colors invented for scope — everything traces back to D-19's four intents.</span></li>
+    <li><span class="pin">4</span><span><b>An empty package is never a dead end.</b> All three Batch 3 flows are one click away from here, matching the "no gate" rule from Batch 1's failure paths (1.5).</span></li>
+  </ol></div>
+
+  <p class="callout"><b>What Batch 3 commits us to.</b> Kind badges (inclusion/exclusion/alternate/allowance/unit price/clarification/VA option) become the fixed vocabulary the bid tab and budget both have to render. The provenance row now has a third shape — parsed line items alongside parsed project fields and parsed sub quotes — same four parts every time. And the exclusion cross-reference (line → package) is a new obligation: Batch 5's bid tab needs to resolve "where did this excluded scope end up" without the estimator hunting for it.</p>
+</section>
+
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.tabs').forEach(function(g){
+  g.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-t]'); if(!b) return;
+    g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected','false')});
+    b.setAttribute('aria-selected','true');
+    var frame=g.nextElementSibling;
+    frame.querySelectorAll('.state').forEach(function(s){s.classList.remove('on')});
+    var t=frame.querySelector('#'+b.dataset.t); if(t) t.classList.add('on');
+  });
+});
+document.querySelectorAll('.wcard').forEach(function(c){
+  c.addEventListener('click',function(){
+    c.parentElement.querySelectorAll('.wcard').forEach(function(x){x.classList.remove('is-sel')});
+    c.classList.add('is-sel');
+  });
+});
+</script>
+</body>
+</html>

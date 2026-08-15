@@ -6,20 +6,20 @@
 <title>Platter — Batch 2 Wireframes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <style>
 /* ── tokens (from platter-tokens.css) ── */
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 14px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;
+body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;
 background-image:radial-gradient(1100px 620px at 86% -10%,rgba(34,124,157,.24),transparent 62%),radial-gradient(820px 520px at 2% 104%,rgba(23,195,178,.1),transparent 60%);background-attachment:fixed}
 .doc{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
 .rail{border-right:1px solid var(--border-invert);padding:24px 0 80px;position:sticky;top:0;height:100vh;overflow-y:auto}
 .rail .brand{display:flex;align-items:center;gap:10px;padding:0 20px 22px}
 .rail .brand b{font:700 20px/1 var(--font-display);letter-spacing:-.04em}
-.rail h4{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:16px 20px 8px;margin:0}
-.rail a{display:block;padding:8px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:13.5px;border-left:2px solid transparent}
+.rail h4{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:16px 20px 8px;margin:0}
+.rail a{display:block;padding:8px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:14px;border-left:2px solid transparent}
 .rail a:hover{color:var(--text-invert);background:var(--bg-shell-raised)}
 .rail a i{font-style:normal;font:400 11px var(--font-data);color:var(--accent-fill);margin-right:8px}
 main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
@@ -47,9 +47,9 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 .ann b{color:var(--text-invert);font-weight:600}
 .pin{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--accent-fill);color:var(--accent-on);font:700 10px var(--font-data);margin-top:1px}
 .pin.onf{position:absolute;z-index:6;box-shadow:0 0 0 2.5px var(--bg-surface),0 2px 6px rgba(14,31,39,.3)}
-.callout{border-left:2px solid var(--accent-line);padding:2px 0 2px 16px;margin:26px 0 0;color:var(--text-invert-dim);font-size:13.5px;max-width:74ch}
+.callout{border-left:2px solid var(--accent-line);padding:2px 0 2px 16px;margin:26px 0 0;color:var(--text-invert-dim);font-size:14px;max-width:74ch}
 .callout b{color:var(--text-invert)}
-.lbl{font:500 9.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
+.lbl{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
 
 /* ── app chrome ── */
 .topnav{background:var(--bg-shell);color:var(--text-invert);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:11px 18px;gap:16px}
@@ -73,56 +73,69 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 .seg{display:inline-flex;gap:3px;padding:3px;background:var(--bg-inset);border-radius:var(--r-pill)}
 .seg button{all:unset;cursor:pointer;padding:7px 14px;font:500 10px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);border-radius:var(--r-pill)}
 .seg button[aria-selected=true]{background:var(--bg-surface-raised);color:var(--text);box-shadow:var(--e-1);font-weight:700}
-.chip{display:inline-flex;align-items:center;gap:6px;font:500 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;
-  padding:5px 11px;border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);white-space:nowrap}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x);border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);white-space:nowrap}
 .chip--acc{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
 .chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
 .chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
 .chip--dgr{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
-.st{display:inline-flex;align-items:center;gap:7px;font:500 10px/1 var(--font-data);letter-spacing:.1em;text-transform:uppercase;padding:6px 12px 6px 10px;border-radius:var(--r-pill);background:var(--bg-inset);color:var(--text-dim)}
+.st{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x) var(--chip-pad-y) 11px;border-radius:var(--r-pill);background:var(--bg-inset);color:var(--text-dim)}
 .st i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
 .st--draft{background:var(--accent-wash);color:var(--accent-text)}
 .st--bid{background:var(--info-wash);color:var(--info-text)}
 .st--won{background:var(--success-wash);color:var(--success-text)}
 .st--lost{background:var(--danger-wash);color:var(--danger-text)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 13px/1 var(--font-body);padding:10px 17px;min-height:36px;
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 14px/1 var(--font-body);padding:10px 17px;min-height:36px;
   border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text);cursor:pointer}
 .btn--pri{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
-.btn--acc{background:linear-gradient(135deg,var(--c-apricot-300),var(--c-apricot-500));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--acc{background:linear-gradient(135deg,var(--c-apricot-300),var(--accent-strong));color:var(--accent-on);border-color:var(--accent-line)}
 .btn--gh{background:transparent;border-color:transparent;color:var(--text-dim)}
-.btn--sm{padding:6px 13px;min-height:29px;font-size:11.5px}
+.btn--sm{padding:6px 13px;min-height:29px;font-size:12px}
 
 /* ── PROJECT CARD ── */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(352px,1fr));gap:16px;padding:22px}
 .pc{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);position:relative;
+  overflow:hidden;display:flex;flex-direction:column;
   transition:transform var(--dur-base) var(--ease-out),box-shadow var(--dur-base),border-color var(--dur-base)}
 .pc:hover{transform:translateY(-4px);box-shadow:var(--e-3);border-color:var(--border-strong)}
 .pc__hd{padding:16px 16px 0;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .pc__name{font:600 18px/1.15 var(--font-display);letter-spacing:-.02em;cursor:pointer}
 .pc__name:hover{color:var(--info-text);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px}
-.pc__meta{font:400 11.5px/1.3 var(--font-data);color:var(--text-dim);margin-top:4px}
+.pc__meta{font:400 12px/1.3 var(--font-data);color:var(--text-dim);margin-top:4px}
 .pc__meta u{text-decoration:none;border-bottom:1px dotted var(--border-strong);cursor:help}
 .pc__tags{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
 .kebab{all:unset;cursor:pointer;width:26px;height:26px;border-radius:var(--r-pill);display:grid;place-items:center;color:var(--text-faint);font-size:15px;line-height:1}
 .kebab:hover{background:var(--accent-wash);color:var(--accent-text)}
-.pc__dates{display:flex;gap:0;margin:14px 0 0;padding:0 16px}
-.pc__dates>div{flex:1;min-width:0}
-.pc__dates dt{font:500 9px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-faint)}
-.pc__dates dd{margin:5px 0 0;font:400 13.5px/1 var(--font-data);font-variant-numeric:tabular-nums}
+/* E-10: fixed 4-column grid (was flex) so slots hold position whether or not
+   they're populated, plus padding under the dates so the footer never butts
+   directly against them when there's no glyph band. */
+.pc__dates{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:14px 0 0;padding:0 16px 18px}
+.pc__dates>div{min-width:0}
+.pc__dates dt{font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-faint)}
+.pc__dates dd{margin:5px 0 0;font:400 14px/1 var(--font-data);font-variant-numeric:tabular-nums}
 .pc__dates dd.due{color:var(--danger-text);font-weight:700}
-.pc__dates dd small{display:block;font-size:9.5px;color:var(--text-faint);margin-top:4px;font-weight:400}
-.pc__band{display:grid;grid-template-columns:repeat(4,1fr);margin-top:15px;border-top:1px solid var(--border-hairline)}
+.pc__dates dd small{display:block;font-size:10.5px;color:var(--text-faint);margin-top:4px;font-weight:400}
+.pc__band{display:grid;grid-template-columns:repeat(4,1fr);margin-top:0;border-top:1px solid var(--border-hairline)}
 .pc__band button{all:unset;cursor:pointer;position:relative;display:grid;place-items:center;min-height:var(--tap-min);padding:11px 4px;
   color:var(--text-faint);border-right:1px solid var(--border-hairline);transition:background var(--dur-fast),color var(--dur-fast)}
 .pc__band button:last-child{border-right:none}
 .pc__band button:hover{background:var(--accent-wash);color:var(--accent-text)}
 .pc__band button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:-2px}
 .pc__band svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.pc__ft{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:11px 16px;border-top:1px solid var(--border-hairline);background:var(--bg-inset);
-  border-radius:0 0 var(--r-lg) var(--r-lg)}
-.pc__ft .v{font:700 15px/1 var(--font-data);font-variant-numeric:tabular-nums}
-.pc__ft .s{font:400 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
-.pc.is-draft{border-style:dashed;border-color:var(--accent-line);background:linear-gradient(var(--bg-surface-raised),var(--bg-surface-raised)) padding-box}
+/* E-09: overflow:hidden on .pc (above) does the corner-clipping instead of a
+   redundant radius here, which was fighting the card's own curve and border.
+   E-01/E-02: no more source-text label — the value's color IS the source now.
+   margin-block-start:auto pins the footer to the bottom of the flex column
+   regardless of how much sits above it. */
+.pc__ft{display:flex;justify-content:flex-end;align-items:baseline;gap:10px;padding:11px 16px;border-top:1px solid var(--border-hairline);background:var(--bg-inset);
+  margin-block-start:auto}
+.pc__ft .v{font:700 16px/1 var(--font-data);font-variant-numeric:tabular-nums;color:var(--text)}
+.pc__ft .v.src-ai{color:var(--info-text)}
+.pc__ft .v.src-verified{color:var(--success-text)}
+.pc.is-draft{border-style:dashed;border-color:var(--accent-line)}
 .pc.is-urgent{box-shadow:var(--e-1),inset 0 0 0 1px var(--danger-line)}
 .pc.is-closed{opacity:.62}
 .pc.is-closed:hover{opacity:1}
@@ -132,15 +145,15 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 .pop button{all:unset;display:flex;justify-content:space-between;gap:14px;width:100%;box-sizing:border-box;cursor:pointer;padding:9px 11px;border-radius:var(--r-sm);font-size:12.5px}
 .pop button:hover{background:var(--accent-wash);color:var(--accent-text)}
 .pop hr{border:none;border-top:1px solid var(--border-hairline);margin:5px 4px}
-.pop .sec{font:500 9px/1 var(--font-data);letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);padding:9px 11px 5px}
+.pop .sec{font:500 10.5px/1 var(--font-data);letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);padding:9px 11px 5px}
 .tip{position:absolute;z-index:8;background:var(--bg-shell);color:var(--text-invert);font-size:12px;padding:7px 11px;border-radius:var(--r-sm);box-shadow:var(--e-2);white-space:nowrap}
 .hint-lbl{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--bg-shell);color:var(--text-invert);
-  font:500 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:var(--r-sm);white-space:nowrap;box-shadow:var(--e-2)}
+  font:500 10.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:var(--r-sm);white-space:nowrap;box-shadow:var(--e-2)}
 
 /* compact rows */
 .rows{padding:0 22px 22px}
 .rows table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised);border-radius:var(--r-md);overflow:hidden}
-.rows th{font:500 9.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;padding:11px 13px;background:var(--bg-inset);border-bottom:1px solid var(--border-strong);white-space:nowrap}
+.rows th{font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;padding:11px 13px;background:var(--bg-inset);border-bottom:1px solid var(--border-strong);white-space:nowrap}
 .rows td{padding:10px 13px;border-bottom:1px solid var(--border-hairline)}
 .rows th.n,.rows td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
 .rows tbody tr:hover{background:var(--accent-wash)}
@@ -158,7 +171,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 .cmdrow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 13px;border-radius:var(--r-sm);color:var(--text-invert-dim);font-size:13px}
 .cmdrow.on{background:var(--accent-fill);color:var(--accent-on);font-weight:600}
 .cmdrow .k{font:400 10px var(--font-data);letter-spacing:.08em;text-transform:uppercase;opacity:.65}
-.cmdsec{font:500 9px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:10px 13px 6px}
+.cmdsec{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:10px 13px 6px}
 
 /* device frames */
 .dev{margin:0 auto;background:var(--bg-surface);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--e-3)}
@@ -175,7 +188,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 
 <aside class="rail">
   <div class="brand">
-    <svg viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFCB77"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
+    <svg viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
     <b>Platter</b>
   </div>
   <h4>Batch 2 — Dashboard &amp; shell</h4>
@@ -213,7 +226,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
     <div class="topnav">
       <div class="left"><span class="qa">＋ New project</span></div>
       <div class="center">
-        <div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n1" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFCB77"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n1)"/></g></svg>Platter</div>
+        <div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n1" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n1)"/></g></svg>Platter</div>
         <nav><b>Files</b><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav>
       </div>
       <div class="right"><span class="search">Search projects…</span><div class="avatar">JL</div></div>
@@ -234,7 +247,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
       <div class="grid">
         <!-- urgent -->
         <article class="pc is-urgent" style="position:relative">
-          <span class="pin onf" style="left:-9px;top:16px">2</span>
+          <span class="pin onf" style="top:8px;right:8px">2</span>
           <div class="pc__hd"><div><div class="pc__name">Marion Transit Hub</div><div class="pc__meta">26-081 · <u>Ocala, FL</u></div></div>
             <div class="pc__tags"><div style="display:flex;gap:6px;align-items:center"><span class="st st--bid"><i></i>Bidding</span><button class="kebab">⋯</button></div><span class="chip chip--dgr">Bond 100%</span></div></div>
           <dl class="pc__dates">
@@ -249,7 +262,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
             <button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button>
             <button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button>
           </div>
-          <div class="pc__ft" style="position:relative"><span class="pin onf" style="right:-9px;top:8px">3</span><span class="s">Proposed budget · deep parse</span><span class="v">$18.4M</span></div>
+          <div class="pc__ft" style="position:relative"><span class="pin onf" style="right:6px;top:8px">3</span><span class="v src-ai">$18.4M</span></div>
         </article>
 
         <article class="pc">
@@ -267,11 +280,11 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
             <button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button>
             <button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button>
           </div>
-          <div class="pc__ft"><span class="s">Proposed budget · deep parse</span><span class="v">$28.4M</span></div>
+          <div class="pc__ft"><span class="v src-verified">$28.4M</span></div>
         </article>
 
         <article class="pc is-draft" style="position:relative">
-          <span class="pin onf" style="left:-9px;top:16px">4</span>
+          <span class="pin onf" style="top:8px;right:8px">4</span>
           <div class="pc__hd"><div><div class="pc__name">Silver Springs Annex</div><div class="pc__meta">26-088 · <u>Silver Springs, FL</u></div></div>
             <div class="pc__tags"><div style="display:flex;gap:6px;align-items:center"><span class="st st--draft"><i></i>Draft</span><button class="kebab">⋯</button></div><span class="chip">4 unresolved</span></div></div>
           <dl class="pc__dates">
@@ -286,7 +299,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
             <button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button>
             <button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button>
           </div>
-          <div class="pc__ft"><span class="s">Proposed budget · deep parse</span><span class="v" style="color:var(--text-faint)">$9.1M est.</span></div>
+          <div class="pc__ft"><span class="v src-ai" style="opacity:.6">$9.1M est.</span></div>
         </article>
       </div>
     </div>
@@ -330,7 +343,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
             <div class="pc__tags"><div style="display:flex;gap:6px;align-items:center"><span class="st st--bid"><i></i>Bidding</span><button class="kebab">⋯</button></div><span class="chip chip--dgr">Bond 100%</span></div></div>
           <dl class="pc__dates"><div><dt>ITB out</dt><dd>07/22</dd></div><div><dt>Site walk</dt><dd>08/05</dd></div><div><dt>Bids due</dt><dd class="due">08/17<small style="color:var(--danger-text)">in 2 days</small></dd></div><div><dt>Packages</dt><dd>14<small>9 quoted</small></dd></div></dl>
           <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
-          <div class="pc__ft"><span class="s">Proposed budget · deep parse</span><span class="v">$18.4M</span></div>
+          <div class="pc__ft"><span class="v src-ai">$18.4M</span></div>
         </article>
       </div>
       <p style="font-size:12.5px;color:var(--text-dim);padding:0 22px 22px;margin:0">Filters are chips in the toolbar, individually removable. Never a hidden filter panel — an invisible active filter is the fastest way to make someone think data is missing.</p>
@@ -351,7 +364,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
   <div class="ann"><ol>
     <li><span class="pin">1</span><span><b>Status counts double as filters.</b> One row, no panel. Sort defaults to bids due ascending because the deadline is the only ordering an estimator works to — not alphabetical, not recently modified.</span></li>
     <li><span class="pin">2</span><span><b>Urgency is carried by an inset ring,</b> not a colored card. The card stays readable; the ring reads at a glance across a full grid. Under 48 hours the due date and its countdown both go grapefruit.</span></li>
-    <li><span class="pin">3</span><span><b>Footer shows the proposed budget and names its source</b> — "deep parse" or "budget table." Same number, very different confidence, so the label is not optional.</span></li>
+    <li><span class="pin">3</span><span><b>Footer shows the proposed budget, source encoded by color</b> (E-01/E-02) — cerulean is AI-generated, sea green is verified against the budget table. No text label; the discipline is the same color meaning as everywhere else in the app.</span></li>
     <li><span class="pin">4</span><span><b>Draft is a dashed border plus a count of what's unresolved.</b> The dash reads as provisional without needing a legend, and the count is the exit criteria from Batch 1.4.</span></li>
   </ol><ol>
     <li><span class="pin">5</span><span><b>Rows mode is the same data, not a lesser view.</b> Cards stop scanning well past about fifteen projects. Toggle is remembered per user.</span></li>
@@ -369,49 +382,56 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
     <div class="grid" style="padding:0">
       <article class="pc is-draft"><div class="pc__hd"><div><div class="pc__name">Silver Springs Annex</div><div class="pc__meta">26-088 · Silver Springs, FL</div></div><div class="pc__tags"><span class="st st--draft"><i></i>Draft</span><span class="chip">4 unresolved</span></div></div>
         <dl class="pc__dates"><div><dt>Bids due</dt><dd>10/02<small>in 48 days</small></dd></div><div><dt>Packages</dt><dd>11</dd></div></dl>
-        <div class="pc__ft"><span class="s">Deep parse</span><span class="v" style="color:var(--text-faint)">$9.1M est.</span></div></article>
+        <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+        <div class="pc__ft"><span class="v src-ai" style="opacity:.6">$9.1M est.</span></div></article>
 
       <article class="pc"><div class="pc__hd"><div><div class="pc__name">Dunnellon Water Plant</div><div class="pc__meta">26-086 · Dunnellon, FL</div></div><div class="pc__tags"><span class="st"><i></i>Scoping</span></div></div>
         <dl class="pc__dates"><div><dt>Bids due</dt><dd>09/28<small>in 44 days</small></dd></div><div><dt>Packages</dt><dd>12<small>scope 60%</small></dd></div></dl>
-        <div class="pc__ft"><span class="s">Budget table</span><span class="v">$11.7M</span></div></article>
+        <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+        <div class="pc__ft"><span class="v src-verified">$11.7M</span></div></article>
 
       <article class="pc"><div class="pc__hd"><div><div class="pc__name">West Henry Logistics</div><div class="pc__meta">26-085 · Ocala, FL</div></div><div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span><span class="chip chip--dgr">Bond 100%</span></div></div>
         <dl class="pc__dates"><div><dt>Site walk</dt><dd>08/21<small style="color:var(--danger-text)">Mandatory</small></dd></div><div><dt>Bids due</dt><dd>09/14<small>in 30 days</small></dd></div><div><dt>Packages</dt><dd>17<small>3 quoted</small></dd></div></dl>
-        <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div></article>
+        <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+        <div class="pc__ft"><span class="v src-verified">$28.4M</span></div></article>
 
-      <article class="pc is-urgent" style="position:relative"><span class="pin onf" style="left:-9px;top:16px">1</span>
+      <article class="pc is-urgent" style="position:relative"><span class="pin onf" style="top:8px;right:8px">1</span>
         <div class="pc__hd"><div><div class="pc__name">Marion Transit Hub</div><div class="pc__meta">26-081 · Ocala, FL</div></div><div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span><span class="chip chip--dgr">Bond 100%</span></div></div>
         <dl class="pc__dates"><div><dt>Bids due</dt><dd class="due">08/17<small style="color:var(--danger-text)">in 2 days · 5 packages unquoted</small></dd></div></dl>
-        <div class="pc__ft"><span class="s">Budget table</span><span class="v">$18.4M</span></div></article>
+        <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+        <div class="pc__ft"><span class="v src-verified">$18.4M</span></div></article>
 
-      <article class="pc is-urgent" style="position:relative"><span class="pin onf" style="left:-9px;top:16px">2</span>
+      <article class="pc is-urgent" style="position:relative"><span class="pin onf" style="top:8px;right:8px">2</span>
         <div class="pc__hd"><div><div class="pc__name">Belleview Fire Station 3</div><div class="pc__meta">26-079 · Belleview, FL</div></div><div class="pc__tags"><span class="st st--bid"><i></i>Leveling</span><span class="chip chip--dgr">Overdue</span></div></div>
         <dl class="pc__dates"><div><dt>Bids due</dt><dd class="due">08/12<small style="color:var(--danger-text)">closed 3 days ago</small></dd></div><div><dt>Bids in</dt><dd>21<small>2 packages short</small></dd></div></dl>
-        <div class="pc__ft"><span class="s">Leveled</span><span class="v">$6.12M</span></div></article>
+        <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+        <div class="pc__ft"><span class="v src-verified">$6.12M</span></div></article>
 
       <article class="pc"><div class="pc__hd"><div><div class="pc__name">Ocala Municipal Garage</div><div class="pc__meta">26-072 · Ocala, FL</div></div><div class="pc__tags"><span class="st"><i></i>Submitted</span></div></div>
         <dl class="pc__dates"><div><dt>Submitted</dt><dd>07/30</dd></div><div><dt>Award target</dt><dd>08/29<small>in 14 days</small></dd></div></dl>
-        <div class="pc__ft"><span class="s">Final proposal</span><span class="v">$4.88M</span></div></article>
+        <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+        <div class="pc__ft"><span class="v src-verified">$4.88M</span></div></article>
 
-      <article class="pc is-closed" style="position:relative"><span class="pin onf" style="left:-9px;top:16px">3</span>
+      <article class="pc is-closed" style="position:relative"><span class="pin onf" style="top:8px;right:8px">3</span>
         <div class="pc__hd"><div><div class="pc__name">Citra Elementary Addition</div><div class="pc__meta">25-140 · Citra, FL</div></div><div class="pc__tags"><span class="st st--won"><i></i>Awarded</span></div></div>
         <dl class="pc__dates"><div><dt>Awarded</dt><dd>06/11</dd></div><div><dt>Buyout</dt><dd>84%</dd></div></dl>
-        <div class="pc__ft"><span class="s">Contract value</span><span class="v">$12.05M</span></div></article>
+        <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+        <div class="pc__ft"><span class="v src-verified">$12.05M</span></div></article>
 
       <article class="pc is-closed"><div class="pc__hd"><div><div class="pc__name">Lake Weir Community Center</div><div class="pc__meta">25-131 · Ocklawaha, FL</div></div><div class="pc__tags"><span class="st st--lost"><i></i>Lost</span></div></div>
         <dl class="pc__dates"><div><dt>Result</dt><dd>05/28</dd></div><div><dt>Gap to low</dt><dd style="color:var(--danger-text)">+3.4%</dd></div></dl>
-        <div class="pc__ft"><span class="s">Our number</span><span class="v" style="color:var(--text-dim)">$7.44M</span></div></article>
+        <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+        <div class="pc__ft"><span class="v src-verified">$7.44M</span></div></article>
     </div>
   </div></div>
 
   <div class="ann"><ol>
     <li><span class="pin">1</span><span><b>Urgent cards drop the date columns they don't need</b> and spend the space on the thing that matters — how many packages are still unquoted with two days left. A card at deadline is a different question than a card at kickoff.</span></li>
     <li><span class="pin">2</span><span><b>Overdue is not the same as urgent.</b> Bids closed, so the flag reads "Overdue" and the card shows what's short. The ring is the same; the content changes.</span></li>
-  </ol><ol>
     <li><span class="pin">3</span><span><b>Closed projects dim to 62% and restore on hover.</b> They stay reachable — the historical data analysis you're after depends on them — but they never compete with live work.</span></li>
   </ol></div>
 
-  <p class="callout"><b>The footer earns its place by naming its source.</b> "Deep parse" is an AI estimate before scope exists. "Budget table" is your own numbers. "Leveled" is real bids. Same slot, same format, escalating confidence — and the label is what stops a parse guess from being mistaken for a commitment three weeks later.</p>
+  <p class="callout"><b>The footer's source is now a color, not a label</b> (E-01 → E-03). Cerulean is AI-generated — a deep parse before scope exists. Sea green is verified — a budget table, a leveling result, a submitted or contract number. The four-state ladder (deep parse → budget table → leveled → contract value) collapses to those two on the card; whether the budget tool still tracks all four internally is an open question flagged for Batch 5, not decided here.</p>
 </section>
 
 <!-- ═══════ 2.3 ═══════ -->
@@ -439,7 +459,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
             <button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button>
             <button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button>
           </div>
-          <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div>
+          <div class="pc__ft"><span class="v src-verified">$28.4M</span></div>
         </article>
         <p style="font-size:12.5px;color:var(--text-dim);margin-top:16px">Four glyphs, no captions: budget table · invite bidders · log communication · planroom and documents. The label appears above on hover, the stroke thickens, and the cell fills apricot.</p>
       </div>
@@ -454,7 +474,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
               <span class="tip" style="left:52px;top:24px">4400 SW 20th Ave, Ocala, FL 34474</span></div></div>
             <div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span></div></div>
           <dl class="pc__dates" style="margin-top:34px"><div><dt>Bids due</dt><dd>09/14</dd></div><div><dt>Packages</dt><dd>17</dd></div></dl>
-          <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div>
+          <div class="pc__ft"><span class="v src-verified">$28.4M</span></div>
         </article>
         <p style="font-size:12.5px;color:var(--text-dim);margin-top:16px">City is the resting state; hovering reveals the full confirmed address. Clicking the project name selects and opens it.</p>
       </div>
@@ -468,7 +488,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
             <div class="pc__tags"><div style="display:flex;gap:6px;align-items:center"><span class="st st--bid"><i></i>Bidding</span>
               <button class="kebab" style="background:var(--accent-wash);color:var(--accent-text)">⋯</button></div></div></div>
           <dl class="pc__dates"><div><dt>Bids due</dt><dd>09/14</dd></div><div><dt>Packages</dt><dd>17</dd></div></dl>
-          <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div>
+          <div class="pc__ft"><span class="v src-verified">$28.4M</span></div>
         </article>
         <div class="pop" style="right:-40px;top:52px">
           <button>Copy planroom link <span style="color:var(--text-faint);font-family:var(--font-data);font-size:10px">⌘L</span></button>
@@ -491,13 +511,14 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
           <div class="pc__hd"><div><div class="pc__name">West Henry Logistics</div><div class="pc__meta">26-085 · Ocala, FL</div></div>
             <div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span><span class="chip chip--dgr" style="box-shadow:0 0 0 3px var(--accent-wash)">Bond 100%</span></div></div>
           <dl class="pc__dates"><div><dt>Bids due</dt><dd>09/14</dd></div><div><dt>Packages</dt><dd>17</dd></div></dl>
-          <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div>
+          <div class="pc__ft"><span class="v src-verified">$28.4M</span></div>
         </article>
         <div class="pop" style="right:-30px;top:96px;min-width:250px">
           <div class="sec">Flags on this project</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;padding:4px 11px 10px">
             <span class="chip chip--dgr">Bond 100% <span style="opacity:.55">✕</span></span>
             <span class="chip chip--dgr">Mandatory walk <span style="opacity:.55">✕</span></span>
+            <span class="chip chip--dgr">Schedule required <span style="opacity:.55">✕</span></span>
             <span class="chip chip--info">Prevailing wage <span style="opacity:.55">✕</span></span>
           </div>
           <hr>
@@ -505,10 +526,10 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
           <button>LD $2,500/day <span class="chip chip--acc" style="padding:2px 8px">0.61</span></button>
           <button>540 calendar days <span class="chip chip--ok" style="padding:2px 8px">0.74</span></button>
           <hr>
-          <button style="color:var(--info-text)">＋ New flag…</button>
+          <button style="color:var(--info-text)">Manage flags in Settings ↗</button>
         </div>
       </div>
-      <p style="font-size:12.5px;color:var(--text-dim);margin-top:210px;max-width:64ch">Flags are editable in place. Suggestions come from the parse and carry their confidence score, so promoting one to a card flag is a deliberate act — the provenance follows it out of Batch 1.</p>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:210px;max-width:64ch"><b style="color:var(--text)">E-04/E-05:</b> flags are a controlled vocabulary now — this popover applies and removes them but can't mint a new one. "Schedule required" (E-04) joins Bond and Mandatory walk as a requirement-type flag, detected from Div 01 32 00 and the ITB. Suggestions still come from the parse and carry their confidence score, so promoting one to a card flag is a deliberate act — the provenance follows it out of Batch 1.</p>
     </div>
   </div></div>
 
@@ -538,14 +559,14 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
       <div class="topnav" style="border-radius:var(--r-md);position:relative">
         <span class="pin onf" style="left:8px;top:-9px">1</span>
         <div class="left"><span class="qa">＋ New project</span></div>
-        <div class="center"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FFCB77"/></g></svg>Platter</div>
+        <div class="center"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FF9F1C"/></g></svg>Platter</div>
           <nav><b>Files</b><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav></div>
         <div class="right"><span class="search">Search projects…</span><div class="avatar">JL</div></div>
       </div>
       <span class="lbl" style="margin:26px 0 10px">Inside a project · logo left, project centered</span>
       <div class="topnav" style="border-radius:var(--r-md);position:relative">
         <span class="pin onf" style="left:8px;top:-9px">2</span>
-        <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FFCB77"/></g></svg></div>
+        <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FF9F1C"/></g></svg></div>
           <span style="font:400 11px var(--font-data);color:var(--text-invert-faint)">/ Files /</span></div>
         <div class="center"><span style="font:600 15px var(--font-display);letter-spacing:-.02em">West Henry Logistics</span><span class="chip chip--info" style="border-color:rgba(127,179,199,.5);background:rgba(34,124,157,.3);color:#DCEAF0">26-085</span></div>
         <div class="right"><nav><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav><div class="avatar">JL</div></div>
@@ -557,7 +578,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
         <span class="pin onf" style="left:-9px;top:14px">3</span>
         <div class="topnav" style="grid-template-columns:auto 1fr auto">
           <div class="left"><span class="qa" style="padding:6px 10px">＋</span></div>
-          <div class="center"><div class="logo"><svg viewBox="0 0 64 64" width="18" height="18"><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FFCB77"/></g></svg>Platter</div></div>
+          <div class="center"><div class="logo"><svg viewBox="0 0 64 64" width="18" height="18"><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FF9F1C"/></g></svg>Platter</div></div>
           <div class="right"><div class="avatar">JL</div></div>
         </div>
         <div style="display:flex;gap:3px;padding:9px 12px;background:var(--bg-shell-raised);overflow-x:auto">
@@ -571,7 +592,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
           <article class="pc"><div class="pc__hd"><div><div class="pc__name" style="font-size:17px">Marion Transit Hub</div><div class="pc__meta">26-081 · Ocala, FL</div></div><div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span></div></div>
             <dl class="pc__dates"><div><dt>Bids due</dt><dd class="due">08/17<small>in 2 days</small></dd></div><div><dt>Packages</dt><dd>14</dd></div></dl>
             <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
-            <div class="pc__ft"><span class="s">Budget table</span><span class="v">$18.4M</span></div></article>
+            <div class="pc__ft"><span class="v src-verified">$18.4M</span></div></article>
         </div>
         <div style="display:flex;justify-content:flex-end;padding:0 16px 18px"><div class="fab">/</div></div>
       </div>
@@ -583,14 +604,14 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
         <span class="pin onf" style="left:-9px;top:14px">4</span>
         <div class="topnav" style="padding:10px 13px;grid-template-columns:auto 1fr auto">
           <div class="left"><span style="font-size:16px">☰</span></div>
-          <div class="center"><div class="logo" style="font-size:14px"><svg viewBox="0 0 64 64" width="16" height="16"><g fill="none" stroke="#FEF9EF" stroke-width="4.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FFCB77"/></g></svg>Platter</div></div>
+          <div class="center"><div class="logo" style="font-size:14px"><svg viewBox="0 0 64 64" width="16" height="16"><g fill="none" stroke="#FEF9EF" stroke-width="4.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FF9F1C"/></g></svg>Platter</div></div>
           <div class="right"><div class="avatar" style="width:24px;height:24px;font-size:9px">JL</div></div>
         </div>
         <div style="padding:12px">
           <article class="pc" style="border-radius:var(--r-md)">
             <div class="pc__hd" style="padding:13px 13px 0"><div><div class="pc__name" style="font-size:15px">Marion Transit Hub</div><div class="pc__meta" style="font-size:10.5px">26-081</div></div><span class="st st--bid" style="font-size:9px;padding:5px 9px 5px 8px"><i style="width:6px;height:6px"></i>Bidding</span></div>
             <dl class="pc__dates" style="padding:0 13px"><div><dt>Bids due</dt><dd class="due" style="font-size:12.5px">08/17<small>2 days</small></dd></div><div><dt>Pkgs</dt><dd style="font-size:12.5px">14</dd></div></dl>
-            <div class="pc__ft" style="padding:9px 13px;border-radius:0 0 var(--r-md) var(--r-md)"><span class="s" style="font-size:8.5px">Budget table</span><span class="v" style="font-size:13px">$18.4M</span></div>
+            <div class="pc__ft" style="padding:9px 13px"><span class="v src-verified" style="font-size:13px">$18.4M</span></div>
           </article>
         </div>
       </div>
@@ -650,8 +671,8 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
         <div class="cmdrow"><span>26-085 budget</span><span>Budget table</span><span class="k">Tool</span></div>
         <div class="cmdrow"><span>26-085 planroom</span><span>Planroom · copy link</span><span class="k">Action</span></div>
       </div>
-      <div class="cmd" style="border-radius:0 0 var(--r-pill) var(--r-pill);border-color:var(--accent-line);border:1px solid var(--accent-line);border-top:none"><span class="sl">/</span><span style="color:var(--text-invert)">26-085</span><kbd style="margin-left:auto">↵</kbd></div></div>
-      <p style="font-size:12.5px;color:var(--text-invert-dim);margin:16px 0 0">A bare project number opens the project. Adding a package code or a tool name drills straight in — the same grammar the file structure and package codes already use.</p>
+      <div class="cmd" style="border-radius:0 0 var(--r-pill) var(--r-pill);border:1px solid var(--accent-strong);border-top:none"><span class="sl">/</span><span style="color:var(--text-invert)">26-085</span><kbd style="margin-left:auto">↵</kbd></div></div>
+      <p style="font-size:12.5px;color:var(--text-invert-dim);margin:16px 0 0"><b style="color:var(--text-invert)">E-27:</b> the active bar's border is now the strong orange, not the base accent. A bare project number opens the project. Adding a package code or a tool name drills straight in — the same grammar the file structure and package codes already use.</p>
     </div>
 
     <div class="state" id="e4">
@@ -661,7 +682,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
         <div class="cmdrow"><span>WH scope</span><span>West Henry Logistics → Scope</span><span class="k">Tool</span></div>
         <div class="cmdrow"><span style="opacity:.5">West Marion Annex</span><span style="opacity:.5">also matches "WH"</span><span class="k">Project</span></div>
       </div>
-      <div class="cmd" style="border-radius:0 0 var(--r-pill) var(--r-pill);border:1px solid var(--accent-line);border-top:none"><span class="sl">/</span><span style="color:var(--text-invert)">WH budget</span><kbd style="margin-left:auto">↵</kbd></div></div>
+      <div class="cmd" style="border-radius:0 0 var(--r-pill) var(--r-pill);border:1px solid var(--accent-strong);border-top:none"><span class="sl">/</span><span style="color:var(--text-invert)">WH budget</span><kbd style="margin-left:auto">↵</kbd></div></div>
       <p style="font-size:12.5px;color:var(--text-invert-dim);margin:16px 0 0">Initialisms resolve against project names. Ambiguity is shown rather than guessed — the runner-up stays visible so a wrong jump is caught before it happens.</p>
     </div>
 
@@ -696,7 +717,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
   </ol></div>
 </section>
 
-<p class="callout" style="margin-top:64px"><b>What Batch 2 commits us to.</b> The card band is glyphs with hover labels, which means every tool in the app needs a glyph in the same drawing style — worth commissioning as one set rather than accumulating. The footer's source label creates an ordering (deep parse → budget table → leveled → contract value) that the budget tool in Batch 5 has to actually produce. And the command registry is now load-bearing for three surfaces: the bar, the iPad sheet, and right-click menus.</p>
+<p class="callout" style="margin-top:64px"><b>What Batch 2 commits us to.</b> The card band is glyphs with hover labels, which means every tool in the app needs a glyph in the same drawing style — worth commissioning as one set rather than accumulating. The footer's source color (E-01 → E-03: cerulean AI-generated, sea green verified) is a two-state read on the card, but whether the budget tool in Batch 5 still needs all four internal states (deep parse, budget table, leveled, contract value) to produce that color is still open — flagged, not decided. And the command registry is now load-bearing for three surfaces: the bar, the iPad sheet, and right-click menus.</p>
 
 </main>
 </div>

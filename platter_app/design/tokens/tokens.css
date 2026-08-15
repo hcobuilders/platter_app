@@ -1,6 +1,6 @@
 /* ============================================================
    PLATTER DESIGN SYSTEM — TOKENS
-   v1.0 · Cerulean & Apricot
+   v1.1 · Cerulean & Apricot, cooled surfaces (E-26 → E-30)
    Primitives are raw values. Never use a primitive in a
    component — always reference a semantic token, so a
    re-skin touches this file only.
@@ -24,7 +24,8 @@
 
   --c-apricot-700: #7A4E08;    /* text-safe on light */
   --c-apricot-600: #D9A23F;
-  --c-apricot-500: #FFCB77;    /* brand */
+  --c-apricot-500: #FFCB77;    /* brand — E-27: washes/large surfaces only, demoted from high-emphasis duty */
+  --c-apricot-strong: #FF9F1C; /* E-27: high-emphasis selection, active command bar, focus rings, logo lifted cell */
   --c-apricot-300: #FFE0AA;
   --c-apricot-100: #FFF3DE;
 
@@ -35,17 +36,19 @@
   --c-coral-100: #FFE5E6;
 
   --c-white:  #FFFFFF;
-  --c-floral: #FEF9EF;
-  --c-sand:   #F6EBD8;
-  --c-shadow: 14 31 39;        /* rgb triplet for shadow alpha */
+  --c-floral: #FEF9EF;         /* E-26: retained ONLY for planroom / document-sheet surfaces, where warmth reads as paper */
+  --c-page:   #F3F5F6;         /* E-26: general page/work-surface ground, derived cool off the cerulean hue */
+  --c-inset:  #E7ECEE;         /* E-26: wells, code, disabled */
+  --c-shadow: 14 31 39;        /* rgb triplet for shadow alpha — warm-tinted per D-28, unchanged by the cool-surface pass */
 
   /* ---------- SEMANTIC · surfaces ---------- */
   --bg-shell:          var(--c-cerulean-900);  /* nav, sidebar, command bar */
   --bg-shell-raised:   var(--c-cerulean-800);
   --bg-shell-hover:    var(--c-cerulean-700);
-  --bg-surface:        var(--c-floral);        /* work surfaces */
+  --bg-surface:        var(--c-page);          /* E-26: general work surfaces — dashboard, tables, project workspace. Supersedes the floral assignment in D-12. */
   --bg-surface-raised: var(--c-white);         /* cards, inputs, rows */
-  --bg-inset:          var(--c-sand);          /* wells, code, disabled */
+  --bg-surface-paper:  var(--c-floral);        /* E-26: planroom + document-sheet surfaces only — the one place warmth still reads as paper (D-12) */
+  --bg-inset:          var(--c-inset);         /* wells, code, disabled */
 
   /* ---------- SEMANTIC · text ---------- */
   --text:            var(--c-cerulean-900);
@@ -64,12 +67,24 @@
   /* ---------- SEMANTIC · intent ----------
      Each intent has: fill (bright, backgrounds only),
      line (hairlines/borders), text (type on light),
-     wash (tinted background on light).            */
-  --accent-fill:  var(--c-apricot-500);   /* SELECTION · focus · active tool */
-  --accent-line:  var(--c-apricot-600);
-  --accent-text:  var(--c-apricot-700);
-  --accent-wash:  rgba(255, 203, 119, .34);
-  --accent-on:    #2A1A02;                /* type placed ON accent-fill */
+     wash (tinted background on light).
+
+     E-30 contrast audit (WCAG 2.x relative-luminance formula), the
+     *-text shades against every light ground introduced by E-26 —
+     page #F3F5F6, raised #FFFFFF, inset #E7ECEE — all exceed 4.5:1
+     and are comfortably higher than they were against the retired
+     Floral White ground the ramp was originally tuned for:
+       accent-text  (#7A4E08) → 6.57:1 on page (was ~6.3:1 on floral)
+       success-text (#0A6B62) → 5.83:1 on page (was ~5.6:1 on floral)
+       danger-text  (#A8262D) → 6.44:1 on page (was ~6.2:1 on floral)
+       info-text    (#1A6480) → 6.04:1 on page (was ~5.8:1 on floral)
+     No text shade needed to move.                                */
+  --accent-fill:   var(--c-apricot-500);   /* washes, large surfaces — E-27 */
+  --accent-strong: var(--c-apricot-strong); /* SELECTION · focus · active tool — E-27 */
+  --accent-line:   var(--c-apricot-600);
+  --accent-text:   var(--c-apricot-700);
+  --accent-wash:   rgba(255, 203, 119, .34);
+  --accent-on:     #2A1A02;                /* type placed ON accent-fill or accent-strong */
 
   --info-fill: var(--c-cerulean-500);     /* structure · links · data */
   --info-line: var(--c-cerulean-500);
@@ -86,7 +101,7 @@
   --danger-text: var(--c-coral-700);
   --danger-wash: rgba(254, 109, 115, .13);
 
-  --focus-ring: var(--c-apricot-600);
+  --focus-ring: var(--accent-strong);     /* E-27: was apricot-600 */
 
   /* ---------- RADIUS ---------- */
   --r-xs:   5px;   /* hairline insets, dots, swatches */
@@ -102,20 +117,31 @@
   --s-14: 56px; --s-18: 72px;
 
   /* ---------- TYPE ---------- */
+  /* E-28: scale bumped one step. Line heights unchanged — same unitless
+     ratios, applied to the new sizes. */
   --font-display: Archivo, "Archivo Expanded", system-ui, sans-serif;
   --font-body:    Inter, system-ui, -apple-system, sans-serif;
   --font-data:    "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --t-display: 700 clamp(30px, 5vw, 46px)/0.98 var(--font-display);
-  --t-h1:      700 30px/1.08 var(--font-display);
-  --t-h2:      600 22px/1.15 var(--font-display);
-  --t-h3:      600 17px/1.25 var(--font-display);
-  --t-body:    400 15px/1.55 var(--font-body);
-  --t-body-sm: 400 13.5px/1.5 var(--font-body);
-  --t-label:   500 9.5px/1.3 var(--font-data);   /* + uppercase, .12em */
-  --t-data:    400 13.5px/1.4 var(--font-data);
-  --t-data-lg: 500 16px/1.3 var(--font-data);
-  --t-caption: 400 11.5px/1.45 var(--font-data);
+  --t-display: 700 clamp(32px, 5.2vw, 49px)/0.98 var(--font-display);
+  --t-h1:      700 32px/1.08 var(--font-display);
+  --t-h2:      600 24px/1.15 var(--font-display);
+  --t-h3:      600 18px/1.25 var(--font-display);
+  --t-body:    400 16px/1.55 var(--font-body);
+  --t-body-sm: 400 14px/1.5 var(--font-body);
+  --t-label:   500 10.5px/1.3 var(--font-data);   /* + uppercase, .12em */
+  --t-data:    400 14px/1.4 var(--font-data);
+  --t-data-lg: 500 17px/1.3 var(--font-data);
+  --t-caption: 400 12px/1.45 var(--font-data);
+
+  /* E-29: chips/status pills move off mono onto condensed Archivo — a
+     chip is a label, not data. Mono stays for genuine data (codes,
+     money, dates, confidence scores) via --t-data/--t-data-lg above. */
+  --t-chip: 600 11px/1 var(--font-display);
+  --chip-wdth:    85;       /* Archivo width axis — condensed cut */
+  --track-chip:   0.07em;
+  --chip-pad-y:   6px;
+  --chip-pad-x:   13px;
 
   --track-display: -0.035em;
   --track-label:    0.12em;

@@ -3,24 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Platter — Design System v1.0</title>
+<title>Platter — Design System v1.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- E-29: Archivo requested as a weight range (not a fixed list) so the served file keeps its
+     width axis — chips/status pills use font-variation-settings('wdth') for the condensed cut. -->
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <style>
 /* ═══════════ TOKENS ═══════════ */
 /* ═══════════ DOC CHROME ═══════════ */
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 15px/1.55 var(--font-body);-webkit-font-smoothing:antialiased;
+body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 16px/1.55 var(--font-body);-webkit-font-smoothing:antialiased;
 background-image:radial-gradient(1100px 620px at 86% -10%,rgba(34,124,157,.26),transparent 62%),radial-gradient(820px 520px at 2% 104%,rgba(23,195,178,.11),transparent 60%);background-attachment:fixed}
 .doc{display:grid;grid-template-columns:224px 1fr;min-height:100vh}
 .nav{border-right:1px solid var(--border-invert);padding:24px 0 80px;position:sticky;top:0;height:100vh;overflow-y:auto}
 .nav .brand{display:flex;align-items:center;gap:10px;padding:0 20px 6px}
 .nav .brand b{font:700 19px/1 var(--font-display);letter-spacing:-.04em}
 .nav .ver{padding:0 20px 20px;font:400 10px/1 var(--font-data);letter-spacing:.12em;color:var(--text-invert-faint);text-transform:uppercase}
-.nav h5{font:500 9.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:18px 20px 8px;margin:0}
-.nav a{display:block;padding:7px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:13.5px;border-left:2px solid transparent}
+.nav h5{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:18px 20px 8px;margin:0}
+.nav a{display:block;padding:7px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:14px;border-left:2px solid transparent}
 .nav a:hover{color:var(--text-invert);background:var(--bg-shell-raised)}
 main{padding:44px clamp(20px,4vw,54px) 140px;max-width:1140px}
 .page-hd{border-bottom:1px solid var(--border-invert);padding-bottom:26px}
@@ -30,14 +32,14 @@ main{padding:44px clamp(20px,4vw,54px) 140px;max-width:1140px}
 section{margin-top:70px;scroll-margin-top:20px}
 section>h2{font:600 26px/1.1 var(--font-display);letter-spacing:-.022em;margin:0 0 6px}
 section>.sub{color:var(--text-invert-dim);font-size:14px;max-width:66ch;margin:0 0 22px}
-h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);margin:38px 0 14px;padding-bottom:9px;border-bottom:1px solid var(--border-invert)}
+h3.grp{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);margin:38px 0 14px;padding-bottom:9px;border-bottom:1px solid var(--border-invert)}
 .rule{color:var(--text-invert-dim);font-size:13px;max-width:70ch;margin:12px 0 0;padding-left:14px;border-left:2px solid var(--accent-line)}
 .rule b{color:var(--text-invert)}
 
 /* canvas: components render on the real work surface */
 .canvas{background:var(--bg-surface);color:var(--text);border-radius:var(--r-xl);padding:26px;box-shadow:var(--e-3)}
 .canvas.dark{background:var(--bg-shell-raised);color:var(--text-invert);border:1px solid var(--border-invert);box-shadow:none}
-.cap{font:500 9.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block;margin-bottom:12px}
+.cap{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block;margin-bottom:12px}
 .canvas.dark .cap{color:var(--text-invert-faint)}
 .grid{display:grid;gap:16px}
 .g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
@@ -46,7 +48,7 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 
 /* ═══════════ COMPONENTS ═══════════ */
 /* — Button — */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 13.5px/1 var(--font-body);
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 14px/1 var(--font-body);
   padding:11px 18px;min-height:38px;border-radius:var(--r-pill);border:1px solid var(--border-strong);
   background:var(--bg-surface-raised);color:var(--text);cursor:pointer;
   transition:background var(--dur-fast),border-color var(--dur-fast),transform var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast)}
@@ -55,13 +57,13 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 .btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
 .btn--primary{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
 .btn--primary:hover{background:var(--bg-shell-hover);border-color:var(--bg-shell-hover)}
-.btn--accent{background:linear-gradient(135deg,var(--c-apricot-300),var(--c-apricot-500));color:var(--accent-on);border-color:var(--accent-line)}
-.btn--accent:hover{background:var(--c-apricot-500)}
+.btn--accent{background:linear-gradient(135deg,var(--c-apricot-300),var(--accent-strong));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--accent:hover{background:var(--accent-strong)}
 .btn--danger{background:var(--danger-fill);color:#3D0A0D;border-color:var(--danger-line)}
 .btn--ghost{background:transparent;border-color:transparent;color:var(--text-dim)}
 .btn--ghost:hover{background:var(--accent-wash);color:var(--accent-text);box-shadow:none}
 .btn--sm{padding:7px 14px;min-height:30px;font-size:12px}
-.btn--lg{padding:14px 24px;min-height:var(--tap-min);font-size:15px}
+.btn--lg{padding:14px 24px;min-height:var(--tap-min);font-size:16px}
 .btn[disabled]{opacity:.42;pointer-events:none}
 .btn--icon{padding:0;width:38px;min-height:38px;border-radius:var(--r-pill)}
 .spin{width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite}
@@ -69,7 +71,7 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 
 /* — Field — */
 .f{display:block;margin-bottom:16px}
-.f > label{display:block;font:500 9.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+.f > label{display:block;font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
 .f input,.f select,.f textarea{width:100%;font:400 14px/1.4 var(--font-body);padding:10px 13px;min-height:40px;
   border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--bg-surface-raised);color:var(--text);
   transition:border-color var(--dur-fast),box-shadow var(--dur-fast)}
@@ -77,8 +79,8 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 .f input:hover{border-color:rgba(14,31,39,.4)}
 .f input:focus{outline:none;border-color:var(--accent-line);box-shadow:0 0 0 3px var(--accent-wash)}
 .f input.num{font-family:var(--font-data);font-variant-numeric:tabular-nums;text-align:right}
-.f .hint{font:400 11.5px/1.4 var(--font-body);color:var(--text-dim);margin-top:5px}
-.f .err{font:400 11.5px/1.4 var(--font-body);color:var(--danger-text);margin-top:5px}
+.f .hint{font:400 12px/1.4 var(--font-body);color:var(--text-dim);margin-top:5px}
+.f .err{font:400 12px/1.4 var(--font-body);color:var(--danger-text);margin-top:5px}
 .f.is-error input{border-color:var(--danger-line);box-shadow:0 0 0 3px var(--danger-wash)}
 .f.is-ok input{border-color:var(--success-line)}
 .f input[disabled]{background:var(--bg-inset);color:var(--text-faint)}
@@ -91,9 +93,12 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 .chk{width:19px;height:19px;border-radius:var(--r-xs);border:1.5px solid var(--border-strong);display:inline-grid;place-items:center;flex:none;background:#fff}
 .chk.on{background:var(--accent-fill);border-color:var(--accent-line);color:var(--accent-on);font-size:12px;font-weight:700}
 
-/* — Chip / tag — */
-.chip{display:inline-flex;align-items:center;gap:6px;font:500 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;
-  padding:5px 11px;border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);background:transparent;white-space:nowrap}
+/* — Chip / tag —
+   E-29: chips are a label, not data — moved off JetBrains Mono onto
+   condensed Archivo (wdth 85). Mono stays reserved for genuine data. */
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x);border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);background:transparent;white-space:nowrap}
 .chip--accent{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
 .chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
 .chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
@@ -101,9 +106,10 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 .chip--solid{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-on)}
 .chip .x{opacity:.5;cursor:pointer;font-size:11px}
 
-/* — Status pill (project lifecycle) — */
-.st{display:inline-flex;align-items:center;gap:7px;font:500 10px/1 var(--font-data);letter-spacing:.1em;text-transform:uppercase;
-  padding:6px 12px 6px 10px;border-radius:var(--r-pill);background:var(--bg-inset);color:var(--text-dim)}
+/* — Status pill (project lifecycle) — E-29: same condensed-Archivo treatment as chips */
+.st{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x) var(--chip-pad-y) 11px;border-radius:var(--r-pill);background:var(--bg-inset);color:var(--text-dim)}
 .st i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
 .st--draft{background:var(--accent-wash);color:var(--accent-text)}
 .st--bid{background:var(--info-wash);color:var(--info-text)}
@@ -129,9 +135,9 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 .card:hover{transform:translateY(-4px);box-shadow:var(--e-3)}
 .card__hd{padding:18px 18px 0;display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
 .card__t{font:600 19px/1.2 var(--font-display);letter-spacing:-.018em}
-.card__m{font:400 11.5px/1.3 var(--font-data);color:var(--text-dim);margin-top:4px}
+.card__m{font:400 12px/1.3 var(--font-data);color:var(--text-dim);margin-top:4px}
 .card__dates{display:flex;gap:24px;flex-wrap:wrap;padding:16px 18px 0;margin:0}
-.card__dates dt{font:500 9.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-faint)}
+.card__dates dt{font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-faint)}
 .card__dates dd{margin:4px 0 0;font:400 14px/1 var(--font-data);font-variant-numeric:tabular-nums}
 .card__dates dd.due{color:var(--danger-text);font-weight:700}
 .card__band{display:grid;grid-template-columns:repeat(4,1fr);margin-top:16px;border-top:1px solid var(--border-hairline)}
@@ -193,7 +199,7 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 
 /* — Empty / drop — */
 .empty{border:2px dashed var(--border-strong);border-radius:var(--r-xl);padding:40px 24px;text-align:center;background:rgba(255,255,255,.5)}
-.empty h4{font:600 17px/1.2 var(--font-display);margin:0 0 6px}
+.empty h4{font:600 18px/1.2 var(--font-display);margin:0 0 6px}
 .empty p{margin:0 0 16px;font-size:12.5px;color:var(--text-dim)}
 .empty.is-hot{border-style:solid;border-color:var(--accent-line);background:var(--accent-wash)}
 
@@ -225,10 +231,10 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 
 <aside class="nav">
   <div class="brand">
-    <svg viewBox="0 0 64 64" width="24" height="24"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFCB77"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
+    <svg viewBox="0 0 64 64" width="24" height="24"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
     <b>Platter</b>
   </div>
-  <div class="ver">Design system v1.0</div>
+  <div class="ver">Design system v1.1</div>
   <h5>Foundations</h5>
   <a href="#color">Color</a><a href="#type">Typography</a><a href="#space">Space &amp; radius</a>
   <a href="#elev">Elevation &amp; motion</a>
@@ -242,9 +248,9 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
 
 <main>
   <div class="page-hd">
-    <p class="eyebrow">Cerulean &amp; Apricot · v1.0</p>
+    <p class="eyebrow">Cerulean &amp; Apricot · v1.1</p>
     <h1>Design system</h1>
-    <p>Every component here is built from semantic tokens, never raw hex. That's what makes the next palette change a one-file edit instead of a rebuild — which we've now proven once.</p>
+    <p>Every component here is built from semantic tokens, never raw hex. That's what makes the next palette change a one-file edit instead of a rebuild — which we've now proven twice: once for the palette itself, once for this cooler-surface, stronger-orange pass (E-26 → E-30).</p>
   </div>
 
 <!-- ══ COLOR ══ -->
@@ -260,20 +266,22 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
     <div><span class="cap" style="color:var(--text-invert-faint)">Sea green</span><div class="scale">
       <div style="background:#0A6B62;color:#fff">700</div><div style="background:#12A497;color:#fff">600</div><div style="background:#17C3B2">500</div><div style="background:#7BDDD3">300</div><div style="background:#DCF6F3">100</div></div></div>
     <div><span class="cap" style="color:var(--text-invert-faint)">Apricot</span><div class="scale">
-      <div style="background:#7A4E08;color:#fff">700</div><div style="background:#D9A23F">600</div><div style="background:#FFCB77">500</div><div style="background:#FFE0AA">300</div><div style="background:#FFF3DE">100</div></div></div>
+      <div style="background:#7A4E08;color:#fff">700</div><div style="background:#D9A23F">600</div><div style="background:#FF9F1C;color:#2A1A02">strong</div><div style="background:#FFCB77">500</div><div style="background:#FFE0AA">300</div><div style="background:#FFF3DE">100</div></div></div>
     <div><span class="cap" style="color:var(--text-invert-faint)">Grapefruit</span><div class="scale">
       <div style="background:#A8262D;color:#fff">700</div><div style="background:#F04C54;color:#fff">600</div><div style="background:#FE6D73">500</div><div style="background:#FFAAAE">300</div><div style="background:#FFE5E6">100</div></div></div>
   </div>
 
   <h3 class="grp">Semantic tokens</h3>
   <div class="tokrow"><code>--accent-*</code><span><b style="color:var(--text-invert)">Selection, focus, active tool.</b> Apricot. Never decorative, never a brand flourish — if something is apricot, the user is acting on it.</span></div>
+  <div class="tokrow"><code>--accent-strong</code><span><b style="color:var(--text-invert)">High-emphasis selection.</b> E-27: the deeper `#FF9F1C` — focus rings, the active command bar, the accent button, the logo's lifted cell. `fill` demotes to washes and large surfaces.</span></div>
   <div class="tokrow"><code>--info-*</code><span>Structure, links, primary data series. Cerulean.</span></div>
   <div class="tokrow"><code>--success-*</code><span>Confirmed, complete, high confidence. Sea green.</span></div>
   <div class="tokrow"><code>--danger-*</code><span>Bond, mandatory, overdue, low confidence, destructive. Grapefruit.</span></div>
   <div class="tokrow"><code>--bg-shell-*</code><span>Dark chassis: nav, sidebar, command bar.</span></div>
-  <div class="tokrow"><code>--bg-surface-*</code><span>Light work surfaces: tables, sheets, cards, planroom.</span></div>
+  <div class="tokrow"><code>--bg-surface</code><span><b style="color:var(--text-invert)">General work surfaces</b> — dashboard, tables, project workspace. E-26: cool page grey, superseding the floral assignment in D-12.</span></div>
+  <div class="tokrow"><code>--bg-surface-paper</code><span>E-26: planroom and document-sheet surfaces only — the one place Floral White remains, where warmth reads as paper.</span></div>
 
-  <p class="rule"><b>Each intent has four values, and they are not interchangeable.</b> <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">fill</code> is the bright hue — backgrounds only. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">line</code> is one step darker for hairlines. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">text</code> is the dark shade, the only one legible as type on floral white. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">wash</code> is the tinted background. Using <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">fill</code> as text is the single most likely way to break this system.</p>
+  <p class="rule"><b>Each intent has four values, and they are not interchangeable.</b> <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">fill</code> is the bright hue — backgrounds only. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">line</code> is one step darker for hairlines. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">text</code> is the dark shade, the only one legible as type on light surfaces. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">wash</code> is the tinted background. Using <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">fill</code> as text is the single most likely way to break this system. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">strong</code> is a fifth, supplemental value (E-27) — reserved for the four specific high-emphasis moments named above, never a substitute for <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">fill</code>.</p>
 </section>
 
 <!-- ══ TYPE ══ -->
@@ -281,18 +289,20 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
   <h2>Typography</h2>
   <p class="sub">Three faces, three jobs. No fourth.</p>
   <div class="canvas">
-    <div style="font:700 42px/1 var(--font-display);letter-spacing:-.038em">West Henry — 26‑085</div>
+    <div style="font:700 44px/1 var(--font-display);letter-spacing:-.038em">West Henry — 26‑085</div>
     <div class="spec" style="color:var(--text-dim)">display · Archivo Expanded 700 · −3.8% · project names, page titles</div>
-    <div style="font:600 22px/1.15 var(--font-display);letter-spacing:-.022em;margin-top:22px">Bid package 3A — Concrete</div>
+    <div style="font:600 24px/1.15 var(--font-display);letter-spacing:-.022em;margin-top:22px">Bid package 3A — Concrete</div>
     <div class="spec" style="color:var(--text-dim)">h2 · Archivo 600 · section headings</div>
-    <p style="font:400 15px/1.55 var(--font-body);max-width:56ch;margin:22px 0 0">Scope narrative, addenda, notes, and everything a person reads at length. Inter at 15px is the baseline for all prose.</p>
-    <div class="spec" style="color:var(--text-dim)">body · Inter 400 · 15px</div>
-    <div style="font:400 16px/1.3 var(--font-data);font-variant-numeric:tabular-nums;margin-top:22px">03&#8202;30&#8202;00 &nbsp; $1,284,500.00 &nbsp; 09/14/26 &nbsp; +4.2%</div>
-    <div class="spec" style="color:var(--text-dim)">data · JetBrains Mono · tabular figures</div>
-    <div style="font:500 9.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-top:22px">Submission due</div>
-    <div class="spec" style="color:var(--text-dim)">label · JetBrains Mono 500 · +0.12em · uppercase · every field label in the app</div>
+    <p style="font:400 16px/1.55 var(--font-body);max-width:56ch;margin:22px 0 0">Scope narrative, addenda, notes, and everything a person reads at length. Inter at 16px is the baseline for all prose.</p>
+    <div class="spec" style="color:var(--text-dim)">body · Inter 400 · 16px (E-28: bumped one step from 15px)</div>
+    <div style="font:500 17px/1.3 var(--font-data);font-variant-numeric:tabular-nums;margin-top:22px">03&#8202;30&#8202;00 &nbsp; $1,284,500.00 &nbsp; 09/14/26 &nbsp; +4.2%</div>
+    <div class="spec" style="color:var(--text-dim)">data-lg · JetBrains Mono 500 · 17px · tabular figures</div>
+    <div style="font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-top:22px">Submission due</div>
+    <div class="spec" style="color:var(--text-dim)">label · JetBrains Mono 500 · 10.5px · +0.12em · uppercase · every field label in the app</div>
+    <span class="chip chip--accent" style="margin-top:22px">Bond required</span>
+    <div class="spec" style="color:var(--text-dim)">chip · Archivo condensed 600 · 11px · +0.07em · uppercase · E-29 — a chip is a label, not data</div>
   </div>
-  <p class="rule"><b>Every number is monospaced and tabular.</b> CSI codes, money, dates, quantities, percentages, confidence scores. Column alignment is a correctness feature in estimating, not a stylistic preference.</p>
+  <p class="rule"><b>Every number is monospaced and tabular.</b> CSI codes, money, dates, quantities, percentages, confidence scores. Column alignment is a correctness feature in estimating, not a stylistic preference. Chips and status pills are the one exception — E-29 moves them to condensed Archivo because a chip is a label the eye reads as a word, not a number the eye reads as a column.</p>
 </section>
 
 <!-- ══ SPACE ══ -->
@@ -536,7 +546,7 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
     <div class="topnav" style="border:1px solid var(--border-invert)">
       <div style="display:flex;align-items:center;gap:22px">
         <div style="display:flex;align-items:center;gap:9px;font:700 15px/1 var(--font-display);letter-spacing:-.04em">
-          <svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="l2" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFCB77"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#l2)"/></g></svg>
+          <svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="l2" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#l2)"/></g></svg>
           Platter</div>
         <nav><b>Files</b><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav>
       </div>
@@ -545,8 +555,8 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
     <div><span class="cap">Command bar · rest</span>
       <div class="cmdbar"><span class="slash">/</span><span>Type a command or a project number</span><span style="margin-left:auto"><kbd>esc</kbd></span></div>
     </div>
-    <div><span class="cap">Command bar · matching</span>
-      <div class="cmdbar" style="border-color:var(--accent-line)"><span class="slash">/</span><span style="color:var(--text-invert)">WH budget</span>
+    <div><span class="cap">Command bar · matching (active — E-27: accent-strong)</span>
+      <div class="cmdbar" style="border-color:var(--accent-strong)"><span class="slash">/</span><span style="color:var(--text-invert)">WH budget</span>
         <span style="margin-left:auto;display:flex;gap:8px"><span class="chip chip--accent" style="border-color:var(--accent-line)">26-085 → Budget</span><kbd>↵</kbd></span></div>
     </div>
     <div><span class="cap">Command bar · no match</span>
@@ -584,8 +594,8 @@ h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppe
     <table class="tbl">
       <thead><tr><th>Requirement</th><th>Rule</th></tr></thead>
       <tbody>
-        <tr><td>Body text contrast</td><td>4.5:1 minimum. Only <code style="font:400 11.5px var(--font-data);color:var(--info-text)">*-text</code> shades on floral white — never a <code style="font:400 11.5px var(--font-data);color:var(--info-text)">*-fill</code>.</td></tr>
-        <tr><td>Focus</td><td>Never removed. 2px apricot ring, 2px offset, visible on both shell and surface.</td></tr>
+        <tr><td>Body text contrast</td><td>4.5:1 minimum. Only <code style="font:400 12px var(--font-data);color:var(--info-text)">*-text</code> shades on light surfaces (page, raised, paper) — never a <code style="font:400 12px var(--font-data);color:var(--info-text)">*-fill</code>. Re-audited under E-30 after the E-26 surface change; all four intents still clear 4.5:1.</td></tr>
+        <tr><td>Focus</td><td>Never removed. 2px <code style="font:400 12px var(--font-data);color:var(--info-text)">--accent-strong</code> ring (E-27, was apricot-600), 2px offset, visible on both shell and surface.</td></tr>
         <tr><td>Touch targets</td><td>44px minimum on iPad. Card band buttons and <code style="font:400 11.5px var(--font-data);color:var(--info-text)">.btn--lg</code> meet it; <code style="font:400 11.5px var(--font-data);color:var(--info-text)">.btn--sm</code> is desktop-only.</td></tr>
         <tr><td>Color alone</td><td>Never the sole signal. Confidence has a dot <em>and</em> a number. Flags have a chip <em>and</em> a label.</td></tr>
         <tr><td>Motion</td><td>All durations collapse to 0 under <code style="font:400 11.5px var(--font-data);color:var(--info-text)">prefers-reduced-motion</code>.</td></tr>
