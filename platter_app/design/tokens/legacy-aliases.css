@@ -1,0 +1,44 @@
+/* ============================================================
+   LEGACY ALIASES — DELETE ME
+   ------------------------------------------------------------
+   design/identity/identity.html and design/wireframes/batch-1-*.html
+   were authored before the v1.0 token naming in tokens.css. They
+   reference the older S4 names (--ink, --paper, --sun, --coral…).
+
+   This file maps those onto the current semantic tokens so both
+   files still render correctly after the token extraction, WITHOUT
+   reintroducing a second source of truth for the actual values.
+
+   Remove this file, and its two <link> tags, once staged edits
+   E-26 → E-30 regenerate identity.html and batch 1 against
+   tokens.css directly. Nothing new should ever link to it.
+   ============================================================ */
+
+:root {
+  /* surfaces */
+  --ink:      var(--bg-shell);
+  --ink2:     var(--bg-shell-raised);
+  --ink3:     var(--bg-shell-hover);
+  --paper:    var(--bg-surface);
+  --paper2:   var(--bg-inset);
+  --white:    var(--bg-surface-raised);
+
+  /* intents */
+  --sun:        var(--accent-fill);
+  --sun-lt:     var(--c-apricot-300);
+  --sun-line:   var(--accent-line);
+  --sun-text:   var(--accent-text);
+  --cerulean:   var(--info-fill);
+  --cer-text:   var(--info-text);
+  --sea:        var(--success-fill);
+  --sea-text:   var(--success-text);
+  --coral:      var(--danger-fill);
+  --coral-text: var(--danger-text);
+
+  /* text & rules */
+  --dim:     var(--text-invert-dim);
+  --dimD:    var(--text-dim);
+  --rule:    var(--border-invert);
+  --ruleD:   var(--border-hairline);
+  --ruleD2:  var(--border-strong);
+}

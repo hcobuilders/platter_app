@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platter — Batch 2 Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+/* ── tokens (from platter-tokens.css) ── */
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 14px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(1100px 620px at 86% -10%,rgba(34,124,157,.24),transparent 62%),radial-gradient(820px 520px at 2% 104%,rgba(23,195,178,.1),transparent 60%);background-attachment:fixed}
+.doc{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.rail{border-right:1px solid var(--border-invert);padding:24px 0 80px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.rail .brand{display:flex;align-items:center;gap:10px;padding:0 20px 22px}
+.rail .brand b{font:700 20px/1 var(--font-display);letter-spacing:-.04em}
+.rail h4{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:16px 20px 8px;margin:0}
+.rail a{display:block;padding:8px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:13.5px;border-left:2px solid transparent}
+.rail a:hover{color:var(--text-invert);background:var(--bg-shell-raised)}
+.rail a i{font-style:normal;font:400 11px var(--font-data);color:var(--accent-fill);margin-right:8px}
+main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
+.hdr{border-bottom:1px solid var(--border-invert);padding-bottom:22px}
+.eyebrow{font:500 10.5px/1 var(--font-data);letter-spacing:.15em;text-transform:uppercase;color:var(--accent-fill);margin:0 0 9px}
+.hdr h1{font:700 clamp(30px,5vw,46px)/1 var(--font-display);letter-spacing:-.035em;margin:0}
+.hdr p{color:var(--text-invert-dim);max-width:68ch;margin:14px 0 0}
+.screen{margin-top:62px;scroll-margin-top:20px}
+.screen>header{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--border-invert);padding-bottom:12px;margin-bottom:16px}
+.screen>header .no{font:400 12px var(--font-data);color:var(--accent-fill)}
+.screen>header h2{font:600 22px/1.1 var(--font-display);letter-spacing:-.02em;margin:0}
+.screen>header .job{color:var(--text-invert-dim);font-size:13px;flex-basis:100%;max-width:74ch}
+.tabs{display:flex;gap:3px;flex-wrap:wrap;margin:0 0 14px;padding:3px;background:var(--bg-shell-raised);border-radius:var(--r-pill);width:fit-content}
+.tabs button{all:unset;cursor:pointer;padding:7px 15px;font:500 10.5px/1 var(--font-data);letter-spacing:.07em;text-transform:uppercase;color:var(--text-invert-dim);border-radius:var(--r-pill)}
+.tabs button:hover{color:var(--text-invert)}
+.tabs button[aria-selected=true]{background:var(--accent-fill);color:var(--accent-on);font-weight:700}
+.tabs button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.frame{background:var(--bg-surface);color:var(--text);border-radius:var(--r-xl);overflow:hidden;position:relative;box-shadow:var(--e-3)}
+.frame.dk{background:var(--bg-shell);color:var(--text-invert);border:1px solid var(--border-invert)}
+.state{display:none}.state.on{display:block}
+.body{padding:22px}
+.ann{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 26px}
+.ann ol{margin:0;padding:0}
+.ann li{list-style:none;display:grid;grid-template-columns:22px 1fr;gap:9px;padding:8px 0;font-size:13px;color:var(--text-invert-dim);border-top:1px solid var(--border-invert)}
+.ann b{color:var(--text-invert);font-weight:600}
+.pin{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--accent-fill);color:var(--accent-on);font:700 10px var(--font-data);margin-top:1px}
+.pin.onf{position:absolute;z-index:6;box-shadow:0 0 0 2.5px var(--bg-surface),0 2px 6px rgba(14,31,39,.3)}
+.callout{border-left:2px solid var(--accent-line);padding:2px 0 2px 16px;margin:26px 0 0;color:var(--text-invert-dim);font-size:13.5px;max-width:74ch}
+.callout b{color:var(--text-invert)}
+.lbl{font:500 9.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
+
+/* ── app chrome ── */
+.topnav{background:var(--bg-shell);color:var(--text-invert);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:11px 18px;gap:16px}
+.topnav .left{display:flex;gap:8px;align-items:center}
+.topnav .center{display:flex;gap:20px;align-items:center;justify-self:center}
+.topnav .right{display:flex;gap:12px;align-items:center;justify-self:end}
+.topnav .logo{display:flex;align-items:center;gap:9px;font:700 15px/1 var(--font-display);letter-spacing:-.04em}
+.topnav nav{display:flex;gap:19px;font:500 10.5px/1 var(--font-data);letter-spacing:.09em;text-transform:uppercase;color:var(--text-invert-dim)}
+.topnav nav span{position:relative;cursor:pointer;padding:4px 0}
+.topnav nav span:hover{color:var(--text-invert)}
+.topnav nav b{color:var(--text-invert);position:relative;padding:4px 0}
+.topnav nav b::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--accent-fill);border-radius:var(--r-pill)}
+.avatar{width:27px;height:27px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 10.5px var(--font-data);color:#fff}
+.qa{display:inline-flex;align-items:center;gap:6px;background:var(--bg-shell-raised);border:1px solid var(--border-invert);color:var(--text-invert);
+  border-radius:var(--r-pill);padding:6px 13px;font:500 10.5px/1 var(--font-data);letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
+.qa:hover{background:var(--accent-fill);color:var(--accent-on);border-color:var(--accent-fill)}
+.search{background:var(--bg-shell-raised);border:1px solid var(--border-invert);border-radius:var(--r-pill);padding:6px 14px;font:400 12px var(--font-data);color:var(--text-invert-faint);min-width:180px}
+
+/* ── toolbar ── */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 22px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.seg{display:inline-flex;gap:3px;padding:3px;background:var(--bg-inset);border-radius:var(--r-pill)}
+.seg button{all:unset;cursor:pointer;padding:7px 14px;font:500 10px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);border-radius:var(--r-pill)}
+.seg button[aria-selected=true]{background:var(--bg-surface-raised);color:var(--text);box-shadow:var(--e-1);font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:6px;font:500 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 11px;border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);white-space:nowrap}
+.chip--acc{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
+.chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
+.chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
+.chip--dgr{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
+.st{display:inline-flex;align-items:center;gap:7px;font:500 10px/1 var(--font-data);letter-spacing:.1em;text-transform:uppercase;padding:6px 12px 6px 10px;border-radius:var(--r-pill);background:var(--bg-inset);color:var(--text-dim)}
+.st i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.st--draft{background:var(--accent-wash);color:var(--accent-text)}
+.st--bid{background:var(--info-wash);color:var(--info-text)}
+.st--won{background:var(--success-wash);color:var(--success-text)}
+.st--lost{background:var(--danger-wash);color:var(--danger-text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 13px/1 var(--font-body);padding:10px 17px;min-height:36px;
+  border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text);cursor:pointer}
+.btn--pri{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
+.btn--acc{background:linear-gradient(135deg,var(--c-apricot-300),var(--c-apricot-500));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--gh{background:transparent;border-color:transparent;color:var(--text-dim)}
+.btn--sm{padding:6px 13px;min-height:29px;font-size:11.5px}
+
+/* ── PROJECT CARD ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(352px,1fr));gap:16px;padding:22px}
+.pc{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);position:relative;
+  transition:transform var(--dur-base) var(--ease-out),box-shadow var(--dur-base),border-color var(--dur-base)}
+.pc:hover{transform:translateY(-4px);box-shadow:var(--e-3);border-color:var(--border-strong)}
+.pc__hd{padding:16px 16px 0;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.pc__name{font:600 18px/1.15 var(--font-display);letter-spacing:-.02em;cursor:pointer}
+.pc__name:hover{color:var(--info-text);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px}
+.pc__meta{font:400 11.5px/1.3 var(--font-data);color:var(--text-dim);margin-top:4px}
+.pc__meta u{text-decoration:none;border-bottom:1px dotted var(--border-strong);cursor:help}
+.pc__tags{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.kebab{all:unset;cursor:pointer;width:26px;height:26px;border-radius:var(--r-pill);display:grid;place-items:center;color:var(--text-faint);font-size:15px;line-height:1}
+.kebab:hover{background:var(--accent-wash);color:var(--accent-text)}
+.pc__dates{display:flex;gap:0;margin:14px 0 0;padding:0 16px}
+.pc__dates>div{flex:1;min-width:0}
+.pc__dates dt{font:500 9px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-faint)}
+.pc__dates dd{margin:5px 0 0;font:400 13.5px/1 var(--font-data);font-variant-numeric:tabular-nums}
+.pc__dates dd.due{color:var(--danger-text);font-weight:700}
+.pc__dates dd small{display:block;font-size:9.5px;color:var(--text-faint);margin-top:4px;font-weight:400}
+.pc__band{display:grid;grid-template-columns:repeat(4,1fr);margin-top:15px;border-top:1px solid var(--border-hairline)}
+.pc__band button{all:unset;cursor:pointer;position:relative;display:grid;place-items:center;min-height:var(--tap-min);padding:11px 4px;
+  color:var(--text-faint);border-right:1px solid var(--border-hairline);transition:background var(--dur-fast),color var(--dur-fast)}
+.pc__band button:last-child{border-right:none}
+.pc__band button:hover{background:var(--accent-wash);color:var(--accent-text)}
+.pc__band button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:-2px}
+.pc__band svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.pc__ft{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:11px 16px;border-top:1px solid var(--border-hairline);background:var(--bg-inset);
+  border-radius:0 0 var(--r-lg) var(--r-lg)}
+.pc__ft .v{font:700 15px/1 var(--font-data);font-variant-numeric:tabular-nums}
+.pc__ft .s{font:400 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
+.pc.is-draft{border-style:dashed;border-color:var(--accent-line);background:linear-gradient(var(--bg-surface-raised),var(--bg-surface-raised)) padding-box}
+.pc.is-urgent{box-shadow:var(--e-1),inset 0 0 0 1px var(--danger-line)}
+.pc.is-closed{opacity:.62}
+.pc.is-closed:hover{opacity:1}
+
+/* popovers */
+.pop{position:absolute;z-index:8;background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--e-3);padding:6px;min-width:216px}
+.pop button{all:unset;display:flex;justify-content:space-between;gap:14px;width:100%;box-sizing:border-box;cursor:pointer;padding:9px 11px;border-radius:var(--r-sm);font-size:12.5px}
+.pop button:hover{background:var(--accent-wash);color:var(--accent-text)}
+.pop hr{border:none;border-top:1px solid var(--border-hairline);margin:5px 4px}
+.pop .sec{font:500 9px/1 var(--font-data);letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);padding:9px 11px 5px}
+.tip{position:absolute;z-index:8;background:var(--bg-shell);color:var(--text-invert);font-size:12px;padding:7px 11px;border-radius:var(--r-sm);box-shadow:var(--e-2);white-space:nowrap}
+.hint-lbl{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--bg-shell);color:var(--text-invert);
+  font:500 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:var(--r-sm);white-space:nowrap;box-shadow:var(--e-2)}
+
+/* compact rows */
+.rows{padding:0 22px 22px}
+.rows table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised);border-radius:var(--r-md);overflow:hidden}
+.rows th{font:500 9.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;padding:11px 13px;background:var(--bg-inset);border-bottom:1px solid var(--border-strong);white-space:nowrap}
+.rows td{padding:10px 13px;border-bottom:1px solid var(--border-hairline)}
+.rows th.n,.rows td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.rows tbody tr:hover{background:var(--accent-wash)}
+
+/* empty */
+.empty{border:2px dashed var(--border-strong);border-radius:var(--r-xl);padding:52px 24px;text-align:center;background:rgba(255,255,255,.5);margin:22px}
+.empty h4{font:600 19px/1.2 var(--font-display);margin:0 0 7px}
+.empty p{margin:0 0 18px;font-size:13px;color:var(--text-dim)}
+
+/* command bar */
+.cmd{background:var(--bg-shell);border-top:1px solid rgba(0,0,0,.5);padding:10px 18px;display:flex;align-items:center;gap:12px;font:400 12.5px/1 var(--font-data);color:var(--text-invert-dim)}
+.cmd .sl{color:var(--accent-fill);font-weight:700}
+.cmd kbd{border:1px solid var(--border-invert);border-radius:var(--r-xs);padding:3px 6px;font-size:10px}
+.cmdpanel{background:var(--bg-shell-raised);border-top:1px solid var(--border-invert);padding:8px}
+.cmdrow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 13px;border-radius:var(--r-sm);color:var(--text-invert-dim);font-size:13px}
+.cmdrow.on{background:var(--accent-fill);color:var(--accent-on);font-weight:600}
+.cmdrow .k{font:400 10px var(--font-data);letter-spacing:.08em;text-transform:uppercase;opacity:.65}
+.cmdsec{font:500 9px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:10px 13px 6px}
+
+/* device frames */
+.dev{margin:0 auto;background:var(--bg-surface);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--e-3)}
+.dev--pad{max-width:600px}
+.dev--phone{max-width:300px}
+.sheet{background:var(--bg-shell);color:var(--text-invert);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:10px 0 16px}
+.sheet .grab{width:36px;height:4px;border-radius:var(--r-pill);background:var(--border-invert);margin:0 auto 12px}
+.fab{width:52px;height:52px;border-radius:var(--r-pill);background:var(--bg-shell);color:var(--accent-fill);display:grid;place-items:center;box-shadow:var(--e-4);font:700 20px var(--font-data)}
+@media(max-width:900px){.doc{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border-invert)}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<aside class="rail">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFCB77"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
+    <b>Platter</b>
+  </div>
+  <h4>Batch 2 — Dashboard &amp; shell</h4>
+  <a href="#s21"><i>2.1</i>Dashboard grid</a>
+  <a href="#s22"><i>2.2</i>Card anatomy</a>
+  <a href="#s23"><i>2.3</i>Card interactions</a>
+  <a href="#s24"><i>2.4</i>Nav across devices</a>
+  <a href="#s25"><i>2.5</i>Command bar</a>
+  <h4>Done</h4>
+  <a href="#" style="opacity:.4"><i>1.x</i>Intake &amp; parse</a>
+  <h4>Next</h4>
+  <a href="#" style="opacity:.4"><i>3.x</i>Project workspace</a>
+</aside>
+
+<main>
+  <div class="hdr">
+    <p class="eyebrow">Step 1 · Wireframes · Batch 2 of 6</p>
+    <h1>Dashboard &amp; shell</h1>
+    <p>Built from design system components rather than one-off markup — every chip, button and status pill here is the real thing. Three roadmap details that Batch 1 hadn't picked up are now in: the nav logo is centered, the card band is glyphs-only with hover labels, and the card carries a proposed-budget footer.</p>
+  </div>
+
+<!-- ═══════ 2.1 ═══════ -->
+<section class="screen" id="s21">
+  <header><span class="no">2.1</span><h2>Dashboard grid</h2>
+    <span class="job">One job: answer "what needs me today" before the user has to think. Default sort is by bid date ascending — the deadline is the only ordering an estimator actually works to.</span></header>
+
+  <div class="tabs" role="tablist" data-g="a">
+    <button role="tab" aria-selected="true" data-t="a1">6 projects</button>
+    <button role="tab" aria-selected="false" data-t="a2">30 · compact rows</button>
+    <button role="tab" aria-selected="false" data-t="a3">Filtered</button>
+    <button role="tab" aria-selected="false" data-t="a4">Empty</button>
+  </div>
+
+  <div class="frame">
+    <div class="topnav">
+      <div class="left"><span class="qa">＋ New project</span></div>
+      <div class="center">
+        <div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n1" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFCB77"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n1)"/></g></svg>Platter</div>
+        <nav><b>Files</b><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav>
+      </div>
+      <div class="right"><span class="search">Search projects…</span><div class="avatar">JL</div></div>
+    </div>
+
+    <!-- a1 -->
+    <div class="state on" id="a1">
+      <div class="toolbar" style="position:relative">
+        <span class="pin onf" style="left:8px;top:-9px">1</span>
+        <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+          <span class="chip chip--acc">Active · 6</span><span class="chip">Draft · 1</span><span class="chip">Closed · 24</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="lbl">Sort</span><span class="chip chip--info">Bids due ↑</span>
+          <div class="seg"><button aria-selected="true">Cards</button><button aria-selected="false">Rows</button></div>
+        </div>
+      </div>
+      <div class="grid">
+        <!-- urgent -->
+        <article class="pc is-urgent" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:16px">2</span>
+          <div class="pc__hd"><div><div class="pc__name">Marion Transit Hub</div><div class="pc__meta">26-081 · <u>Ocala, FL</u></div></div>
+            <div class="pc__tags"><div style="display:flex;gap:6px;align-items:center"><span class="st st--bid"><i></i>Bidding</span><button class="kebab">⋯</button></div><span class="chip chip--dgr">Bond 100%</span></div></div>
+          <dl class="pc__dates">
+            <div><dt>ITB out</dt><dd>07/22</dd></div>
+            <div><dt>Site walk</dt><dd>08/05</dd></div>
+            <div><dt>Bids due</dt><dd class="due">08/17<small style="color:var(--danger-text)">in 2 days</small></dd></div>
+            <div><dt>Packages</dt><dd>14<small>9 quoted</small></dd></div>
+          </dl>
+          <div class="pc__band">
+            <button><span class="hint-lbl" style="display:none">Budget</span><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button>
+          </div>
+          <div class="pc__ft" style="position:relative"><span class="pin onf" style="right:-9px;top:8px">3</span><span class="s">Proposed budget · deep parse</span><span class="v">$18.4M</span></div>
+        </article>
+
+        <article class="pc">
+          <div class="pc__hd"><div><div class="pc__name">West Henry Logistics</div><div class="pc__meta">26-085 · <u>Ocala, FL</u></div></div>
+            <div class="pc__tags"><div style="display:flex;gap:6px;align-items:center"><span class="st st--bid"><i></i>Bidding</span><button class="kebab">⋯</button></div><span class="chip chip--dgr">Bond 100%</span></div></div>
+          <dl class="pc__dates">
+            <div><dt>ITB out</dt><dd>08/04</dd></div>
+            <div><dt>Site walk</dt><dd>08/21<small style="color:var(--danger-text)">Mandatory</small></dd></div>
+            <div><dt>Bids due</dt><dd>09/14<small>in 30 days</small></dd></div>
+            <div><dt>Packages</dt><dd>17<small>0 quoted</small></dd></div>
+          </dl>
+          <div class="pc__band">
+            <button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button>
+          </div>
+          <div class="pc__ft"><span class="s">Proposed budget · deep parse</span><span class="v">$28.4M</span></div>
+        </article>
+
+        <article class="pc is-draft" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:16px">4</span>
+          <div class="pc__hd"><div><div class="pc__name">Silver Springs Annex</div><div class="pc__meta">26-088 · <u>Silver Springs, FL</u></div></div>
+            <div class="pc__tags"><div style="display:flex;gap:6px;align-items:center"><span class="st st--draft"><i></i>Draft</span><button class="kebab">⋯</button></div><span class="chip">4 unresolved</span></div></div>
+          <dl class="pc__dates">
+            <div><dt>ITB out</dt><dd style="color:var(--text-faint)">—</dd></div>
+            <div><dt>Site walk</dt><dd style="color:var(--text-faint)">—</dd></div>
+            <div><dt>Bids due</dt><dd>10/02<small>in 48 days</small></dd></div>
+            <div><dt>Packages</dt><dd>11<small>2 pending</small></dd></div>
+          </dl>
+          <div class="pc__band">
+            <button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button>
+          </div>
+          <div class="pc__ft"><span class="s">Proposed budget · deep parse</span><span class="v" style="color:var(--text-faint)">$9.1M est.</span></div>
+        </article>
+      </div>
+    </div>
+
+    <!-- a2 -->
+    <div class="state" id="a2">
+      <div class="toolbar">
+        <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap"><span class="chip chip--acc">Active · 30</span><span class="chip">Draft · 3</span></div>
+        <div style="display:flex;gap:10px;align-items:center"><span class="lbl">Sort</span><span class="chip chip--info">Bids due ↑</span>
+          <div class="seg"><button aria-selected="false">Cards</button><button aria-selected="true">Rows</button></div></div>
+      </div>
+      <div class="rows" style="position:relative">
+        <span class="pin onf" style="left:8px;top:-2px">5</span>
+        <table>
+          <thead><tr><th>Project</th><th>Status</th><th>Flags</th><th class="n">Site walk</th><th class="n">Bids due</th><th class="n">Pkgs</th><th class="n">Budget</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>Marion Transit Hub</b> <span style="color:var(--text-dim);font-family:var(--font-data);font-size:11px">26-081</span></td><td><span class="st st--bid"><i></i>Bidding</span></td><td><span class="chip chip--dgr">Bond</span></td><td class="n">08/05</td><td class="n" style="color:var(--danger-text);font-weight:700">08/17 · 2d</td><td class="n">14</td><td class="n">18,400,000</td><td><button class="kebab">⋯</button></td></tr>
+            <tr><td><b>Belleview Fire Station 3</b> <span style="color:var(--text-dim);font-family:var(--font-data);font-size:11px">26-079</span></td><td><span class="st st--bid"><i></i>Leveling</span></td><td></td><td class="n">07/18</td><td class="n">08/22 · 7d</td><td class="n">9</td><td class="n">6,120,000</td><td><button class="kebab">⋯</button></td></tr>
+            <tr><td><b>West Henry Logistics</b> <span style="color:var(--text-dim);font-family:var(--font-data);font-size:11px">26-085</span></td><td><span class="st st--bid"><i></i>Bidding</span></td><td><span class="chip chip--dgr">Bond</span> <span class="chip chip--dgr">Walk</span></td><td class="n">08/21</td><td class="n">09/14 · 30d</td><td class="n">17</td><td class="n">28,400,000</td><td><button class="kebab">⋯</button></td></tr>
+            <tr><td><b>Silver Springs Annex</b> <span style="color:var(--text-dim);font-family:var(--font-data);font-size:11px">26-088</span></td><td><span class="st st--draft"><i></i>Draft</span></td><td><span class="chip">4 unresolved</span></td><td class="n">—</td><td class="n">10/02 · 48d</td><td class="n">11</td><td class="n" style="color:var(--text-faint)">9,100,000</td><td><button class="kebab">⋯</button></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12.5px;color:var(--text-dim);margin:14px 0 0">Same data, same sort, same actions. Rows become the sane default somewhere around fifteen projects — the toggle is remembered per user.</p>
+      </div>
+    </div>
+
+    <!-- a3 -->
+    <div class="state" id="a3">
+      <div class="toolbar" style="position:relative">
+        <span class="pin onf" style="left:8px;top:-9px">6</span>
+        <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+          <span class="chip chip--acc">Bond required <span style="opacity:.55">✕</span></span>
+          <span class="chip chip--acc">Due within 30 days <span style="opacity:.55">✕</span></span>
+          <span class="btn btn--sm btn--gh">Clear all</span>
+        </div>
+        <span style="font:400 12px var(--font-data);color:var(--text-dim)">3 of 30 shown</span>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr;max-width:560px">
+        <article class="pc is-urgent">
+          <div class="pc__hd"><div><div class="pc__name">Marion Transit Hub</div><div class="pc__meta">26-081 · <u>Ocala, FL</u></div></div>
+            <div class="pc__tags"><div style="display:flex;gap:6px;align-items:center"><span class="st st--bid"><i></i>Bidding</span><button class="kebab">⋯</button></div><span class="chip chip--dgr">Bond 100%</span></div></div>
+          <dl class="pc__dates"><div><dt>ITB out</dt><dd>07/22</dd></div><div><dt>Site walk</dt><dd>08/05</dd></div><div><dt>Bids due</dt><dd class="due">08/17<small style="color:var(--danger-text)">in 2 days</small></dd></div><div><dt>Packages</dt><dd>14<small>9 quoted</small></dd></div></dl>
+          <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+          <div class="pc__ft"><span class="s">Proposed budget · deep parse</span><span class="v">$18.4M</span></div>
+        </article>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);padding:0 22px 22px;margin:0">Filters are chips in the toolbar, individually removable. Never a hidden filter panel — an invisible active filter is the fastest way to make someone think data is missing.</p>
+    </div>
+
+    <!-- a4 -->
+    <div class="state" id="a4">
+      <div class="empty" style="position:relative">
+        <span class="pin onf" style="left:14px;top:14px">7</span>
+        <h4>No projects yet</h4>
+        <p>Drop a set of RFP documents and Platter will fill in what it can.</p>
+        <span class="btn btn--pri">New project</span>
+      </div>
+    </div>
+    <div class="cmd"><span class="sl">/</span> Type a command or a project number <kbd style="margin-left:auto">esc</kbd></div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Status counts double as filters.</b> One row, no panel. Sort defaults to bids due ascending because the deadline is the only ordering an estimator works to — not alphabetical, not recently modified.</span></li>
+    <li><span class="pin">2</span><span><b>Urgency is carried by an inset ring,</b> not a colored card. The card stays readable; the ring reads at a glance across a full grid. Under 48 hours the due date and its countdown both go grapefruit.</span></li>
+    <li><span class="pin">3</span><span><b>Footer shows the proposed budget and names its source</b> — "deep parse" or "budget table." Same number, very different confidence, so the label is not optional.</span></li>
+    <li><span class="pin">4</span><span><b>Draft is a dashed border plus a count of what's unresolved.</b> The dash reads as provisional without needing a legend, and the count is the exit criteria from Batch 1.4.</span></li>
+  </ol><ol>
+    <li><span class="pin">5</span><span><b>Rows mode is the same data, not a lesser view.</b> Cards stop scanning well past about fifteen projects. Toggle is remembered per user.</span></li>
+    <li><span class="pin">6</span><span><b>Active filters are always visible as removable chips.</b> A hidden filter is the fastest way to convince someone their data disappeared.</span></li>
+    <li><span class="pin">7</span><span><b>Empty state is an invitation.</b> One sentence about what to do, one button, no illustration and no apology.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 2.2 ═══════ -->
+<section class="screen" id="s22">
+  <header><span class="no">2.2</span><h2>Card anatomy — all states</h2>
+    <span class="job">One job: make the card legible at a glance in every lifecycle stage, with flags that survive scanning. Eight states, one geometry.</span></header>
+
+  <div class="frame"><div class="body">
+    <div class="grid" style="padding:0">
+      <article class="pc is-draft"><div class="pc__hd"><div><div class="pc__name">Silver Springs Annex</div><div class="pc__meta">26-088 · Silver Springs, FL</div></div><div class="pc__tags"><span class="st st--draft"><i></i>Draft</span><span class="chip">4 unresolved</span></div></div>
+        <dl class="pc__dates"><div><dt>Bids due</dt><dd>10/02<small>in 48 days</small></dd></div><div><dt>Packages</dt><dd>11</dd></div></dl>
+        <div class="pc__ft"><span class="s">Deep parse</span><span class="v" style="color:var(--text-faint)">$9.1M est.</span></div></article>
+
+      <article class="pc"><div class="pc__hd"><div><div class="pc__name">Dunnellon Water Plant</div><div class="pc__meta">26-086 · Dunnellon, FL</div></div><div class="pc__tags"><span class="st"><i></i>Scoping</span></div></div>
+        <dl class="pc__dates"><div><dt>Bids due</dt><dd>09/28<small>in 44 days</small></dd></div><div><dt>Packages</dt><dd>12<small>scope 60%</small></dd></div></dl>
+        <div class="pc__ft"><span class="s">Budget table</span><span class="v">$11.7M</span></div></article>
+
+      <article class="pc"><div class="pc__hd"><div><div class="pc__name">West Henry Logistics</div><div class="pc__meta">26-085 · Ocala, FL</div></div><div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span><span class="chip chip--dgr">Bond 100%</span></div></div>
+        <dl class="pc__dates"><div><dt>Site walk</dt><dd>08/21<small style="color:var(--danger-text)">Mandatory</small></dd></div><div><dt>Bids due</dt><dd>09/14<small>in 30 days</small></dd></div><div><dt>Packages</dt><dd>17<small>3 quoted</small></dd></div></dl>
+        <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div></article>
+
+      <article class="pc is-urgent" style="position:relative"><span class="pin onf" style="left:-9px;top:16px">1</span>
+        <div class="pc__hd"><div><div class="pc__name">Marion Transit Hub</div><div class="pc__meta">26-081 · Ocala, FL</div></div><div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span><span class="chip chip--dgr">Bond 100%</span></div></div>
+        <dl class="pc__dates"><div><dt>Bids due</dt><dd class="due">08/17<small style="color:var(--danger-text)">in 2 days · 5 packages unquoted</small></dd></div></dl>
+        <div class="pc__ft"><span class="s">Budget table</span><span class="v">$18.4M</span></div></article>
+
+      <article class="pc is-urgent" style="position:relative"><span class="pin onf" style="left:-9px;top:16px">2</span>
+        <div class="pc__hd"><div><div class="pc__name">Belleview Fire Station 3</div><div class="pc__meta">26-079 · Belleview, FL</div></div><div class="pc__tags"><span class="st st--bid"><i></i>Leveling</span><span class="chip chip--dgr">Overdue</span></div></div>
+        <dl class="pc__dates"><div><dt>Bids due</dt><dd class="due">08/12<small style="color:var(--danger-text)">closed 3 days ago</small></dd></div><div><dt>Bids in</dt><dd>21<small>2 packages short</small></dd></div></dl>
+        <div class="pc__ft"><span class="s">Leveled</span><span class="v">$6.12M</span></div></article>
+
+      <article class="pc"><div class="pc__hd"><div><div class="pc__name">Ocala Municipal Garage</div><div class="pc__meta">26-072 · Ocala, FL</div></div><div class="pc__tags"><span class="st"><i></i>Submitted</span></div></div>
+        <dl class="pc__dates"><div><dt>Submitted</dt><dd>07/30</dd></div><div><dt>Award target</dt><dd>08/29<small>in 14 days</small></dd></div></dl>
+        <div class="pc__ft"><span class="s">Final proposal</span><span class="v">$4.88M</span></div></article>
+
+      <article class="pc is-closed" style="position:relative"><span class="pin onf" style="left:-9px;top:16px">3</span>
+        <div class="pc__hd"><div><div class="pc__name">Citra Elementary Addition</div><div class="pc__meta">25-140 · Citra, FL</div></div><div class="pc__tags"><span class="st st--won"><i></i>Awarded</span></div></div>
+        <dl class="pc__dates"><div><dt>Awarded</dt><dd>06/11</dd></div><div><dt>Buyout</dt><dd>84%</dd></div></dl>
+        <div class="pc__ft"><span class="s">Contract value</span><span class="v">$12.05M</span></div></article>
+
+      <article class="pc is-closed"><div class="pc__hd"><div><div class="pc__name">Lake Weir Community Center</div><div class="pc__meta">25-131 · Ocklawaha, FL</div></div><div class="pc__tags"><span class="st st--lost"><i></i>Lost</span></div></div>
+        <dl class="pc__dates"><div><dt>Result</dt><dd>05/28</dd></div><div><dt>Gap to low</dt><dd style="color:var(--danger-text)">+3.4%</dd></div></dl>
+        <div class="pc__ft"><span class="s">Our number</span><span class="v" style="color:var(--text-dim)">$7.44M</span></div></article>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Urgent cards drop the date columns they don't need</b> and spend the space on the thing that matters — how many packages are still unquoted with two days left. A card at deadline is a different question than a card at kickoff.</span></li>
+    <li><span class="pin">2</span><span><b>Overdue is not the same as urgent.</b> Bids closed, so the flag reads "Overdue" and the card shows what's short. The ring is the same; the content changes.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Closed projects dim to 62% and restore on hover.</b> They stay reachable — the historical data analysis you're after depends on them — but they never compete with live work.</span></li>
+  </ol></div>
+
+  <p class="callout"><b>The footer earns its place by naming its source.</b> "Deep parse" is an AI estimate before scope exists. "Budget table" is your own numbers. "Leveled" is real bids. Same slot, same format, escalating confidence — and the label is what stops a parse guess from being mistaken for a commitment three weeks later.</p>
+</section>
+
+<!-- ═══════ 2.3 ═══════ -->
+<section class="screen" id="s23">
+  <header><span class="no">2.3</span><h2>Card interactions</h2>
+    <span class="job">One job: put every routine action one gesture from the card, without printing a word of chrome on it.</span></header>
+
+  <div class="tabs" role="tablist" data-g="c">
+    <button role="tab" aria-selected="true" data-t="c1">Glyph hover</button>
+    <button role="tab" aria-selected="false" data-t="c2">Address tooltip</button>
+    <button role="tab" aria-selected="false" data-t="c3">Kebab menu</button>
+    <button role="tab" aria-selected="false" data-t="c4">Tag editor</button>
+  </div>
+
+  <div class="frame"><div class="body" style="min-height:390px">
+    <div class="state on" id="c1">
+      <div style="max-width:400px;position:relative">
+        <span class="pin onf" style="left:-9px;top:200px">1</span>
+        <article class="pc" style="transform:translateY(-4px);box-shadow:var(--e-3)">
+          <div class="pc__hd"><div><div class="pc__name">West Henry Logistics</div><div class="pc__meta">26-085 · <u>Ocala, FL</u></div></div><div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span></div></div>
+          <dl class="pc__dates"><div><dt>ITB out</dt><dd>08/04</dd></div><div><dt>Site walk</dt><dd>08/21</dd></div><div><dt>Bids due</dt><dd>09/14</dd></div><div><dt>Packages</dt><dd>17</dd></div></dl>
+          <div class="pc__band">
+            <button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button>
+            <button style="background:var(--accent-wash);color:var(--accent-text);position:relative"><span class="hint-lbl">Invite bidders</span><svg viewBox="0 0 24 24" style="stroke-width:1.9"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button>
+            <button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button>
+          </div>
+          <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div>
+        </article>
+        <p style="font-size:12.5px;color:var(--text-dim);margin-top:16px">Four glyphs, no captions: budget table · invite bidders · log communication · planroom and documents. The label appears above on hover, the stroke thickens, and the cell fills apricot.</p>
+      </div>
+    </div>
+
+    <div class="state" id="c2">
+      <div style="max-width:400px;position:relative">
+        <span class="pin onf" style="left:-9px;top:44px">2</span>
+        <article class="pc">
+          <div class="pc__hd"><div><div class="pc__name">West Henry Logistics</div>
+            <div class="pc__meta" style="position:relative"><span style="color:var(--info-text)">26-085 · <u style="border-bottom-style:solid;border-color:var(--info-line)">Ocala, FL</u></span>
+              <span class="tip" style="left:52px;top:24px">4400 SW 20th Ave, Ocala, FL 34474</span></div></div>
+            <div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span></div></div>
+          <dl class="pc__dates" style="margin-top:34px"><div><dt>Bids due</dt><dd>09/14</dd></div><div><dt>Packages</dt><dd>17</dd></div></dl>
+          <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div>
+        </article>
+        <p style="font-size:12.5px;color:var(--text-dim);margin-top:16px">City is the resting state; hovering reveals the full confirmed address. Clicking the project name selects and opens it.</p>
+      </div>
+    </div>
+
+    <div class="state" id="c3">
+      <div style="max-width:400px;position:relative">
+        <span class="pin onf" style="right:-9px;top:14px">3</span>
+        <article class="pc">
+          <div class="pc__hd"><div><div class="pc__name">West Henry Logistics</div><div class="pc__meta">26-085 · Ocala, FL</div></div>
+            <div class="pc__tags"><div style="display:flex;gap:6px;align-items:center"><span class="st st--bid"><i></i>Bidding</span>
+              <button class="kebab" style="background:var(--accent-wash);color:var(--accent-text)">⋯</button></div></div></div>
+          <dl class="pc__dates"><div><dt>Bids due</dt><dd>09/14</dd></div><div><dt>Packages</dt><dd>17</dd></div></dl>
+          <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div>
+        </article>
+        <div class="pop" style="right:-40px;top:52px">
+          <button>Copy planroom link <span style="color:var(--text-faint);font-family:var(--font-data);font-size:10px">⌘L</span></button>
+          <hr>
+          <div class="sec">Open in</div>
+          <button>Procore <span style="color:var(--text-faint)">↗</span></button>
+          <button>SharePoint <span style="color:var(--text-faint)">↗</span></button>
+          <hr>
+          <button>Duplicate as template</button>
+          <button>Archive project</button>
+        </div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:180px;max-width:60ch">External links are grouped under "Open in" and marked with ↗ so it's obvious you're leaving Platter. Until step 7 these render disabled with a "not connected" hint rather than being hidden — the user should know the seam exists.</p>
+    </div>
+
+    <div class="state" id="c4">
+      <div style="max-width:400px;position:relative">
+        <span class="pin onf" style="right:-9px;top:56px">4</span>
+        <article class="pc">
+          <div class="pc__hd"><div><div class="pc__name">West Henry Logistics</div><div class="pc__meta">26-085 · Ocala, FL</div></div>
+            <div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span><span class="chip chip--dgr" style="box-shadow:0 0 0 3px var(--accent-wash)">Bond 100%</span></div></div>
+          <dl class="pc__dates"><div><dt>Bids due</dt><dd>09/14</dd></div><div><dt>Packages</dt><dd>17</dd></div></dl>
+          <div class="pc__ft"><span class="s">Budget table</span><span class="v">$28.4M</span></div>
+        </article>
+        <div class="pop" style="right:-30px;top:96px;min-width:250px">
+          <div class="sec">Flags on this project</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;padding:4px 11px 10px">
+            <span class="chip chip--dgr">Bond 100% <span style="opacity:.55">✕</span></span>
+            <span class="chip chip--dgr">Mandatory walk <span style="opacity:.55">✕</span></span>
+            <span class="chip chip--info">Prevailing wage <span style="opacity:.55">✕</span></span>
+          </div>
+          <hr>
+          <div class="sec">Add from parse</div>
+          <button>LD $2,500/day <span class="chip chip--acc" style="padding:2px 8px">0.61</span></button>
+          <button>540 calendar days <span class="chip chip--ok" style="padding:2px 8px">0.74</span></button>
+          <hr>
+          <button style="color:var(--info-text)">＋ New flag…</button>
+        </div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin-top:210px;max-width:64ch">Flags are editable in place. Suggestions come from the parse and carry their confidence score, so promoting one to a card flag is a deliberate act — the provenance follows it out of Batch 1.</p>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Glyphs, not captions.</b> Four words repeated across thirty cards is ninety words of chrome. The label appears on hover; the icon fills apricot and its stroke thickens. On touch, first tap reveals the label, second commits — so an iPad user is never guessing.</span></li>
+    <li><span class="pin">2</span><span><b>City rests, address reveals.</b> Straight from the roadmap. The name is the click target for opening the project.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>External links declare the seam.</b> Grouped under "Open in," marked ↗, and shown disabled-with-reason before step 7 rather than hidden.</span></li>
+    <li><span class="pin">4</span><span><b>Flag suggestions carry their confidence.</b> The parse proposes; you promote. That keeps the card's flags trustworthy even though a machine drafted them.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 2.4 ═══════ -->
+<section class="screen" id="s24">
+  <header><span class="no">2.4</span><h2>Nav across devices</h2>
+    <span class="job">One job: same five destinations, three ergonomics. Logo centered on the dashboard per the roadmap; left-aligned once inside a project so the project name takes the center.</span></header>
+
+  <div class="tabs" role="tablist" data-g="d">
+    <button role="tab" aria-selected="true" data-t="d1">Desktop</button>
+    <button role="tab" aria-selected="false" data-t="d2">iPad</button>
+    <button role="tab" aria-selected="false" data-t="d3">Phone</button>
+  </div>
+
+  <div class="frame"><div class="body">
+    <div class="state on" id="d1">
+      <span class="lbl" style="margin-bottom:10px">Dashboard · logo centered</span>
+      <div class="topnav" style="border-radius:var(--r-md);position:relative">
+        <span class="pin onf" style="left:8px;top:-9px">1</span>
+        <div class="left"><span class="qa">＋ New project</span></div>
+        <div class="center"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FFCB77"/></g></svg>Platter</div>
+          <nav><b>Files</b><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav></div>
+        <div class="right"><span class="search">Search projects…</span><div class="avatar">JL</div></div>
+      </div>
+      <span class="lbl" style="margin:26px 0 10px">Inside a project · logo left, project centered</span>
+      <div class="topnav" style="border-radius:var(--r-md);position:relative">
+        <span class="pin onf" style="left:8px;top:-9px">2</span>
+        <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FFCB77"/></g></svg></div>
+          <span style="font:400 11px var(--font-data);color:var(--text-invert-faint)">/ Files /</span></div>
+        <div class="center"><span style="font:600 15px var(--font-display);letter-spacing:-.02em">West Henry Logistics</span><span class="chip chip--info" style="border-color:rgba(127,179,199,.5);background:rgba(34,124,157,.3);color:#DCEAF0">26-085</span></div>
+        <div class="right"><nav><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav><div class="avatar">JL</div></div>
+      </div>
+    </div>
+
+    <div class="state" id="d2">
+      <div class="dev dev--pad" style="position:relative">
+        <span class="pin onf" style="left:-9px;top:14px">3</span>
+        <div class="topnav" style="grid-template-columns:auto 1fr auto">
+          <div class="left"><span class="qa" style="padding:6px 10px">＋</span></div>
+          <div class="center"><div class="logo"><svg viewBox="0 0 64 64" width="18" height="18"><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FFCB77"/></g></svg>Platter</div></div>
+          <div class="right"><div class="avatar">JL</div></div>
+        </div>
+        <div style="display:flex;gap:3px;padding:9px 12px;background:var(--bg-shell-raised);overflow-x:auto">
+          <span class="chip" style="border-color:var(--accent-line);background:var(--accent-fill);color:var(--accent-on)">Files</span>
+          <span class="chip" style="border-color:var(--border-invert);color:var(--text-invert-dim)">Network</span>
+          <span class="chip" style="border-color:var(--border-invert);color:var(--text-invert-dim)">Data</span>
+          <span class="chip" style="border-color:var(--border-invert);color:var(--text-invert-dim)">Tools</span>
+          <span class="chip" style="border-color:var(--border-invert);color:var(--text-invert-dim)">Settings</span>
+        </div>
+        <div style="padding:16px">
+          <article class="pc"><div class="pc__hd"><div><div class="pc__name" style="font-size:17px">Marion Transit Hub</div><div class="pc__meta">26-081 · Ocala, FL</div></div><div class="pc__tags"><span class="st st--bid"><i></i>Bidding</span></div></div>
+            <dl class="pc__dates"><div><dt>Bids due</dt><dd class="due">08/17<small>in 2 days</small></dd></div><div><dt>Packages</dt><dd>14</dd></div></dl>
+            <div class="pc__band"><button><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></button><button><svg viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="12" rx="2"/><path d="m2 7 7.5 5L17 7M19 15v6M22 18h-6"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.8A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></button><button><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2.5h5.5A2.5 2.5 0 0 1 20 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="M9 13h6"/></svg></button></div>
+            <div class="pc__ft"><span class="s">Budget table</span><span class="v">$18.4M</span></div></article>
+        </div>
+        <div style="display:flex;justify-content:flex-end;padding:0 16px 18px"><div class="fab">/</div></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin:16px auto 0;max-width:600px">Nav collapses to a scrollable chip row. The command bar has no keyboard to listen to, so it becomes a floating glyph opening the same registry as a sheet.</p>
+    </div>
+
+    <div class="state" id="d3">
+      <div class="dev dev--phone" style="position:relative">
+        <span class="pin onf" style="left:-9px;top:14px">4</span>
+        <div class="topnav" style="padding:10px 13px;grid-template-columns:auto 1fr auto">
+          <div class="left"><span style="font-size:16px">☰</span></div>
+          <div class="center"><div class="logo" style="font-size:14px"><svg viewBox="0 0 64 64" width="16" height="16"><g fill="none" stroke="#FEF9EF" stroke-width="4.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="#FFCB77"/></g></svg>Platter</div></div>
+          <div class="right"><div class="avatar" style="width:24px;height:24px;font-size:9px">JL</div></div>
+        </div>
+        <div style="padding:12px">
+          <article class="pc" style="border-radius:var(--r-md)">
+            <div class="pc__hd" style="padding:13px 13px 0"><div><div class="pc__name" style="font-size:15px">Marion Transit Hub</div><div class="pc__meta" style="font-size:10.5px">26-081</div></div><span class="st st--bid" style="font-size:9px;padding:5px 9px 5px 8px"><i style="width:6px;height:6px"></i>Bidding</span></div>
+            <dl class="pc__dates" style="padding:0 13px"><div><dt>Bids due</dt><dd class="due" style="font-size:12.5px">08/17<small>2 days</small></dd></div><div><dt>Pkgs</dt><dd style="font-size:12.5px">14</dd></div></dl>
+            <div class="pc__ft" style="padding:9px 13px;border-radius:0 0 var(--r-md) var(--r-md)"><span class="s" style="font-size:8.5px">Budget table</span><span class="v" style="font-size:13px">$18.4M</span></div>
+          </article>
+        </div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-dim);margin:16px auto 0;max-width:400px;text-align:center">Phone is read-only by design. The band and command bar are gone — you check a deadline on a phone, you don't level a bid on one.</p>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Dashboard centers the logo</b> per the roadmap, with New project pinned left and search right. The center cluster is the only branded moment in the app.</span></li>
+    <li><span class="pin">2</span><span><b>Inside a project the logo moves left</b> and the center belongs to the project name and number — which is the thing you need to confirm you're in the right place before you edit a budget.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>iPad gets a chip row and a floating glyph.</b> The command bar's entire premise is a keyboard; on touch it becomes a sheet reading the same registry, so no action is desktop-only.</span></li>
+    <li><span class="pin">4</span><span><b>Phone is deliberately read-only.</b> The roadmap asks for "viewable on sm-mobile," not usable. Cutting the band and command bar is honest about that instead of shipping controls too small to hit.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 2.5 ═══════ -->
+<section class="screen" id="s25">
+  <header><span class="no">2.5</span><h2>Command bar</h2>
+    <span class="job">One job: reach anything in the app from anywhere in it, in the time it takes to type four characters. Modeled on AutoCAD's command line, not on a search box.</span></header>
+
+  <div class="tabs" role="tablist" data-g="e">
+    <button role="tab" aria-selected="true" data-t="e1">Rest</button>
+    <button role="tab" aria-selected="false" data-t="e2">Open · suggestions</button>
+    <button role="tab" aria-selected="false" data-t="e3">Project jump</button>
+    <button role="tab" aria-selected="false" data-t="e4">Tool jump</button>
+    <button role="tab" aria-selected="false" data-t="e5">No match</button>
+    <button role="tab" aria-selected="false" data-t="e6">iPad sheet</button>
+  </div>
+
+  <div class="frame dk"><div class="body" style="min-height:330px;display:flex;flex-direction:column;justify-content:flex-end">
+    <div class="state on" id="e1">
+      <div style="position:relative"><span class="pin onf" style="left:-9px;top:8px">1</span>
+        <div class="cmd" style="border-radius:var(--r-pill);border:1px solid var(--border-invert)"><span class="sl">/</span> Type a command or a project number <kbd style="margin-left:auto">/</kbd></div></div>
+      <p style="font-size:12.5px;color:var(--text-invert-dim);margin:16px 0 0">Anchored at the bottom of every desktop screen. Suppressed until called — one hairline, one glyph, one line of muted text.</p>
+    </div>
+
+    <div class="state" id="e2">
+      <div style="position:relative"><span class="pin onf" style="left:-9px;top:8px">2</span>
+      <div class="cmdpanel" style="border-radius:var(--r-md) var(--r-md) 0 0;border:1px solid var(--border-invert);border-bottom:none">
+        <div class="cmdsec">Recent</div>
+        <div class="cmdrow on"><span>26-081</span><span>Marion Transit Hub</span><span class="k">Open project</span></div>
+        <div class="cmdrow"><span>WH budget</span><span>West Henry Logistics → Budget</span><span class="k">Tool</span></div>
+        <div class="cmdsec">Commands</div>
+        <div class="cmdrow"><span>new</span><span>New project</span><span class="k">⌘N</span></div>
+        <div class="cmdrow"><span>invite</span><span>Invite bidders to a package</span><span class="k">Action</span></div>
+        <div class="cmdrow"><span>level</span><span>Open bid tab</span><span class="k">Tool</span></div>
+      </div>
+      <div class="cmd" style="border-radius:0 0 var(--r-pill) var(--r-pill);border:1px solid var(--border-invert);border-top:none"><span class="sl">/</span><span style="color:var(--text-invert)">|</span><kbd style="margin-left:auto">↑↓</kbd><kbd>↵</kbd><kbd>esc</kbd></div></div>
+    </div>
+
+    <div class="state" id="e3">
+      <div style="position:relative"><span class="pin onf" style="left:-9px;top:8px">3</span>
+      <div class="cmdpanel" style="border-radius:var(--r-md) var(--r-md) 0 0;border:1px solid var(--border-invert);border-bottom:none">
+        <div class="cmdrow on"><span>26-085</span><span>West Henry Logistics · Ocala, FL</span><span class="k">Open project</span></div>
+        <div class="cmdrow"><span>26-085 3A</span><span>Package 3A Concrete</span><span class="k">Open package</span></div>
+        <div class="cmdrow"><span>26-085 budget</span><span>Budget table</span><span class="k">Tool</span></div>
+        <div class="cmdrow"><span>26-085 planroom</span><span>Planroom · copy link</span><span class="k">Action</span></div>
+      </div>
+      <div class="cmd" style="border-radius:0 0 var(--r-pill) var(--r-pill);border-color:var(--accent-line);border:1px solid var(--accent-line);border-top:none"><span class="sl">/</span><span style="color:var(--text-invert)">26-085</span><kbd style="margin-left:auto">↵</kbd></div></div>
+      <p style="font-size:12.5px;color:var(--text-invert-dim);margin:16px 0 0">A bare project number opens the project. Adding a package code or a tool name drills straight in — the same grammar the file structure and package codes already use.</p>
+    </div>
+
+    <div class="state" id="e4">
+      <div style="position:relative"><span class="pin onf" style="left:-9px;top:8px">4</span>
+      <div class="cmdpanel" style="border-radius:var(--r-md) var(--r-md) 0 0;border:1px solid var(--border-invert);border-bottom:none">
+        <div class="cmdrow on"><span>WH budget</span><span>West Henry Logistics → Budget table</span><span class="k">Tool</span></div>
+        <div class="cmdrow"><span>WH scope</span><span>West Henry Logistics → Scope</span><span class="k">Tool</span></div>
+        <div class="cmdrow"><span style="opacity:.5">West Marion Annex</span><span style="opacity:.5">also matches "WH"</span><span class="k">Project</span></div>
+      </div>
+      <div class="cmd" style="border-radius:0 0 var(--r-pill) var(--r-pill);border:1px solid var(--accent-line);border-top:none"><span class="sl">/</span><span style="color:var(--text-invert)">WH budget</span><kbd style="margin-left:auto">↵</kbd></div></div>
+      <p style="font-size:12.5px;color:var(--text-invert-dim);margin:16px 0 0">Initialisms resolve against project names. Ambiguity is shown rather than guessed — the runner-up stays visible so a wrong jump is caught before it happens.</p>
+    </div>
+
+    <div class="state" id="e5">
+      <div style="position:relative"><span class="pin onf" style="left:-9px;top:8px">5</span>
+        <div class="cmd" style="border-radius:var(--r-pill);border:1px solid var(--danger-line)"><span style="color:var(--danger-fill);font-weight:700">/</span><span style="color:var(--text-invert)">qqqq</span><span style="margin-left:auto;color:var(--danger-fill)">Not recognized</span></div></div>
+      <p style="font-size:12.5px;color:var(--text-invert-dim);margin:16px 0 0">A 400ms resolution budget. If nothing matches in that window the border goes grapefruit and the bar says so — it never spins, and it never guesses.</p>
+    </div>
+
+    <div class="state" id="e6">
+      <div style="max-width:340px;margin:0 auto;position:relative"><span class="pin onf" style="left:-9px;top:8px">6</span>
+        <div class="sheet" style="border:1px solid var(--border-invert)">
+          <div class="grab"></div>
+          <div style="padding:0 14px 12px"><div class="search" style="width:100%;box-sizing:border-box;background:var(--bg-shell);color:var(--text-invert)">26-0|</div></div>
+          <div class="cmdrow on" style="margin:0 8px;min-height:44px"><span>26-081</span><span>Marion Transit Hub</span><span></span></div>
+          <div class="cmdrow" style="margin:0 8px;min-height:44px"><span>26-085</span><span>West Henry Logistics</span><span></span></div>
+          <div class="cmdrow" style="margin:0 8px;min-height:44px"><span>26-088</span><span>Silver Springs Annex</span><span></span></div>
+        </div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-invert-dim);margin:16px auto 0;max-width:340px;text-align:center">Same registry, 44px rows, opened from the floating glyph.</p>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Suppressed at rest.</b> One hairline and one glyph. It should feel like an instrument that's always powered on, not a feature asking to be used.</span></li>
+    <li><span class="pin">2</span><span><b>Opening shows recents before commands.</b> The registry is the source — <code style="font-family:var(--font-data);font-size:11.5px;color:var(--accent-fill)">{id, label, keywords, scope, run()}</code> — so context menus and shortcuts stay in sync automatically.</span></li>
+    <li><span class="pin">3</span><span><b>The grammar is already yours.</b> <code style="font-family:var(--font-data);font-size:11.5px;color:var(--accent-fill)">26-085 3A</code> is project plus package code — the same handle your SharePoint folders use.</span></li>
+  </ol><ol>
+    <li><span class="pin">4</span><span><b>Ambiguity is displayed, not resolved.</b> The runner-up stays on screen so a wrong jump gets caught before it happens.</span></li>
+    <li><span class="pin">5</span><span><b>400ms timeout, then say so.</b> Grapefruit border, plain words, no spinner. The roadmap asked for a short budget and a tooltip; this is that, inline.</span></li>
+    <li><span class="pin">6</span><span><b>iPad sheet reads the same registry.</b> Building the registry first is what makes this a 40-line component instead of a second implementation.</span></li>
+  </ol></div>
+</section>
+
+<p class="callout" style="margin-top:64px"><b>What Batch 2 commits us to.</b> The card band is glyphs with hover labels, which means every tool in the app needs a glyph in the same drawing style — worth commissioning as one set rather than accumulating. The footer's source label creates an ordering (deep parse → budget table → leveled → contract value) that the budget tool in Batch 5 has to actually produce. And the command registry is now load-bearing for three surfaces: the bar, the iPad sheet, and right-click menus.</p>
+
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.tabs').forEach(function(g){
+  g.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-t]'); if(!b) return;
+    g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected','false')});
+    b.setAttribute('aria-selected','true');
+    var frame=g.nextElementSibling;
+    frame.querySelectorAll('.state').forEach(function(s){s.classList.remove('on')});
+    var t=frame.querySelector('#'+b.dataset.t); if(t) t.classList.add('on');
+  });
+});
+document.querySelectorAll('.pc__band button').forEach(function(b){
+  var l=b.querySelector('.hint-lbl'); if(!l) return;
+  b.addEventListener('mouseenter',function(){l.style.display='block'});
+  b.addEventListener('mouseleave',function(){l.style.display='none'});
+});
+</script>
+</body>
+</html>

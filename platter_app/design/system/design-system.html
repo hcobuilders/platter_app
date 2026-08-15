@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platter — Design System v1.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+/* ═══════════ TOKENS ═══════════ */
+/* ═══════════ DOC CHROME ═══════════ */
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 15px/1.55 var(--font-body);-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(1100px 620px at 86% -10%,rgba(34,124,157,.26),transparent 62%),radial-gradient(820px 520px at 2% 104%,rgba(23,195,178,.11),transparent 60%);background-attachment:fixed}
+.doc{display:grid;grid-template-columns:224px 1fr;min-height:100vh}
+.nav{border-right:1px solid var(--border-invert);padding:24px 0 80px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.nav .brand{display:flex;align-items:center;gap:10px;padding:0 20px 6px}
+.nav .brand b{font:700 19px/1 var(--font-display);letter-spacing:-.04em}
+.nav .ver{padding:0 20px 20px;font:400 10px/1 var(--font-data);letter-spacing:.12em;color:var(--text-invert-faint);text-transform:uppercase}
+.nav h5{font:500 9.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:18px 20px 8px;margin:0}
+.nav a{display:block;padding:7px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:13.5px;border-left:2px solid transparent}
+.nav a:hover{color:var(--text-invert);background:var(--bg-shell-raised)}
+main{padding:44px clamp(20px,4vw,54px) 140px;max-width:1140px}
+.page-hd{border-bottom:1px solid var(--border-invert);padding-bottom:26px}
+.page-hd h1{font:700 clamp(34px,6vw,58px)/.96 var(--font-display);letter-spacing:-.038em;margin:0 0 14px}
+.page-hd p{color:var(--text-invert-dim);max-width:62ch;margin:0}
+.eyebrow{font:500 10.5px/1 var(--font-data);letter-spacing:.16em;text-transform:uppercase;color:var(--accent-fill);margin:0 0 10px}
+section{margin-top:70px;scroll-margin-top:20px}
+section>h2{font:600 26px/1.1 var(--font-display);letter-spacing:-.022em;margin:0 0 6px}
+section>.sub{color:var(--text-invert-dim);font-size:14px;max-width:66ch;margin:0 0 22px}
+h3.grp{font:500 10px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);margin:38px 0 14px;padding-bottom:9px;border-bottom:1px solid var(--border-invert)}
+.rule{color:var(--text-invert-dim);font-size:13px;max-width:70ch;margin:12px 0 0;padding-left:14px;border-left:2px solid var(--accent-line)}
+.rule b{color:var(--text-invert)}
+
+/* canvas: components render on the real work surface */
+.canvas{background:var(--bg-surface);color:var(--text);border-radius:var(--r-xl);padding:26px;box-shadow:var(--e-3)}
+.canvas.dark{background:var(--bg-shell-raised);color:var(--text-invert);border:1px solid var(--border-invert);box-shadow:none}
+.cap{font:500 9.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block;margin-bottom:12px}
+.canvas.dark .cap{color:var(--text-invert-faint)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.stack{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* ═══════════ COMPONENTS ═══════════ */
+/* — Button — */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 13.5px/1 var(--font-body);
+  padding:11px 18px;min-height:38px;border-radius:var(--r-pill);border:1px solid var(--border-strong);
+  background:var(--bg-surface-raised);color:var(--text);cursor:pointer;
+  transition:background var(--dur-fast),border-color var(--dur-fast),transform var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast)}
+.btn:hover{background:var(--bg-inset);box-shadow:var(--e-1)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.btn--primary{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
+.btn--primary:hover{background:var(--bg-shell-hover);border-color:var(--bg-shell-hover)}
+.btn--accent{background:linear-gradient(135deg,var(--c-apricot-300),var(--c-apricot-500));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--accent:hover{background:var(--c-apricot-500)}
+.btn--danger{background:var(--danger-fill);color:#3D0A0D;border-color:var(--danger-line)}
+.btn--ghost{background:transparent;border-color:transparent;color:var(--text-dim)}
+.btn--ghost:hover{background:var(--accent-wash);color:var(--accent-text);box-shadow:none}
+.btn--sm{padding:7px 14px;min-height:30px;font-size:12px}
+.btn--lg{padding:14px 24px;min-height:var(--tap-min);font-size:15px}
+.btn[disabled]{opacity:.42;pointer-events:none}
+.btn--icon{padding:0;width:38px;min-height:38px;border-radius:var(--r-pill)}
+.spin{width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* — Field — */
+.f{display:block;margin-bottom:16px}
+.f > label{display:block;font:500 9.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+.f input,.f select,.f textarea{width:100%;font:400 14px/1.4 var(--font-body);padding:10px 13px;min-height:40px;
+  border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--bg-surface-raised);color:var(--text);
+  transition:border-color var(--dur-fast),box-shadow var(--dur-fast)}
+.f input::placeholder{color:var(--text-faint)}
+.f input:hover{border-color:rgba(14,31,39,.4)}
+.f input:focus{outline:none;border-color:var(--accent-line);box-shadow:0 0 0 3px var(--accent-wash)}
+.f input.num{font-family:var(--font-data);font-variant-numeric:tabular-nums;text-align:right}
+.f .hint{font:400 11.5px/1.4 var(--font-body);color:var(--text-dim);margin-top:5px}
+.f .err{font:400 11.5px/1.4 var(--font-body);color:var(--danger-text);margin-top:5px}
+.f.is-error input{border-color:var(--danger-line);box-shadow:0 0 0 3px var(--danger-wash)}
+.f.is-ok input{border-color:var(--success-line)}
+.f input[disabled]{background:var(--bg-inset);color:var(--text-faint)}
+
+/* — Toggle / check — */
+.tog{position:relative;width:40px;height:23px;border-radius:var(--r-pill);background:var(--border-strong);cursor:pointer;transition:background var(--dur-base);flex:none}
+.tog::after{content:"";position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:var(--e-1);transition:transform var(--dur-base) var(--ease-out)}
+.tog.on{background:var(--success-fill)}
+.tog.on::after{transform:translateX(17px)}
+.chk{width:19px;height:19px;border-radius:var(--r-xs);border:1.5px solid var(--border-strong);display:inline-grid;place-items:center;flex:none;background:#fff}
+.chk.on{background:var(--accent-fill);border-color:var(--accent-line);color:var(--accent-on);font-size:12px;font-weight:700}
+
+/* — Chip / tag — */
+.chip{display:inline-flex;align-items:center;gap:6px;font:500 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 11px;border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);background:transparent;white-space:nowrap}
+.chip--accent{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
+.chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
+.chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
+.chip--danger{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
+.chip--solid{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-on)}
+.chip .x{opacity:.5;cursor:pointer;font-size:11px}
+
+/* — Status pill (project lifecycle) — */
+.st{display:inline-flex;align-items:center;gap:7px;font:500 10px/1 var(--font-data);letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 12px 6px 10px;border-radius:var(--r-pill);background:var(--bg-inset);color:var(--text-dim)}
+.st i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.st--draft{background:var(--accent-wash);color:var(--accent-text)}
+.st--bid{background:var(--info-wash);color:var(--info-text)}
+.st--won{background:var(--success-wash);color:var(--success-text)}
+.st--lost{background:var(--danger-wash);color:var(--danger-text)}
+
+/* — Confidence + provenance (signature pattern) — */
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none}
+.dot--hi{background:var(--success-fill)}.dot--mid{background:var(--accent-fill)}
+.dot--lo{background:var(--danger-fill)}.dot--none{background:transparent;border:1.5px solid var(--border-strong)}
+.prov{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:start;padding:11px 12px;
+  border-bottom:1px solid var(--border-hairline);border-left:2px solid transparent;transition:background var(--dur-fast)}
+.prov:hover{background:var(--bg-surface-raised)}
+.prov.is-sel{background:var(--bg-surface-raised);border-left-color:var(--accent-line);box-shadow:var(--e-1)}
+.prov .val{font:500 14px/1.35 var(--font-body)}
+.prov .src{font:400 10.5px/1.4 var(--font-data);color:var(--text-dim);margin-top:4px}
+.prov .src u{text-decoration:none;border-bottom:1px dotted var(--border-strong);cursor:pointer}
+.prov .src u:hover{color:var(--info-text);border-color:var(--info-line)}
+
+/* — Card — */
+.card{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);
+  transition:transform var(--dur-base) var(--ease-out),box-shadow var(--dur-base)}
+.card:hover{transform:translateY(-4px);box-shadow:var(--e-3)}
+.card__hd{padding:18px 18px 0;display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.card__t{font:600 19px/1.2 var(--font-display);letter-spacing:-.018em}
+.card__m{font:400 11.5px/1.3 var(--font-data);color:var(--text-dim);margin-top:4px}
+.card__dates{display:flex;gap:24px;flex-wrap:wrap;padding:16px 18px 0;margin:0}
+.card__dates dt{font:500 9.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-faint)}
+.card__dates dd{margin:4px 0 0;font:400 14px/1 var(--font-data);font-variant-numeric:tabular-nums}
+.card__dates dd.due{color:var(--danger-text);font-weight:700}
+.card__band{display:grid;grid-template-columns:repeat(4,1fr);margin-top:16px;border-top:1px solid var(--border-hairline)}
+.card__band button{all:unset;cursor:pointer;text-align:center;padding:13px 4px;min-height:var(--tap-min);box-sizing:border-box;
+  font:500 10px/1 var(--font-data);letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
+  border-right:1px solid var(--border-hairline);transition:background var(--dur-fast),color var(--dur-fast);display:grid;place-items:center}
+.card__band button:last-child{border-right:none}
+.card__band button:hover{background:var(--accent-wash);color:var(--accent-text)}
+.card__band button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:-2px}
+
+/* — Table — */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised);border-radius:var(--r-md);overflow:hidden}
+.tbl th{font:500 9.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;
+  padding:12px 13px;border-bottom:1px solid var(--border-strong);background:var(--bg-inset);white-space:nowrap}
+.tbl th.n,.tbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.tbl td{padding:11px 13px;border-bottom:1px solid var(--border-hairline)}
+.tbl tbody tr:hover{background:var(--accent-wash)}
+.tbl tr.is-sel{background:var(--accent-wash);box-shadow:inset 3px 0 0 var(--accent-line)}
+.tbl tr.is-flag td:first-child{box-shadow:inset 3px 0 0 var(--danger-fill)}
+.tbl tfoot td{font-family:var(--font-data);font-weight:700;border-top:2px solid var(--border-strong);border-bottom:none;background:var(--bg-inset)}
+
+/* — Tabs / segmented — */
+.tabs{display:inline-flex;gap:3px;padding:3px;background:var(--bg-inset);border-radius:var(--r-pill)}
+.tabs button{all:unset;cursor:pointer;padding:8px 16px;min-height:34px;box-sizing:border-box;display:grid;place-items:center;
+  font:500 10.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);border-radius:var(--r-pill);
+  transition:background var(--dur-fast),color var(--dur-fast)}
+.tabs button:hover{color:var(--text)}
+.tabs button[aria-selected=true]{background:var(--bg-surface-raised);color:var(--text);box-shadow:var(--e-1);font-weight:700}
+.tabs button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px}
+
+/* — Progress — */
+.bar{height:6px;border-radius:var(--r-pill);background:var(--border);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:var(--r-pill);background:var(--info-fill);transition:width var(--dur-slow) var(--ease-out)}
+.bar i.acc{background:linear-gradient(90deg,var(--c-apricot-300),var(--c-apricot-500))}
+.bar i.ok{background:var(--success-fill)}
+
+/* — Banner — */
+.ban{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;
+  padding:15px 17px;border-radius:var(--r-md);border:1px solid var(--border);background:var(--bg-surface-raised)}
+.ban b{display:block;font:600 14px/1.3 var(--font-body);margin-bottom:3px}
+.ban p{margin:0;font-size:12.5px;color:var(--text-dim);max-width:60ch}
+.ban--info{border-color:rgba(34,124,157,.4);background:var(--info-wash)}
+.ban--ok{border-color:rgba(18,164,151,.45);background:var(--success-wash)}
+.ban--warn{border-color:var(--accent-line);background:var(--accent-wash)}
+.ban--danger{border-color:rgba(240,76,84,.45);background:var(--danger-wash)}
+
+/* — Menu — */
+.menu{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--e-3);padding:6px;min-width:212px}
+.menu button{all:unset;display:flex;justify-content:space-between;gap:16px;width:100%;box-sizing:border-box;cursor:pointer;
+  padding:9px 11px;border-radius:var(--r-sm);font-size:13px;color:var(--text)}
+.menu button:hover{background:var(--accent-wash);color:var(--accent-text)}
+.menu button.dgr:hover{background:var(--danger-wash);color:var(--danger-text)}
+.menu button kbd{font:400 10px/1 var(--font-data);color:var(--text-faint);border:1px solid var(--border);border-radius:var(--r-xs);padding:3px 5px}
+.menu hr{border:none;border-top:1px solid var(--border-hairline);margin:6px 4px}
+.menu .sec{font:500 9px/1 var(--font-data);letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);padding:9px 11px 5px}
+
+/* — Tooltip — */
+.tip{display:inline-block;background:var(--bg-shell);color:var(--text-invert);font-size:12px;padding:7px 11px;border-radius:var(--r-sm);box-shadow:var(--e-2)}
+
+/* — Empty / drop — */
+.empty{border:2px dashed var(--border-strong);border-radius:var(--r-xl);padding:40px 24px;text-align:center;background:rgba(255,255,255,.5)}
+.empty h4{font:600 17px/1.2 var(--font-display);margin:0 0 6px}
+.empty p{margin:0 0 16px;font-size:12.5px;color:var(--text-dim)}
+.empty.is-hot{border-style:solid;border-color:var(--accent-line);background:var(--accent-wash)}
+
+/* — Shell bits — */
+.topnav{background:var(--bg-shell);color:var(--text-invert);display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-radius:var(--r-md)}
+.topnav nav{display:flex;gap:18px;font:500 10.5px/1 var(--font-data);letter-spacing:.09em;text-transform:uppercase;color:var(--text-invert-dim)}
+.topnav nav b{color:var(--text-invert);position:relative}
+.topnav nav b::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:2px;background:var(--accent-fill);border-radius:var(--r-pill)}
+.cmdbar{background:var(--bg-shell);border:1px solid var(--border-invert);border-radius:var(--r-pill);padding:9px 18px;display:flex;align-items:center;gap:12px;
+  font:400 12.5px/1 var(--font-data);color:var(--text-invert-dim);box-shadow:var(--e-4)}
+.cmdbar .slash{color:var(--accent-fill);font-weight:700}
+.cmdbar kbd{border:1px solid var(--border-invert);border-radius:var(--r-xs);padding:3px 6px;font-size:10px}
+.avatar{width:28px;height:28px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 11px/1 var(--font-data);color:#fff}
+
+/* — swatches — */
+.sw{border-radius:var(--r-md);padding:14px;min-height:96px;display:flex;flex-direction:column;justify-content:flex-end}
+.sw b{font:600 13px/1 var(--font-display)}
+.sw code{font:400 10.5px/1.6 var(--font-data);opacity:.75;display:block}
+.scale{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px}
+.scale div{height:62px;border-radius:var(--r-sm);display:flex;align-items:flex-end;padding:7px;font:400 9.5px/1 var(--font-data)}
+.spec{font:400 11.5px/1.5 var(--font-data);color:var(--text-invert-faint);margin-top:7px}
+.tokrow{display:grid;grid-template-columns:160px 1fr;gap:14px;padding:9px 0;border-top:1px solid var(--border-invert);font-size:13px;color:var(--text-invert-dim)}
+.tokrow code{font:400 11.5px/1.5 var(--font-data);color:var(--accent-fill)}
+@media(max-width:900px){.doc{grid-template-columns:1fr}.nav{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border-invert)}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<aside class="nav">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" width="24" height="24"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFCB77"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
+    <b>Platter</b>
+  </div>
+  <div class="ver">Design system v1.0</div>
+  <h5>Foundations</h5>
+  <a href="#color">Color</a><a href="#type">Typography</a><a href="#space">Space &amp; radius</a>
+  <a href="#elev">Elevation &amp; motion</a>
+  <h5>Components</h5>
+  <a href="#btn">Buttons</a><a href="#form">Fields &amp; controls</a><a href="#chip">Chips &amp; status</a>
+  <a href="#card">Cards</a><a href="#table">Tables</a><a href="#navc">Tabs, menus, tooltips</a>
+  <a href="#feed">Banners &amp; progress</a><a href="#empty">Empty &amp; drop</a><a href="#shell">Shell &amp; command bar</a>
+  <h5>Patterns</h5>
+  <a href="#prov">Provenance row</a><a href="#a11y">Accessibility</a>
+</aside>
+
+<main>
+  <div class="page-hd">
+    <p class="eyebrow">Cerulean &amp; Apricot · v1.0</p>
+    <h1>Design system</h1>
+    <p>Every component here is built from semantic tokens, never raw hex. That's what makes the next palette change a one-file edit instead of a rebuild — which we've now proven once.</p>
+  </div>
+
+<!-- ══ COLOR ══ -->
+<section id="color">
+  <h2>Color</h2>
+  <p class="sub">Two layers. Primitives are raw ramps. Semantic tokens name a <em>job</em>, and components only ever reference those.</p>
+
+  <h3 class="grp">Primitive ramps</h3>
+  <div class="grid g2">
+    <div><span class="cap" style="color:var(--text-invert-faint)">Cerulean</span><div class="scale">
+      <div style="background:#0E1F27;color:#fff">900</div><div style="background:#16303B;color:#fff">800</div><div style="background:#22485A;color:#fff">700</div>
+      <div style="background:#1A6480;color:#fff">600</div><div style="background:#227C9D;color:#fff">500</div><div style="background:#7FB3C7">300</div><div style="background:#DCEAF0">100</div></div></div>
+    <div><span class="cap" style="color:var(--text-invert-faint)">Sea green</span><div class="scale">
+      <div style="background:#0A6B62;color:#fff">700</div><div style="background:#12A497;color:#fff">600</div><div style="background:#17C3B2">500</div><div style="background:#7BDDD3">300</div><div style="background:#DCF6F3">100</div></div></div>
+    <div><span class="cap" style="color:var(--text-invert-faint)">Apricot</span><div class="scale">
+      <div style="background:#7A4E08;color:#fff">700</div><div style="background:#D9A23F">600</div><div style="background:#FFCB77">500</div><div style="background:#FFE0AA">300</div><div style="background:#FFF3DE">100</div></div></div>
+    <div><span class="cap" style="color:var(--text-invert-faint)">Grapefruit</span><div class="scale">
+      <div style="background:#A8262D;color:#fff">700</div><div style="background:#F04C54;color:#fff">600</div><div style="background:#FE6D73">500</div><div style="background:#FFAAAE">300</div><div style="background:#FFE5E6">100</div></div></div>
+  </div>
+
+  <h3 class="grp">Semantic tokens</h3>
+  <div class="tokrow"><code>--accent-*</code><span><b style="color:var(--text-invert)">Selection, focus, active tool.</b> Apricot. Never decorative, never a brand flourish — if something is apricot, the user is acting on it.</span></div>
+  <div class="tokrow"><code>--info-*</code><span>Structure, links, primary data series. Cerulean.</span></div>
+  <div class="tokrow"><code>--success-*</code><span>Confirmed, complete, high confidence. Sea green.</span></div>
+  <div class="tokrow"><code>--danger-*</code><span>Bond, mandatory, overdue, low confidence, destructive. Grapefruit.</span></div>
+  <div class="tokrow"><code>--bg-shell-*</code><span>Dark chassis: nav, sidebar, command bar.</span></div>
+  <div class="tokrow"><code>--bg-surface-*</code><span>Light work surfaces: tables, sheets, cards, planroom.</span></div>
+
+  <p class="rule"><b>Each intent has four values, and they are not interchangeable.</b> <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">fill</code> is the bright hue — backgrounds only. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">line</code> is one step darker for hairlines. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">text</code> is the dark shade, the only one legible as type on floral white. <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">wash</code> is the tinted background. Using <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">fill</code> as text is the single most likely way to break this system.</p>
+</section>
+
+<!-- ══ TYPE ══ -->
+<section id="type">
+  <h2>Typography</h2>
+  <p class="sub">Three faces, three jobs. No fourth.</p>
+  <div class="canvas">
+    <div style="font:700 42px/1 var(--font-display);letter-spacing:-.038em">West Henry — 26‑085</div>
+    <div class="spec" style="color:var(--text-dim)">display · Archivo Expanded 700 · −3.8% · project names, page titles</div>
+    <div style="font:600 22px/1.15 var(--font-display);letter-spacing:-.022em;margin-top:22px">Bid package 3A — Concrete</div>
+    <div class="spec" style="color:var(--text-dim)">h2 · Archivo 600 · section headings</div>
+    <p style="font:400 15px/1.55 var(--font-body);max-width:56ch;margin:22px 0 0">Scope narrative, addenda, notes, and everything a person reads at length. Inter at 15px is the baseline for all prose.</p>
+    <div class="spec" style="color:var(--text-dim)">body · Inter 400 · 15px</div>
+    <div style="font:400 16px/1.3 var(--font-data);font-variant-numeric:tabular-nums;margin-top:22px">03&#8202;30&#8202;00 &nbsp; $1,284,500.00 &nbsp; 09/14/26 &nbsp; +4.2%</div>
+    <div class="spec" style="color:var(--text-dim)">data · JetBrains Mono · tabular figures</div>
+    <div style="font:500 9.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-top:22px">Submission due</div>
+    <div class="spec" style="color:var(--text-dim)">label · JetBrains Mono 500 · +0.12em · uppercase · every field label in the app</div>
+  </div>
+  <p class="rule"><b>Every number is monospaced and tabular.</b> CSI codes, money, dates, quantities, percentages, confidence scores. Column alignment is a correctness feature in estimating, not a stylistic preference.</p>
+</section>
+
+<!-- ══ SPACE ══ -->
+<section id="space">
+  <h2>Space &amp; radius</h2>
+  <p class="sub">4px base. Radius scales with the size of the thing — a chip and a modal don't share a corner.</p>
+  <div class="canvas">
+    <span class="cap">Radius</span>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end">
+      <div style="width:88px;height:74px;background:var(--bg-inset);border-radius:5px;display:grid;place-items:end center;padding-bottom:8px;font:400 10px/1 var(--font-data);color:var(--text-dim)">xs · 5</div>
+      <div style="width:88px;height:74px;background:var(--bg-inset);border-radius:8px;display:grid;place-items:end center;padding-bottom:8px;font:400 10px/1 var(--font-data);color:var(--text-dim)">sm · 8</div>
+      <div style="width:88px;height:74px;background:var(--bg-inset);border-radius:12px;display:grid;place-items:end center;padding-bottom:8px;font:400 10px/1 var(--font-data);color:var(--text-dim)">md · 12</div>
+      <div style="width:88px;height:74px;background:var(--bg-inset);border-radius:16px;display:grid;place-items:end center;padding-bottom:8px;font:400 10px/1 var(--font-data);color:var(--text-dim)">lg · 16</div>
+      <div style="width:88px;height:74px;background:var(--bg-inset);border-radius:22px;display:grid;place-items:end center;padding-bottom:8px;font:400 10px/1 var(--font-data);color:var(--text-dim)">xl · 22</div>
+      <div style="width:88px;height:74px;background:var(--bg-inset);border-radius:999px;display:grid;place-items:end center;padding-bottom:8px;font:400 10px/1 var(--font-data);color:var(--text-dim)">pill</div>
+    </div>
+    <p style="font-size:12.5px;color:var(--text-dim);margin:16px 0 0">xs insets and dots · sm fields · md tables, panels, menus · lg cards and frames · xl modals, stages, drop zones · pill chips, tags, buttons, progress.</p>
+    <span class="cap" style="margin-top:26px">Space scale</span>
+    <div style="display:flex;gap:6px;align-items:flex-end">
+      <div style="width:4px;height:4px;background:var(--info-fill);border-radius:2px"></div><div style="width:8px;height:8px;background:var(--info-fill);border-radius:2px"></div>
+      <div style="width:12px;height:12px;background:var(--info-fill);border-radius:2px"></div><div style="width:16px;height:16px;background:var(--info-fill);border-radius:2px"></div>
+      <div style="width:24px;height:24px;background:var(--info-fill);border-radius:3px"></div><div style="width:32px;height:32px;background:var(--info-fill);border-radius:4px"></div>
+      <div style="width:40px;height:40px;background:var(--info-fill);border-radius:5px"></div><div style="width:56px;height:56px;background:var(--info-fill);border-radius:6px"></div>
+      <div style="width:72px;height:72px;background:var(--info-fill);border-radius:7px"></div>
+    </div>
+    <p style="font-size:12.5px;color:var(--text-dim);margin:12px 0 0">4 · 8 · 12 · 16 · 24 · 32 · 40 · 56 · 72</p>
+  </div>
+</section>
+
+<!-- ══ ELEVATION ══ -->
+<section id="elev">
+  <h2>Elevation &amp; motion</h2>
+  <p class="sub">Shadows are warm-tinted, never neutral grey — a cool shadow on floral white reads as dirt.</p>
+  <div class="canvas">
+    <div class="grid g3">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:var(--e-1)"><b style="font:600 13px var(--font-display)">e-1</b><div style="font:400 11.5px var(--font-data);color:var(--text-dim);margin-top:4px">resting cards, inputs</div></div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:var(--e-2)"><b style="font:600 13px var(--font-display)">e-2</b><div style="font:400 11.5px var(--font-data);color:var(--text-dim);margin-top:4px">tooltips, hover</div></div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:var(--e-3)"><b style="font:600 13px var(--font-display)">e-3</b><div style="font:400 11.5px var(--font-data);color:var(--text-dim);margin-top:4px">menus, lifted cards</div></div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:var(--e-4)"><b style="font:600 13px var(--font-display)">e-4</b><div style="font:400 11.5px var(--font-data);color:var(--text-dim);margin-top:4px">modals, command bar</div></div>
+    </div>
+  </div>
+  <p class="rule"><b>Motion:</b> 120ms for color and state, 180ms for movement and reveal, 240ms for layout shifts. Easing is <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">cubic-bezier(.2,.7,.3,1)</code> for anything entering. All durations collapse to 0 under reduced-motion.</p>
+</section>
+
+<!-- ══ BUTTONS ══ -->
+<section id="btn">
+  <h2>Buttons</h2>
+  <p class="sub">Labels state the outcome. "Save changes," never "Submit." An action keeps its verb through the whole flow.</p>
+  <div class="canvas">
+    <span class="cap">Variants</span>
+    <div class="stack">
+      <button class="btn btn--primary">Create draft project</button>
+      <button class="btn btn--accent">Confirm</button>
+      <button class="btn">Add more files</button>
+      <button class="btn btn--ghost">Cancel</button>
+      <button class="btn btn--danger">Reject bid</button>
+    </div>
+    <span class="cap" style="margin-top:26px">Sizes &amp; states</span>
+    <div class="stack">
+      <button class="btn btn--sm">Small</button>
+      <button class="btn">Medium</button>
+      <button class="btn btn--lg">Large · 44px tap</button>
+      <button class="btn" disabled>Disabled</button>
+      <button class="btn btn--primary"><span class="spin"></span>Parsing</button>
+      <button class="btn btn--icon" aria-label="More">⋯</button>
+    </div>
+  </div>
+  <p class="rule"><b>One primary per view.</b> Accent buttons mean "confirm this specific thing" and appear inline in review flows — they're the button form of selection. Danger is reserved for destructive or rejecting actions.</p>
+</section>
+
+<!-- ══ FORM ══ -->
+<section id="form">
+  <h2>Fields &amp; controls</h2>
+  <p class="sub">Labels are mono uppercase — they read as instrument markings and never compete with the value.</p>
+  <div class="canvas">
+    <div class="grid g2">
+      <div>
+        <div class="f"><label>Project name</label><input placeholder="Leave blank to fill from documents"><div class="hint">Anything typed here overrides the parse.</div></div>
+        <div class="f is-error"><label>Bid due</label><input value="09/31/26"><div class="err">September has 30 days. Check the ITB.</div></div>
+        <div class="f is-ok"><label>Project number</label><input value="26-085"></div>
+      </div>
+      <div>
+        <div class="f"><label>Package budget</label><input class="num" value="1,284,500.00"></div>
+        <div class="f"><label>Delivery method</label><select><option>Hard bid</option><option>CM at risk</option><option>Design-build</option></select></div>
+        <div class="f"><label>Synced from Procore</label><input value="26-085 West Henry" disabled></div>
+        <div class="stack" style="margin-top:4px">
+          <span class="tog on"></span><span style="font-size:13px">Require bond</span>
+          <span class="chk on" style="margin-left:18px">✓</span><span style="font-size:13px">Mandatory site walk</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="rule"><b>Errors explain and instruct.</b> They name what's wrong and what to do — never "invalid input," never an apology, never a code.</p>
+</section>
+
+<!-- ══ CHIPS ══ -->
+<section id="chip">
+  <h2>Chips &amp; status</h2>
+  <div class="canvas">
+    <span class="cap">Chips</span>
+    <div class="stack">
+      <span class="chip">Neutral</span>
+      <span class="chip chip--accent">Selected</span>
+      <span class="chip chip--info">Specifications</span>
+      <span class="chip chip--ok">Confirmed</span>
+      <span class="chip chip--danger">Bond 100%</span>
+      <span class="chip chip--solid">Draft</span>
+      <span class="chip chip--info">Concrete <span class="x">✕</span></span>
+    </div>
+    <span class="cap" style="margin-top:26px">Project lifecycle</span>
+    <div class="stack">
+      <span class="st st--draft"><i></i>Draft</span>
+      <span class="st"><i></i>Scoping</span>
+      <span class="st st--bid"><i></i>Bidding</span>
+      <span class="st st--bid"><i></i>Leveling</span>
+      <span class="st"><i></i>Submitted</span>
+      <span class="st st--won"><i></i>Awarded</span>
+      <span class="st st--lost"><i></i>Lost</span>
+    </div>
+    <span class="cap" style="margin-top:26px">Confidence</span>
+    <div class="stack" style="font:400 13px var(--font-data)">
+      <span><span class="dot dot--hi"></span> 0.94 high</span>
+      <span style="margin-left:14px"><span class="dot dot--mid"></span> 0.78 medium</span>
+      <span style="margin-left:14px"><span class="dot dot--lo"></span> 0.61 low</span>
+      <span style="margin-left:14px"><span class="dot dot--none"></span> not found</span>
+    </div>
+  </div>
+  <p class="rule"><b>Thresholds are fixed at 0.90 and 0.70</b> so the dot means the same thing on a parsed date, a parsed sub quote, and a proposed package. Consistency here is what lets a user learn the vocabulary once.</p>
+</section>
+
+<!-- ══ CARD ══ -->
+<section id="card">
+  <h2>Cards</h2>
+  <p class="sub">The project card is the app's most-seen object. Hover it — the lift is the same gesture as the logo.</p>
+  <div class="canvas">
+    <article class="card" style="max-width:520px">
+      <div class="card__hd">
+        <div><div class="card__t">West Henry Logistics</div><div class="card__m">26-085 · Ocala, FL</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+          <span class="st st--bid"><i></i>Bidding</span><span class="chip chip--danger">Bond 100%</span>
+        </div>
+      </div>
+      <dl class="card__dates">
+        <div><dt>ITB out</dt><dd>08/04</dd></div>
+        <div><dt>Site walk</dt><dd>08/21 M</dd></div>
+        <div><dt>Bids due</dt><dd class="due">09/14</dd></div>
+        <div><dt>Packages</dt><dd>17</dd></div>
+      </dl>
+      <div class="card__band"><button>Budget</button><button>Invite</button><button>Log</button><button>Planroom</button></div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ TABLE ══ -->
+<section id="table">
+  <h2>Tables</h2>
+  <p class="sub">Bid tabs and budgets are the densest surfaces in the app. Numbers right-aligned, tabular, mono.</p>
+  <div class="canvas">
+    <table class="tbl">
+      <thead><tr><th>Code</th><th>Package</th><th>Low bidder</th><th class="n">Bid</th><th class="n">Budget</th><th class="n">Δ</th></tr></thead>
+      <tbody>
+        <tr><td class="n">3A</td><td>Concrete</td><td>Bayline Concrete</td><td class="n">1,284,500</td><td class="n">1,350,000</td><td class="n" style="color:var(--success-text)">−65,500</td></tr>
+        <tr class="is-sel"><td class="n">5A</td><td>Structural Steel</td><td>Gulf Steel Erectors</td><td class="n">2,140,000</td><td class="n">1,980,000</td><td class="n" style="color:var(--danger-text)">+160,000</td></tr>
+        <tr class="is-flag"><td class="n">9A</td><td>Drywall &amp; Framing</td><td colspan="3" style="color:var(--danger-text);font-size:12.5px">No bids received — plug required</td></tr>
+        <tr><td class="n">26A</td><td>Electrical</td><td>Meridian Electric</td><td class="n">3,410,750</td><td class="n">3,500,000</td><td class="n" style="color:var(--success-text)">−89,250</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="3">Total · 4 of 17 packages</td><td class="n">6,835,250</td><td class="n">6,830,000</td><td class="n">+5,250</td></tr></tfoot>
+    </table>
+  </div>
+  <p class="rule"><b>Row state is carried on the left edge,</b> not by filling the whole row — apricot inset for selection, grapefruit for flagged. Fills would fight the numbers, which are what the user is actually reading.</p>
+</section>
+
+<!-- ══ NAV COMPONENTS ══ -->
+<section id="navc">
+  <h2>Tabs, menus, tooltips</h2>
+  <div class="canvas">
+    <span class="cap">Segmented</span>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true">CSI 2026</button>
+      <button role="tab" aria-selected="false">16 division</button>
+      <button role="tab" aria-selected="false">By package</button>
+    </div>
+    <div class="grid g2" style="margin-top:26px">
+      <div><span class="cap">Context menu · right-click</span>
+        <div class="menu">
+          <div class="sec">Row</div>
+          <button>Insert row above<kbd>⌥↑</kbd></button>
+          <button>Duplicate<kbd>⌘D</kbd></button>
+          <button>Add note<kbd>N</kbd></button>
+          <hr>
+          <div class="sec">Column</div>
+          <button>Hide column</button>
+          <button>Show all columns</button>
+          <hr>
+          <button class="dgr">Delete row<kbd>⌫</kbd></button>
+        </div>
+      </div>
+      <div><span class="cap">Tooltip</span>
+        <div class="tip">4400 SW 20th Ave, Ocala FL 34474</div>
+        <p style="font-size:12.5px;color:var(--text-dim);margin-top:14px;max-width:40ch">Tooltips carry information that didn't fit, never a restatement of a visible label. Dark on light, always.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEEDBACK ══ -->
+<section id="feed">
+  <h2>Banners &amp; progress</h2>
+  <div class="canvas">
+    <div class="grid" style="gap:12px">
+      <div class="ban ban--info"><div><b>Addendum 03 issued</b><p>Two dates changed. Review before your next ITB send.</p></div><button class="btn btn--sm">Review</button></div>
+      <div class="ban ban--ok"><div><b>17 packages created</b><p>Folders provisioned in SharePoint and scope worksheets seeded.</p></div></div>
+      <div class="ban ban--warn"><div><b>Partial parse — specifications stopped at page 812</b><p>Divisions 00–22 were read. Packages in 23–33 may be missing.</p></div><button class="btn btn--sm btn--accent">Resume</button></div>
+      <div class="ban ban--danger"><div><b>Addendum_03.pdf couldn't be read</b><p>The file is password protected. Nothing else is blocked.</p></div><button class="btn btn--sm">Enter password</button></div>
+    </div>
+    <span class="cap" style="margin-top:26px">Progress</span>
+    <div style="max-width:340px;display:grid;gap:12px">
+      <div class="bar"><i style="width:64%"></i></div>
+      <div class="bar"><i class="acc" style="width:38%"></i></div>
+      <div class="bar"><i class="ok" style="width:100%"></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EMPTY ══ -->
+<section id="empty">
+  <h2>Empty &amp; drop</h2>
+  <p class="sub">An empty screen is an invitation to act, never an apology for having nothing.</p>
+  <div class="canvas">
+    <div class="grid g2">
+      <div class="empty"><h4>No projects yet</h4><p>Drop RFP documents and Platter will fill in what it can.</p><button class="btn btn--primary">New project</button></div>
+      <div class="empty is-hot"><h4 style="color:var(--accent-text)">Release to add 34 files</h4><p style="color:var(--accent-text)">Whole folders are accepted — structure is preserved</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SHELL ══ -->
+<section id="shell">
+  <h2>Shell &amp; command bar</h2>
+  <div class="canvas dark" style="display:grid;gap:20px">
+    <div class="topnav" style="border:1px solid var(--border-invert)">
+      <div style="display:flex;align-items:center;gap:22px">
+        <div style="display:flex;align-items:center;gap:9px;font:700 15px/1 var(--font-display);letter-spacing:-.04em">
+          <svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="l2" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFCB77"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#l2)"/></g></svg>
+          Platter</div>
+        <nav><b>Files</b><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav>
+      </div>
+      <div class="avatar">JL</div>
+    </div>
+    <div><span class="cap">Command bar · rest</span>
+      <div class="cmdbar"><span class="slash">/</span><span>Type a command or a project number</span><span style="margin-left:auto"><kbd>esc</kbd></span></div>
+    </div>
+    <div><span class="cap">Command bar · matching</span>
+      <div class="cmdbar" style="border-color:var(--accent-line)"><span class="slash">/</span><span style="color:var(--text-invert)">WH budget</span>
+        <span style="margin-left:auto;display:flex;gap:8px"><span class="chip chip--accent" style="border-color:var(--accent-line)">26-085 → Budget</span><kbd>↵</kbd></span></div>
+    </div>
+    <div><span class="cap">Command bar · no match</span>
+      <div class="cmdbar" style="border-color:rgba(240,76,84,.5)"><span style="color:var(--danger-fill);font-weight:700">/</span><span>qqq</span><span style="margin-left:auto;color:var(--danger-fill)">Not recognized</span></div>
+    </div>
+  </div>
+  <p class="rule"><b>The command bar reads from a registry,</b> not a hardcoded list. Every action in the app registers <code style="color:var(--accent-fill);font-family:var(--font-data);font-size:12px">{id, label, keywords, scope, run()}</code>, and context menus and keyboard shortcuts read from the same source. On iPad the registry opens as a sheet from a floating glyph instead.</p>
+</section>
+
+<!-- ══ PROVENANCE ══ -->
+<section id="prov">
+  <h2>Provenance row</h2>
+  <p class="sub">The signature pattern. Any AI-derived value anywhere in Platter uses this shape — parsed project fields, parsed sub quotes, proposed packages, spec references.</p>
+  <div class="canvas" style="padding:10px">
+    <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span>
+      <div><div class="val">4400 SW 20th Ave, Ocala FL 34474</div><div class="src">address · <u>ITB_Rev2.pdf p.1</u> · 0.94</div></div>
+      <span class="chip chip--ok">Confirmed</span></div>
+    <div class="prov is-sel"><span class="dot dot--mid" style="margin-top:5px"></span>
+      <div><div class="val">09/14/26 · 2:00 PM ET</div><div class="src">submission_due · <u>Addendum_02.pdf p.1</u> · 0.88 · supersedes ITB</div></div>
+      <button class="btn btn--sm btn--accent">Confirm</button></div>
+    <div class="prov"><span class="dot dot--lo" style="margin-top:5px"></span>
+      <div><div class="val">Liquidated damages — $2,500/day</div><div class="src">liquidated_damages · <u>Div 00 52 00 p.7</u> · <b style="color:var(--danger-text)">0.61</b> · scanned source</div></div>
+      <button class="btn btn--sm">Review</button></div>
+    <div class="prov"><span class="dot dot--none" style="margin-top:5px"></span>
+      <div><div class="val" style="color:var(--text-dim)">Architect of record</div><div class="src">Searched ITB, Div 00, title blocks · no match</div></div>
+      <button class="btn btn--sm btn--ghost">Enter manually</button></div>
+  </div>
+  <p class="rule"><b>Four parts, always in this order:</b> confidence dot, the value, the source citation, the action. The citation is a live link — clicking it opens the document at that page with the region highlighted. That gesture is the product's trust mechanism, so it's a component, not a screen.</p>
+</section>
+
+<!-- ══ A11Y ══ -->
+<section id="a11y">
+  <h2>Accessibility floor</h2>
+  <div class="canvas">
+    <table class="tbl">
+      <thead><tr><th>Requirement</th><th>Rule</th></tr></thead>
+      <tbody>
+        <tr><td>Body text contrast</td><td>4.5:1 minimum. Only <code style="font:400 11.5px var(--font-data);color:var(--info-text)">*-text</code> shades on floral white — never a <code style="font:400 11.5px var(--font-data);color:var(--info-text)">*-fill</code>.</td></tr>
+        <tr><td>Focus</td><td>Never removed. 2px apricot ring, 2px offset, visible on both shell and surface.</td></tr>
+        <tr><td>Touch targets</td><td>44px minimum on iPad. Card band buttons and <code style="font:400 11.5px var(--font-data);color:var(--info-text)">.btn--lg</code> meet it; <code style="font:400 11.5px var(--font-data);color:var(--info-text)">.btn--sm</code> is desktop-only.</td></tr>
+        <tr><td>Color alone</td><td>Never the sole signal. Confidence has a dot <em>and</em> a number. Flags have a chip <em>and</em> a label.</td></tr>
+        <tr><td>Motion</td><td>All durations collapse to 0 under <code style="font:400 11.5px var(--font-data);color:var(--info-text)">prefers-reduced-motion</code>.</td></tr>
+        <tr><td>Daylight</td><td>Work surfaces are light by default — this gets used on a jobsite iPad in sun.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p class="rule" style="margin-top:64px;border-left-width:3px"><b>How to extend this.</b> Add a component only when a pattern appears three times. Build it from semantic tokens exclusively — if you find yourself needing a raw hex, the token set is missing something, and that's the thing to fix. Every new component needs its hover, focus, disabled, loading, empty and error states defined before it ships, because the ones that get skipped are always the ones that break.</p>
+
+</main>
+</div>
+</body>
+</html>
