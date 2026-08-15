@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platter — Batch 4 Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(1100px 620px at 86% -10%,rgba(34,124,157,.24),transparent 62%),radial-gradient(820px 520px at 2% 104%,rgba(23,195,178,.1),transparent 60%);background-attachment:fixed}
+.doc{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.rail{border-right:1px solid var(--border-invert);padding:24px 0 80px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.rail .brand{display:flex;align-items:center;gap:10px;padding:0 20px 22px}
+.rail .brand b{font:700 20px/1 var(--font-display);letter-spacing:-.04em}
+.rail h4{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:16px 20px 8px;margin:0}
+.rail a{display:block;padding:8px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:14px;border-left:2px solid transparent}
+.rail a:hover{color:var(--text-invert);background:var(--bg-shell-raised)}
+.rail a.on{color:var(--text-invert);border-left-color:var(--accent-fill);background:var(--bg-shell-raised)}
+.rail a i{font-style:normal;font:400 11px var(--font-data);color:var(--accent-fill);margin-right:8px}
+main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
+.hdr{border-bottom:1px solid var(--border-invert);padding-bottom:22px}
+.eyebrow{font:500 10.5px/1 var(--font-data);letter-spacing:.15em;text-transform:uppercase;color:var(--accent-fill);margin:0 0 9px}
+.hdr h1{font:700 clamp(32px,5.2vw,49px)/1 var(--font-display);letter-spacing:-.035em;margin:0}
+.hdr p{color:var(--text-invert-dim);max-width:68ch;margin:14px 0 0}
+.hdr .flag{margin-top:16px;display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border-invert);border-left:2px solid var(--danger-fill);border-radius:var(--r-sm);background:var(--bg-shell-raised);max-width:68ch;font-size:12.5px;color:var(--text-invert-dim)}
+.hdr .flag b{color:var(--text-invert)}
+.screen{margin-top:62px;scroll-margin-top:20px}
+.screen>header{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--border-invert);padding-bottom:12px;margin-bottom:16px}
+.screen>header .no{font:400 12px var(--font-data);color:var(--accent-fill)}
+.screen>header h2{font:600 22px/1.1 var(--font-display);letter-spacing:-.02em;margin:0}
+.screen>header .job{color:var(--text-invert-dim);font-size:13px;flex-basis:100%;max-width:74ch}
+.screen>header .reg{font:500 9.5px/1 var(--font-data);letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:var(--r-xs);flex:none}
+.reg--int{background:var(--info-wash);color:var(--info-text)}
+.reg--ext{background:var(--danger-wash);color:var(--danger-text)}
+.tabs{display:flex;gap:3px;flex-wrap:wrap;margin:0 0 14px;padding:3px;background:var(--bg-shell-raised);border-radius:var(--r-pill);width:fit-content}
+.tabs button{all:unset;cursor:pointer;padding:7px 15px;font:500 10.5px/1 var(--font-data);letter-spacing:.07em;text-transform:uppercase;color:var(--text-invert-dim);border-radius:var(--r-pill)}
+.tabs button:hover{color:var(--text-invert)}
+.tabs button[aria-selected=true]{background:var(--accent-fill);color:var(--accent-on);font-weight:700}
+.tabs button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.frame{background:var(--bg-surface);color:var(--text);border-radius:var(--r-xl);overflow:hidden;position:relative;box-shadow:var(--e-3)}
+.state{display:none}.state.on{display:block}
+.body{padding:22px}
+.ann{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 26px}
+.ann ol{margin:0;padding:0}
+.ann li{list-style:none;display:grid;grid-template-columns:22px 1fr;gap:9px;padding:8px 0;font-size:13px;color:var(--text-invert-dim);border-top:1px solid var(--border-invert)}
+.ann b{color:var(--text-invert);font-weight:600}
+.pin{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--accent-fill);color:var(--accent-on);font:700 10px var(--font-data);margin-top:1px}
+.pin.onf{position:absolute;z-index:6;box-shadow:0 0 0 2.5px var(--bg-surface),0 2px 6px rgba(14,31,39,.3)}
+.callout{border-left:2px solid var(--accent-line);padding:2px 0 2px 16px;margin:26px 0 0;color:var(--text-invert-dim);font-size:14px;max-width:74ch}
+.callout b{color:var(--text-invert)}
+.lbl{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
+
+/* ── internal app chrome (reused from Batch 3, 4.1/4.2 only) ── */
+.topnav{background:var(--bg-shell);color:var(--text-invert);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:11px 18px;gap:16px}
+.topnav .left{display:flex;gap:10px;align-items:center}
+.topnav .center{display:flex;gap:12px;align-items:center;justify-self:center}
+.topnav .right{display:flex;gap:16px;align-items:center;justify-self:end}
+.topnav .logo{display:flex;align-items:center;gap:8px}
+.topnav .crumb{font:400 11px/1 var(--font-data);color:var(--text-invert-faint)}
+.topnav .pname{font:600 15px/1 var(--font-display);letter-spacing:-.02em}
+.topnav nav{display:flex;gap:17px;font:500 10.5px/1 var(--font-data);letter-spacing:.09em;text-transform:uppercase;color:var(--text-invert-dim)}
+.avatar{width:27px;height:27px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 10.5px var(--font-data);color:#fff}
+.wshell{display:grid;grid-template-columns:198px 1fr;min-height:460px}
+.pnav{border-right:1px solid var(--border);padding:14px 0}
+.pnav a{display:flex;align-items:center;gap:9px;padding:9px 16px;font:500 12.5px/1 var(--font-body);color:var(--text-dim);text-decoration:none;border-left:2px solid transparent}
+.pnav a.on{color:var(--text);border-left-color:var(--accent-strong);background:var(--bg-inset);font-weight:600}
+.pnav a:hover{color:var(--text);background:var(--bg-inset)}
+.pnav a .dot2{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;flex:none}
+.pnav a.on .dot2{opacity:1;background:var(--accent-strong)}
+.wmain{padding:20px 22px}
+
+/* ── chip / status (E-29) ── */
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x);border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);white-space:nowrap}
+.chip--acc{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
+.chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
+.chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
+.chip--dgr{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
+.st{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x) var(--chip-pad-y) 11px;border-radius:var(--r-pill);background:var(--bg-inset);color:var(--text-dim)}
+.st i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.st--bid{background:var(--info-wash);color:var(--info-text)}
+.st--ok{background:var(--success-wash);color:var(--success-text)}
+
+/* ── kind badges (scope_line_item.kind) ── */
+.kb{display:inline-flex;align-items:center;font-family:var(--font-display);font-weight:600;font-size:10.5px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:.05em;text-transform:uppercase;
+  padding:4px 9px;border-radius:var(--r-xs);white-space:nowrap}
+.kb--inc{background:var(--success-wash);color:var(--success-text)}
+.kb--exc{background:var(--danger-wash);color:var(--danger-text)}
+.kb--alt{background:var(--info-wash);color:var(--info-text)}
+.kb--allow{background:var(--accent-wash);color:var(--accent-text)}
+.kb--unit{background:var(--bg-inset);color:var(--text-dim)}
+
+/* ── buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 14px/1 var(--font-body);padding:10px 17px;min-height:36px;
+  border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text);cursor:pointer}
+.btn--pri{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
+.btn--acc{background:linear-gradient(135deg,var(--c-apricot-300),var(--accent-strong));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--gh{background:transparent;border-color:transparent;color:var(--text-dim)}
+.btn--sm{padding:6px 13px;min-height:29px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── table ── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised);border-radius:var(--r-md);overflow:hidden}
+.tbl th{font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;
+  padding:11px 12px;border-bottom:1px solid var(--border-strong);background:var(--bg-inset);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border-hairline);vertical-align:top}
+.tbl th.n,.tbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.tbl tbody tr:hover{background:var(--accent-wash)}
+.tbl tr.is-sel{background:var(--accent-wash);box-shadow:inset 3px 0 0 var(--accent-line)}
+.tbl tr.is-err td:first-child{box-shadow:inset 3px 0 0 var(--danger-fill)}
+.tbl tr.is-stale td:first-child{box-shadow:inset 3px 0 0 var(--danger-fill)}
+
+/* ── provenance row ── */
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none}
+.dot--hi{background:var(--success-fill)}.dot--mid{background:var(--accent-fill)}.dot--lo{background:var(--danger-fill)}
+.prov{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:start;padding:11px 12px;
+  border-bottom:1px solid var(--border-hairline);border-left:2px solid transparent}
+.prov:hover{background:var(--bg-surface-raised)}
+.prov .val{font:500 14px/1.35 var(--font-body)}
+.prov .src{font:400 11px/1.4 var(--font-data);color:var(--text-dim);margin-top:4px}
+.prov .src u{text-decoration:none;border-bottom:1px dotted var(--border-strong);cursor:pointer}
+
+/* ── cards ── */
+.card{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);padding:16px}
+.empty{border:2px dashed var(--border-strong);border-radius:var(--r-xl);padding:44px 24px;text-align:center;background:rgba(255,255,255,.5)}
+.empty h4{font:600 18px/1.2 var(--font-display);margin:0 0 6px}
+.empty p{margin:0 0 16px;font-size:12.5px;color:var(--text-dim)}
+.tree{font:400 12.5px/2 var(--font-data)}
+.tree div{color:var(--text-dim)}
+.tree div b{color:var(--text);font-weight:500}
+.tree .row{display:flex;align-items:center;gap:8px;padding:3px 6px;border-radius:var(--r-xs);cursor:pointer}
+.tree .row:hover{background:var(--bg-inset)}
+.tree .row.is-sel{background:var(--accent-wash);color:var(--accent-text)}
+
+/* ── toggle ── */
+.tgl{width:34px;height:20px;border-radius:var(--r-pill);background:var(--border-strong);display:inline-block;position:relative;cursor:pointer;flex:none}
+.tgl::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:var(--e-1)}
+.tgl.on{background:var(--accent-strong)}
+.tgl.on::after{left:16px}
+
+/* ── star rating ── */
+.stars{color:var(--accent-strong);font-size:13px;letter-spacing:1px}
+.stars b{color:var(--text-faint);font-weight:400}
+
+/* ══════════════════════════════════════════════════════════════
+   PLANROOM — separate visual register (R-04 / D-10)
+   Warm paper surface, no dark shell, no internal nav, no avatar
+   account menu. Every screen instead carries a persistent
+   "magic-link, no login" cue so the auth model is legible, not
+   just true in the backend.
+   ══════════════════════════════════════════════════════════════ */
+.plm{background:var(--bg-surface-paper);color:var(--text)}
+.plm-hdr{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid var(--border)}
+.plm-hdr .id{display:flex;align-items:center;gap:11px}
+.plm-hdr .mark{width:26px;height:26px;flex:none}
+.plm-hdr .pj{font:600 15px/1.2 var(--font-display);letter-spacing:-.01em}
+.plm-hdr .addr{font-size:11.5px;color:var(--text-dim);margin-top:1px}
+.plm-hdr .right{display:flex;align-items:center;gap:10px}
+.plm-link{display:inline-flex;align-items:center;gap:6px;font:500 10.5px/1 var(--font-data);letter-spacing:.04em;color:var(--info-text);
+  background:var(--info-wash);border:1px solid rgba(34,124,157,.35);border-radius:var(--r-pill);padding:6px 11px}
+.plm-count{font:700 12.5px/1 var(--font-data);padding:7px 13px;border-radius:var(--r-pill);background:var(--bg-inset);color:var(--text)}
+.plm-count.urgent{background:var(--danger-wash);color:var(--danger-text)}
+.plm-tabs{display:flex;gap:2px;padding:0 22px;border-bottom:1px solid var(--border);background:var(--bg-surface-raised);overflow-x:auto}
+.plm-tabs span{padding:12px 14px;font:500 12px/1 var(--font-body);color:var(--text-dim);border-bottom:2px solid transparent;white-space:nowrap}
+.plm-tabs span.on{color:var(--text);border-color:var(--accent-strong);font-weight:600}
+.plm-main{padding:22px}
+.plm-foot{padding:11px 22px;border-top:1px solid var(--border);font-size:11px;color:var(--text-faint);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+.hero{border-radius:var(--r-lg);overflow:hidden;background:linear-gradient(135deg,var(--c-cerulean-100),var(--c-sea-100));min-height:150px;
+  display:flex;align-items:flex-end;padding:16px}
+.feed-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--border-hairline)}
+.feed-item .lv{width:8px;height:8px;border-radius:50%;background:var(--success-fill);flex:none;margin-top:6px}
+.feed-item b{display:block;font-size:13.5px}
+.feed-item .meta{font:400 11px var(--font-data);color:var(--text-dim);margin-top:3px}
+
+.att{display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border:1px solid var(--border-strong);border-radius:var(--r-sm);font-size:12.5px;background:var(--bg-surface-raised)}
+.att.done{border-color:var(--success-line);background:var(--success-wash);color:var(--success-text)}
+.att.missing{border-color:var(--danger-line);background:var(--danger-wash);color:var(--danger-text)}
+
+.rad{display:flex;align-items:center;gap:11px;padding:12px 13px;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;cursor:pointer}
+.rad.is-sel{border-color:var(--accent-strong);background:var(--accent-wash)}
+.rad i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border-strong);flex:none;display:inline-grid;place-items:center;font-style:normal}
+.rad.is-sel i::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent-strong)}
+
+.qcell{border:1px solid var(--border-strong);border-radius:var(--r-xs);background:var(--bg-surface-raised);padding:6px 9px;font-family:var(--font-data);font-size:12.5px;min-width:64px}
+.qcell.err{border-color:var(--danger-line);background:var(--danger-wash)}
+
+@media(max-width:900px){.doc{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border-invert)}.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<aside class="rail">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
+    <b>Platter</b>
+  </div>
+  <h4>Batch 4 — ITB &amp; planroom</h4>
+  <a href="#s41"><i>4.1</i>ITB tool</a>
+  <a href="#s42"><i>4.2</i>Invite composer</a>
+  <a href="#s43"><i>4.3</i>Planroom — landing</a>
+  <a href="#s44"><i>4.4</i>Planroom — scope</a>
+  <a href="#s45"><i>4.5</i>Planroom — documents</a>
+  <a href="#s46"><i>4.6</i>Planroom — addenda</a>
+  <a href="#s47"><i>4.7</i>Planroom — submit quote</a>
+  <a href="#s48"><i>4.8</i>Planroom — RFI</a>
+  <a href="#s49"><i>4.9</i>Planroom — prequal</a>
+  <a href="#s410"><i>4.10</i>Planroom — no-bid</a>
+  <h4>Done</h4>
+  <a href="#" style="opacity:.4"><i>1.x</i>Intake &amp; parse</a>
+  <a href="#" style="opacity:.4"><i>2.x</i>Dashboard &amp; shell</a>
+  <a href="#" style="opacity:.4"><i>3.x</i>Workspace &amp; scope</a>
+  <h4>Next</h4>
+  <a href="#" style="opacity:.4"><i>5.x</i>Bid tab &amp; budget</a>
+</aside>
+
+<main>
+  <div class="hdr">
+    <p class="eyebrow">Step 1 · Wireframes · Batch 4 of 6</p>
+    <h1>ITB &amp; sub-facing planroom</h1>
+    <p>Priority #2 (D-07): the surface that turns a scoped package into invited bids. 4.1–4.2 are internal — estimator picks bidders and sends invites from inside the app's own chrome. 4.3–4.10 are the planroom itself, opened from a magic link with no account (D-10) — a deliberately separate register, not the internal shell with a new skin (R-04).</p>
+    <div class="flag"><span>⚠</span><span><b>Open question carried in, not resolved here.</b> Field-level privacy/redaction (E-13→E-19) was never specced — see <span class="mono">HANDOFF.md</span>. This batch treats sub-facing visibility only at the <i>package</i> level (Q-09: siloed, invited scope vs. everything else) — screen 4.4's "other scopes collapsed" is that assumption, not a redaction system. No lock/mask affordance is drawn here that isn't backed by a locked decision.</span></div>
+  </div>
+
+<!-- ═══════ 4.1 ═══════ -->
+<section class="screen" id="s41">
+  <header><span class="no">4.1</span><h2>ITB tool</h2><span class="reg reg--int">Internal</span>
+    <span class="job">One job: turn a scoped package into a shortlist of the right subs to invite, with anything stale caught before it's sent.</span></header>
+
+  <div class="tabs" role="tablist" data-g="a">
+    <button role="tab" aria-selected="true" data-t="a1">Package → bidder matching</button>
+    <button role="tab" aria-selected="false" data-t="a2">Sub suggestions by trade/rating</button>
+    <button role="tab" aria-selected="false" data-t="a3">Stale-info warning</button>
+  </div>
+
+  <div class="frame">
+    <div class="topnav">
+      <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n1" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n1)"/></g></svg></div><span class="crumb">/ ITB /</span></div>
+      <div class="center"><span class="pname">West Henry Logistics</span><span class="chip chip--info">26-085</span></div>
+      <div class="right"><nav><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav><div class="avatar">JL</div></div>
+    </div>
+    <div class="wshell">
+      <nav class="pnav">
+        <a href="#"><span class="dot2"></span>Overview</a>
+        <a href="#"><span class="dot2"></span>Scope</a>
+        <a class="on" href="#"><span class="dot2"></span>ITB</a>
+        <a href="#"><span class="dot2"></span>Planroom</a>
+        <a href="#"><span class="dot2"></span>Bid tab</a>
+        <a href="#"><span class="dot2"></span>Budget</a>
+        <a href="#"><span class="dot2"></span>Documents</a>
+      </nav>
+      <div class="wmain">
+
+        <!-- a1 package → bidder matching -->
+        <div class="state on" id="a1" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">1</span>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <span class="chip chip--acc">3A Concrete</span><span class="chip">5A Structural Steel</span><span class="chip">9A Drywall &amp; Framing</span><span class="chip">26A Electrical</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+            <span class="lbl" style="margin:0">Matched to 3A · Concrete — 6 subs</span>
+            <span class="btn btn--sm btn--acc">Invite selected · 4 →</span>
+          </div>
+          <table class="tbl">
+            <thead><tr><th style="width:26px"></th><th>Subcontractor</th><th>Trade match</th><th>Rating</th><th>Last bid w/ LEMA</th></tr></thead>
+            <tbody>
+              <tr class="is-sel"><td><input type="checkbox" checked></td><td>Bayline Concrete</td><td><span class="chip chip--ok">Exact</span></td><td class="stars">★★★★<b>★</b> 4.6</td><td class="mono">6mo ago · won</td></tr>
+              <tr class="is-sel"><td><input type="checkbox" checked></td><td>Marion Ready Mix &amp; Forming</td><td><span class="chip chip--ok">Exact</span></td><td class="stars">★★★★<b>★</b> 4.4</td><td class="mono">2mo ago · lost</td></tr>
+              <tr class="is-sel"><td><input type="checkbox" checked></td><td>Coastal Concrete Group</td><td><span class="chip chip--info">Adjacent</span></td><td class="stars">★★★<b>★★</b> 3.8</td><td class="mono">14mo ago</td></tr>
+              <tr class="is-sel"><td><input type="checkbox" checked></td><td>Suncoast Structural</td><td><span class="chip chip--info">Adjacent</span></td><td class="stars">★★★★<b>★</b> 4.1</td><td class="mono">never</td></tr>
+              <tr><td><input type="checkbox"></td><td>Anchor Concrete Cutting</td><td><span class="chip">Trade only</span></td><td class="stars">★★★<b>★★</b> 3.5</td><td class="mono">never</td></tr>
+              <tr class="is-stale"><td><input type="checkbox"></td><td>Palm Coast Concrete Co.</td><td><span class="chip chip--ok">Exact</span></td><td class="stars">★★★★<b>★</b> 4.7</td><td><span class="chip chip--dgr">Stale info</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- a2 sub suggestions by trade/rating -->
+        <div class="state" id="a2" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">2</span>
+          <div class="lbl" style="margin-bottom:8px">Ranked by rating within trade match</div>
+          <div>
+            <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">Bayline Concrete <span class="stars" style="margin-left:8px">★★★★<b>★</b></span></div><div class="src">Concrete · FL Lic. #CGC1521 · groups: MBE · won 2 of last 3 LEMA bids in this trade</div></div><span class="btn btn--sm">Add</span></div>
+            <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">Marion Ready Mix &amp; Forming <span class="stars" style="margin-left:8px">★★★★<b>★</b></span></div><div class="src">Concrete · FL Lic. #CGC0985 · groups: — · reliable pricer, rarely wins</div></div><span class="btn btn--sm">Add</span></div>
+            <div class="prov"><span class="dot dot--mid" style="margin-top:5px"></span><div><div class="val">Suncoast Structural <span class="stars" style="margin-left:8px">★★★★<b>★</b></span></div><div class="src">Concrete (adjacent) · FL Lic. #CGC1877 · no bid history with LEMA</div></div><span class="btn btn--sm">Add</span></div>
+          </div>
+        </div>
+
+        <!-- a3 stale-info warning -->
+        <div class="state" id="a3" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">3</span>
+          <div class="card" style="border-left:2px solid var(--danger-fill);max-width:560px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+              <div><div style="font:600 15px var(--font-display)">Palm Coast Concrete Co.</div><div style="font-size:12.5px;color:var(--text-dim);margin-top:3px">FL Lic. #CGC0741 — expired 41 days ago</div></div>
+              <span class="chip chip--dgr">Not verified in 14mo</span>
+            </div>
+            <p style="font-size:12.5px;color:var(--text-dim);margin:12px 0 14px">Highest-rated match for 3A, but the license on file lapsed and contact info hasn't been reconfirmed since last year. Inviting is still possible — it's a warning, not a block.</p>
+            <div style="display:flex;gap:8px"><span class="btn btn--sm btn--gh">Skip this sub</span><span class="btn btn--sm">Request re-verification</span><span class="btn btn--sm btn--acc">Invite anyway</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="cmd" style="background:var(--bg-shell);border-top:1px solid rgba(0,0,0,.5);padding:10px 18px;display:flex;align-items:center;gap:12px;font:400 12.5px/1 var(--font-data);color:var(--text-invert-dim)"><span style="color:var(--accent-fill);font-weight:700">/</span> Type a command or a project number</div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Matching is per-package, not project-wide</b> — the chip row switches the trade being matched, so an estimator works one invitation batch at a time.</span></li>
+    <li><span class="pin">2</span><span><b>Trade match has two tiers, exact vs. adjacent,</b> so the list doesn't silently exclude a sub who does the work under a neighboring CSI code.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Stale info surfaces where the decision gets made,</b> not buried in a settings panel — a lapsed license shouldn't require the estimator to already know to go check.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 4.2 ═══════ -->
+<section class="screen" id="s42">
+  <header><span class="no">4.2</span><h2>Invite composer</h2><span class="reg reg--int">Internal</span>
+    <span class="job">One job: send a correct, on-brand invitation to every selected sub in one action, with the sending identity visible.</span></header>
+
+  <div class="tabs" role="tablist" data-g="b">
+    <button role="tab" aria-selected="true" data-t="b1">Template · tagged details</button>
+    <button role="tab" aria-selected="false" data-t="b2">Custom email</button>
+    <button role="tab" aria-selected="false" data-t="b3">Preview</button>
+    <button role="tab" aria-selected="false" data-t="b4">Send confirmation</button>
+  </div>
+
+  <div class="frame"><div class="body">
+    <div class="state on" id="b1" style="position:relative;max-width:620px">
+      <span class="pin onf" style="left:-9px;top:8px">1</span>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><span class="lbl" style="margin:0">Invitation template</span><span style="font-size:11.5px;color:var(--text-dim)">4 recipients · 3A Concrete</span></div>
+      <div class="card" style="font-size:13.5px;line-height:1.7">
+        Hi <span class="chip chip--info" style="padding:2px 7px">{{sub.contact_first}}</span>,<br><br>
+        LEMA is inviting <span class="chip chip--info" style="padding:2px 7px">{{sub.company}}</span> to bid <span class="chip chip--info" style="padding:2px 7px">{{package.code}} {{package.name}}</span> on <span class="chip chip--info" style="padding:2px 7px">{{project.name}}</span>.<br><br>
+        Bids are due <span class="chip chip--info" style="padding:2px 7px">{{dates.bid_due}}</span>. A mandatory site walk is scheduled for <span class="chip chip--info" style="padding:2px 7px">{{dates.site_walk}}</span>.<br><br>
+        Open your planroom: <span class="chip chip--acc" style="padding:2px 7px">[magic link]</span>
+      </div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Tags resolve per recipient at send time — pulled straight from <span class="mono">project</span>, <span class="mono">bid_package</span> and <span class="mono">sub_contact</span>.</p>
+    </div>
+
+    <div class="state" id="b2" style="position:relative;max-width:620px">
+      <span class="pin onf" style="left:-9px;top:8px">2</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span class="tgl on"></span><span style="font-size:13px">Use a custom message instead of the template</span></div>
+      <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--bg-surface-raised);padding:12px;font-size:13px;color:var(--text-faint);min-height:110px">Hi team — following up on our call last week, we'd like you to bid the concrete package on West Henry...</div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Tags still resolve inside custom text — the override replaces tone and framing, not the merge fields.</p>
+    </div>
+
+    <div class="state" id="b3" style="position:relative;max-width:520px">
+      <span class="pin onf" style="left:-9px;top:8px">3</span>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--border-hairline);font-size:12px;color:var(--text-dim)">From: <b style="color:var(--text)">estimating@lemabuilders.com</b> · To: <b style="color:var(--text)">Bayline Concrete</b></div>
+        <div style="padding:18px;font-size:13.5px;line-height:1.7">
+          Hi <b>Marcus</b>,<br><br>LEMA is inviting <b>Bayline Concrete</b> to bid <b>3A Concrete</b> on <b>West Henry Logistics</b>.<br><br>Bids are due <b>Sep 14, 2:00 PM</b>. A mandatory site walk is scheduled for <b>Aug 21</b>.<br><br>
+          <span class="btn btn--acc" style="margin-top:6px">Open your planroom →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="state" id="b4" style="position:relative;max-width:520px">
+      <span class="pin onf" style="left:-9px;top:8px">4</span>
+      <div class="card" style="border-left:2px solid var(--success-line)">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><span class="dot dot--hi"></span><span style="font:600 15px var(--font-display)">4 invitations sent</span></div>
+        <div style="font-size:12.5px;color:var(--text-dim);line-height:1.9">
+          Bayline Concrete · marcus@baylineconcrete.com<br>
+          Marion Ready Mix &amp; Forming · j.tran@marionreadymix.com<br>
+          Coastal Concrete Group · bids@coastalconcrete.com<br>
+          Suncoast Structural · office@suncoaststructural.com
+        </div>
+        <p style="font-size:12px;color:var(--text-dim);margin-top:12px">Sent from the estimating mailbox via Graph <span class="mono">sendMail</span> (D-14) — replies thread back to a real inbox, not a noreply address.</p>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Tags render as chips inline,</b> not raw <span class="mono">{{curly}}</span> syntax the estimator has to trust blindly — what you see is what resolves.</span></li>
+    <li><span class="pin">2</span><span><b>Custom message is an override, not a blank slate</b> — merge tags still work, so a personal note doesn't cost the correct bid-due date.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Preview shows the actual sending identity</b> — an estimator should never be surprised by what a sub receives.</span></li>
+    <li><span class="pin">4</span><span><b>Confirmation lists every recipient by name,</b> because "sent" is a claim worth being able to double-check without opening the mail client.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 4.3 ═══════ -->
+<section class="screen" id="s43">
+  <header><span class="no">4.3</span><h2>Planroom — landing</h2><span class="reg reg--ext">External · planroom</span>
+    <span class="job">One job: land a sub inside the right bid instantly from an email click, with zero login friction — and make it obvious, not just true, that no account exists.</span></header>
+
+  <div class="tabs" role="tablist" data-g="c">
+    <button role="tab" aria-selected="true" data-t="c1">Magic link arrival</button>
+    <button role="tab" aria-selected="false" data-t="c2">Bid instructions</button>
+    <button role="tab" aria-selected="false" data-t="c3">Map + renderings</button>
+    <button role="tab" aria-selected="false" data-t="c4">Countdown · urgent</button>
+  </div>
+
+  <div class="frame plm">
+    <div class="state on" id="c1">
+      <div style="min-height:340px;display:grid;place-items:center;padding:40px 20px;position:relative">
+        <span class="pin onf" style="left:50%;top:20px;transform:translateX(-50%)">1</span>
+        <div style="text-align:center;max-width:340px">
+          <svg viewBox="0 0 64 64" width="34" height="34" style="margin-bottom:16px"><g fill="none" stroke="var(--accent-strong)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg>
+          <div style="font:600 16px var(--font-display);margin-bottom:8px">Verifying your invitation…</div>
+          <div style="font-size:12.5px;color:var(--text-dim)">Opened via emailed link — no password, no account. This link is scoped to Bayline Concrete's invitation on 3A Concrete only.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state" id="c2">
+      <div class="plm-hdr">
+        <div class="id"><svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="var(--accent-strong)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg>
+          <div><div class="pj">West Henry Logistics — Planroom</div><div class="addr">4400 SW 20th Ave, Ocala, FL 34474</div></div></div>
+        <div class="right"><span class="plm-link">🔗 Bayline Concrete · 3A Concrete</span><span class="plm-count">21d 4h left</span></div>
+      </div>
+      <div class="plm-tabs"><span class="on">Scope</span><span>Documents</span><span>Addenda</span><span>Submit quote</span><span>RFI</span><span>Prequal</span></div>
+      <div class="plm-main" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:14px">2</span>
+        <div class="card" style="max-width:520px">
+          <div class="lbl" style="margin-bottom:8px">How to bid this package</div>
+          <ol style="margin:0;padding-left:18px;font-size:13px;line-height:2;color:var(--text)">
+            <li>Review scope and documents for 3A Concrete</li>
+            <li>Acknowledge all addenda before submitting</li>
+            <li>Submit pricing by <b>Sep 14, 2:00 PM</b></li>
+            <li>Attach bond letter and current license</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="state" id="c3">
+      <div class="plm-hdr"><div class="id"><svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="var(--accent-strong)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg><div><div class="pj">West Henry Logistics — Planroom</div><div class="addr">4400 SW 20th Ave, Ocala, FL 34474</div></div></div><div class="right"><span class="plm-count">21d 4h left</span></div></div>
+      <div class="plm-main" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:14px">3</span>
+        <div class="hero"><div style="background:rgba(255,255,255,.85);border-radius:var(--r-sm);padding:6px 11px;font-size:11px;color:var(--text-dim)">site map · 4400 SW 20th Ave</div></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">
+          <div style="height:80px;border-radius:var(--r-sm);background:var(--bg-inset)"></div>
+          <div style="height:80px;border-radius:var(--r-sm);background:var(--bg-inset)"></div>
+          <div style="height:80px;border-radius:var(--r-sm);background:var(--bg-inset)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state" id="c4">
+      <div class="plm-hdr"><div class="id"><svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="var(--danger-fill)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg><div><div class="pj">West Henry Logistics — Planroom</div><div class="addr">4400 SW 20th Ave, Ocala, FL 34474</div></div></div>
+        <div class="right"><span class="plm-link">🔗 Bayline Concrete · 3A Concrete</span><span class="plm-count urgent">1d 6h left</span></div></div>
+      <div class="plm-main" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:14px">4</span>
+        <div class="card" style="border-left:2px solid var(--danger-fill);max-width:460px">
+          <div style="font:600 15px var(--font-display);color:var(--danger-text)">Bids due in 1 day, 6 hours</div>
+          <p style="font-size:12.5px;color:var(--text-dim);margin:8px 0 0">Sep 14, 2:00 PM — submit early if pricing is close; a late submission cannot be accepted.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Arrival states the auth model out loud</b> — "no password, no account" isn't a detail a sub should have to infer from the absence of a login screen.</span></li>
+    <li><span class="pin">2</span><span><b>Instructions are the first thing after arrival,</b> not scope or documents — a first-time bidder needs the shape of the ask before the content of it.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Same map + renderings pattern as the internal project dashboard</b> (3.1) — one component, reused across the register boundary because the content, not the chrome, is what's shared.</span></li>
+    <li><span class="pin">4</span><span><b>Countdown turns grapefruit under 48h,</b> mirroring D-32's internal urgency treatment — the planroom gets its own visual language everywhere except this one shared signal.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 4.4 ═══════ -->
+<section class="screen" id="s44">
+  <header><span class="no">4.4</span><h2>Planroom — scope</h2><span class="reg reg--ext">External · planroom</span>
+    <span class="job">One job: show exactly what this sub is bidding, and nothing about anyone else's scope or price.</span></header>
+
+  <div class="tabs" role="tablist" data-g="d">
+    <button role="tab" aria-selected="true" data-t="d1">Invited scope — expanded</button>
+    <button role="tab" aria-selected="false" data-t="d2">Other scopes — collapsed</button>
+    <button role="tab" aria-selected="false" data-t="d3">xlsx export</button>
+  </div>
+
+  <div class="frame plm">
+    <div class="plm-hdr"><div class="id"><svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="var(--accent-strong)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg><div><div class="pj">West Henry Logistics — Planroom</div><div class="addr">3A Concrete</div></div></div><div class="right"><span class="plm-count">21d 4h left</span></div></div>
+    <div class="plm-tabs"><span class="on">Scope</span><span>Documents</span><span>Addenda</span><span>Submit quote</span><span>RFI</span><span>Prequal</span></div>
+    <div class="plm-main">
+
+      <div class="state on" id="d1" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">1</span>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><span class="lbl" style="margin:0">3A — Concrete · 6 lines</span><span class="btn btn--sm">⇩ Export .xlsx</span></div>
+        <table class="tbl">
+          <thead><tr><th style="width:34px">#</th><th>CSI</th><th>Description</th><th>Kind</th><th class="n">Qty</th><th style="width:70px">Unit</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">1</td><td class="mono">03 30 00</td><td>Cast-in-place foundation walls</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">1,240</td><td class="mono">CY</td></tr>
+            <tr><td class="mono">2</td><td class="mono">03 30 00</td><td>Slab on grade, 6" reinforced</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">42,000</td><td class="mono">SF</td></tr>
+            <tr><td class="mono">3</td><td class="mono">03 30 00</td><td>Waterproofing membrane at grade</td><td><span class="kb kb--exc">Exclusion</span></td><td class="n mono">—</td><td class="mono">—</td></tr>
+            <tr><td class="mono">4</td><td class="mono">03 30 00</td><td>Alternate — polished slab finish</td><td><span class="kb kb--alt">Alternate</span></td><td class="n mono">42,000</td><td class="mono">SF</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="state" id="d2" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">2</span>
+        <div class="lbl" style="margin-bottom:8px">Your invitation</div>
+        <div class="card" style="margin-bottom:16px"><span class="chip chip--acc">3A Concrete</span> <span style="font-size:12.5px;color:var(--text-dim);margin-left:8px">6 lines · expanded above</span></div>
+        <div class="lbl" style="margin-bottom:8px">Other packages on this project</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-sm);opacity:.55"><span>🔒 5A — Structural Steel</span><span style="font-size:11px;color:var(--text-faint)">Not part of your invitation</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-sm);opacity:.55"><span>🔒 9A — Drywall &amp; Framing</span><span style="font-size:11px;color:var(--text-faint)">Not part of your invitation</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-sm);opacity:.55"><span>🔒 26A — Electrical</span><span style="font-size:11px;color:var(--text-faint)">Not part of your invitation</span></div>
+        </div>
+      </div>
+
+      <div class="state" id="d3" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">3</span>
+        <div class="card" style="max-width:400px;border-left:2px solid var(--success-line)">
+          <div style="display:flex;gap:10px;align-items:center"><span class="dot dot--hi"></span><span style="font:600 14px var(--font-display)">Downloading 3A-Concrete-Scope.xlsx</span></div>
+          <p style="font-size:12px;color:var(--text-dim);margin:8px 0 0">Same column layout as the internal worksheet (3.7) — a sub pricing offline in Excel gets a format they can price directly into.</p>
+        </div>
+      </div>
+
+    </div>
+    <div class="plm-foot"><span>Questions about this scope? <b>Submit an RFI →</b></span><span>Signed in via invitation link — not Bayline Concrete? <u style="cursor:pointer">This isn't my company</u></span></div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Same scope worksheet columns as the internal tool</b> (3.7), read-only — a sub prices against the identical rows an estimator authored, not a summarized version.</span></li>
+    <li><span class="pin">2</span><span><b>Other packages are named but locked,</b> never hidden outright — confirms the siloed model from Q-09 without pretending the rest of the project doesn't exist.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Export mirrors the internal xlsx export</b> (E-24's project-info pattern) — one export mechanic, reused, rather than a second one invented for subs.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 4.5 ═══════ -->
+<section class="screen" id="s45">
+  <header><span class="no">4.5</span><h2>Planroom — documents</h2><span class="reg reg--ext">External · planroom</span>
+    <span class="job">One job: give a sub everything they need to price accurately, viewable without leaving the browser and downloadable when they'd rather work from paper.</span></header>
+
+  <div class="tabs" role="tablist" data-g="e">
+    <button role="tab" aria-selected="true" data-t="e1">Index</button>
+    <button role="tab" aria-selected="false" data-t="e2">Viewer</button>
+    <button role="tab" aria-selected="false" data-t="e3">Annotate</button>
+    <button role="tab" aria-selected="false" data-t="e4">Download / print set</button>
+  </div>
+
+  <div class="frame plm">
+    <div class="plm-hdr"><div class="id"><svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="var(--accent-strong)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg><div><div class="pj">West Henry Logistics — Planroom</div><div class="addr">3A Concrete</div></div></div><div class="right"><span class="plm-count">21d 4h left</span></div></div>
+    <div class="plm-tabs"><span>Scope</span><span class="on">Documents</span><span>Addenda</span><span>Submit quote</span><span>RFI</span><span>Prequal</span></div>
+    <div class="plm-main">
+
+      <div class="state on" id="e1" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">1</span>
+        <div class="tree">
+          <div class="row" style="color:inherit">▾ <b>Project Manual</b></div>
+          <div class="row is-sel" style="padding-left:26px">Div 03 00 00 — Concrete</div>
+          <div class="row" style="padding-left:26px">Div 01 32 00 — Schedule requirements</div>
+          <div class="row" style="color:inherit">▾ <b>Drawings</b></div>
+          <div class="row" style="padding-left:26px">S-101 — Foundation Plan</div>
+          <div class="row" style="padding-left:26px">A-201 — Floor Plan Level 1</div>
+          <div class="row" style="color:inherit">▾ <b>Addenda</b></div>
+          <div class="row" style="padding-left:26px">Addendum 01</div>
+          <div class="row" style="padding-left:26px">Addendum 02</div>
+        </div>
+        <p style="font-size:12px;color:var(--text-dim);margin-top:14px">Scoped to documents relevant to 3A only — general project-wide sets (e.g. Division 26 specs) don't appear for a concrete bidder.</p>
+      </div>
+
+      <div class="state" id="e2" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">2</span>
+        <div style="display:grid;grid-template-columns:160px 1fr;gap:16px">
+          <div class="tree" style="font-size:11.5px"><div class="row is-sel">Page 1</div><div class="row">Page 2</div><div class="row">Page 3</div><div class="row">Page 4</div></div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);min-height:260px;display:grid;place-items:center;color:var(--text-faint);font-size:12px">S-101 · Foundation Plan · page 1</div>
+        </div>
+      </div>
+
+      <div class="state" id="e3" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">3</span>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:16px">
+          <div style="display:flex;flex-direction:column;gap:6px;padding-top:4px">
+            <span class="btn btn--sm btn--acc" style="width:36px;padding:8px">✎</span>
+            <span class="btn btn--sm" style="width:36px;padding:8px">▭</span>
+            <span class="btn btn--sm" style="width:36px;padding:8px">💬</span>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);min-height:240px;position:relative;color:var(--text-faint);font-size:12px;display:grid;place-items:center">
+            S-101 · Foundation Plan
+            <div style="position:absolute;left:60px;top:70px;width:70px;height:44px;border:2px solid var(--accent-strong);background:var(--accent-wash);border-radius:2px"></div>
+            <div style="position:absolute;left:60px;top:120px;background:#fff;border:1px solid var(--border-strong);border-radius:var(--r-xs);padding:6px 9px;font-size:11px;color:var(--text);box-shadow:var(--e-1)">Confirm footing depth here</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="state" id="e4" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">4</span>
+        <div style="display:flex;flex-direction:column;gap:8px;max-width:420px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-sm)"><span style="font-size:13px">S-101 — Foundation Plan</span><span class="btn btn--sm">⇩</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-sm)"><span style="font-size:13px">Div 03 00 00 — Concrete</span><span class="btn btn--sm">⇩</span></div>
+          <div style="margin-top:6px"><span class="btn btn--acc">⇩ Download full print set · 42 sheets, 380MB</span></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="plm-foot"><span>Questions about this scope? <b>Submit an RFI →</b></span><span>Signed in via invitation link</span></div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>The index is trade-filtered,</b> the sub-facing counterpart to the internal spec-index picker in 3.5 — same tree component, different starting scope.</span></li>
+    <li><span class="pin">2</span><span><b>In-browser viewer means pricing doesn't require a download first,</b> lowering the bar for a quick scope check mid-bid.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Annotate is a lightweight markup layer,</b> not a full markup suite — a highlight and a sticky note cover the actual use case (flagging something to ask about in the RFI, 4.8).</span></li>
+    <li><span class="pin">4</span><span><b>Print set exists because not every estimator on the sub side works on-screen</b> — the roadmap asked for it explicitly, and a jobsite trailer still runs on paper.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 4.6 ═══════ -->
+<section class="screen" id="s46">
+  <header><span class="no">4.6</span><h2>Planroom — addenda board</h2><span class="reg reg--ext">External · planroom</span>
+    <span class="job">One job: make sure nobody bids on stale information — every addendum lands here in real time and has to be acknowledged before a quote can be submitted.</span></header>
+
+  <div class="tabs" role="tablist" data-g="f">
+    <button role="tab" aria-selected="true" data-t="f1">Realtime feed</button>
+    <button role="tab" aria-selected="false" data-t="f2">Trade-scoped vs all-sub</button>
+    <button role="tab" aria-selected="false" data-t="f3">Unacknowledged badge</button>
+  </div>
+
+  <div class="frame plm">
+    <div class="plm-hdr"><div class="id"><svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="var(--accent-strong)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg><div><div class="pj">West Henry Logistics — Planroom</div><div class="addr">3A Concrete</div></div></div><div class="right"><span class="plm-count">21d 4h left</span></div></div>
+    <div class="plm-tabs"><span>Scope</span><span>Documents</span><span class="on">Addenda</span><span>Submit quote</span><span>RFI</span><span>Prequal</span></div>
+    <div class="plm-main">
+
+      <div class="state on" id="f1" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">1</span>
+        <div class="feed-item"><span class="lv"></span><div style="flex:1"><b>Addendum 02 issued</b><div class="meta">Bid due date moved 09/07 → 09/14 · 2h ago</div></div><span class="chip chip--dgr">Unacknowledged</span></div>
+        <div class="feed-item"><span class="lv" style="background:var(--border-strong)"></span><div style="flex:1"><b>Addendum 01 issued</b><div class="meta">Clarified rebar spec, Div 03 20 00 · 5d ago</div></div><span class="chip chip--ok">Acknowledged</span></div>
+        <div class="feed-item"><span class="lv" style="background:var(--border-strong)"></span><div style="flex:1"><b>RFI #12 answered — all bidders</b><div class="meta">Footing depth confirmed at 3'-6" · 6d ago</div></div><span style="font-size:11px;color:var(--text-faint)">Read</span></div>
+      </div>
+
+      <div class="state" id="f2" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">2</span>
+        <div class="tabs" role="tablist" style="background:var(--bg-inset);margin-bottom:14px"><button role="tab" aria-selected="true" style="color:var(--text)">All bidders</button><button role="tab" aria-selected="false" style="color:var(--text-dim)">Concrete trade only</button></div>
+        <div class="feed-item"><span class="lv"></span><div style="flex:1"><b>Addendum 02 — all bidders</b><div class="meta">Bid due date moved · applies to every package</div></div></div>
+        <div class="feed-item"><span class="lv"></span><div style="flex:1"><b>Clarification — concrete trade only</b><div class="meta">Mix design substitution approved for 3A</div></div></div>
+        <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Trade-scoped messages never reveal who else received them (Q-09) — a sub sees the content, never the other bidders on the thread.</p>
+      </div>
+
+      <div class="state" id="f3" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">3</span>
+        <div class="card" style="border-left:2px solid var(--danger-fill);max-width:460px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><span style="font:600 14px var(--font-display)">Addendum 02</span><span class="chip chip--dgr">Unacknowledged</span></div>
+          <p style="font-size:12.5px;color:var(--text-dim);margin:8px 0 12px">Bid due date moved 09/07 → 09/14. Acknowledging confirms you've received and reviewed this change.</p>
+          <span class="btn btn--acc">I acknowledge Addendum 02</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="plm-foot"><span>Questions about this scope? <b>Submit an RFI →</b></span><span>1 addendum unacknowledged — required before submitting a quote</span></div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Newest first, live dot on the unread item</b> — the board is designed to be checked once and trusted, not refreshed anxiously.</span></li>
+    <li><span class="pin">2</span><span><b>All-sub vs. trade-scoped is a filter, not two separate places</b> — one board, because a sub shouldn't have to guess where a given message will show up.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Acknowledgment is explicit and gates submission</b> (carried into 4.7) — this is the mechanism that makes "the sub said they didn't see it" undefendable.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 4.7 ═══════ -->
+<section class="screen" id="s47">
+  <header><span class="no">4.7</span><h2>Planroom — submit quote</h2><span class="reg reg--ext">External · planroom</span>
+    <span class="job">One job: capture a sub's price against every scope line, however they'd rather enter it, and refuse to let an incomplete or unacknowledged submission through.</span></header>
+
+  <div class="tabs" role="tablist" data-g="g">
+    <button role="tab" aria-selected="true" data-t="g1">Entry table</button>
+    <button role="tab" aria-selected="false" data-t="g2">xlsx upload + parse-back</button>
+    <button role="tab" aria-selected="false" data-t="g3">Attachments + addenda ack</button>
+    <button role="tab" aria-selected="false" data-t="g4">Validation errors</button>
+  </div>
+
+  <div class="frame plm">
+    <div class="plm-hdr"><div class="id"><svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="var(--accent-strong)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg><div><div class="pj">West Henry Logistics — Planroom</div><div class="addr">3A Concrete</div></div></div><div class="right"><span class="plm-count urgent">1d 6h left</span></div></div>
+    <div class="plm-tabs"><span>Scope</span><span>Documents</span><span>Addenda</span><span class="on">Submit quote</span><span>RFI</span><span>Prequal</span></div>
+    <div class="plm-main">
+
+      <div class="state on" id="g1" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">1</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:10px"><span class="tgl"></span><span style="font-size:12.5px">I prefer to quote unit prices</span></div>
+          <span class="btn btn--sm">＋ Add line</span>
+        </div>
+        <table class="tbl">
+          <thead><tr><th style="width:34px">#</th><th>Description</th><th>Kind</th><th class="n">Qty</th><th style="width:70px">Unit</th><th class="n" style="width:130px">Your price</th><th style="width:60px">Incl.</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">1</td><td>Cast-in-place foundation walls</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">1,240</td><td class="mono">CY</td><td class="n"><input class="qcell" value="$187,400"></td><td><input type="checkbox" checked></td></tr>
+            <tr><td class="mono">2</td><td>Slab on grade, 6" reinforced</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">42,000</td><td class="mono">SF</td><td class="n"><input class="qcell" value="$294,000"></td><td><input type="checkbox" checked></td></tr>
+            <tr><td class="mono">4</td><td>Alternate — polished slab finish</td><td><span class="kb kb--alt">Alternate</span></td><td class="n mono">42,000</td><td class="mono">SF</td><td class="n"><input class="qcell" value="$31,500"></td><td><input type="checkbox"></td></tr>
+            <tr><td class="mono">+</td><td colspan="5" style="color:var(--text-faint)">Add a line not in scope — clarification, VA option, etc.</td><td></td></tr>
+          </tbody>
+          <tfoot><tr><td colspan="5" style="text-align:right;font:600 12.5px var(--font-body);padding:11px 12px">Total (included lines)</td><td class="n mono" style="font-weight:700;padding:11px 12px">$481,400</td><td></td></tr></tfoot>
+        </table>
+      </div>
+
+      <div class="state" id="g2" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">2</span>
+        <div class="empty" style="margin-bottom:16px"><h4>Or upload your own priced spreadsheet</h4><p>xlsx, matching the exported column layout or close to it — Platter parses it back against the scope lines.</p><span class="btn btn--acc">Upload .xlsx</span></div>
+        <div class="lbl" style="margin-bottom:8px">Parsed back — review before confirming</div>
+        <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">Line 1 matched — Cast-in-place foundation walls</div><div class="src">$187,400 · your_bid.xlsx row 4 · 0.97</div></div><span class="chip chip--ok">Matched</span></div>
+        <div class="prov"><span class="dot dot--mid" style="margin-top:5px"></span><div><div class="val">Line 2 matched — Slab on grade</div><div class="src">$294,000 · your_bid.xlsx row 5 · 0.81</div></div><span class="chip chip--ok">Matched</span></div>
+        <div class="prov"><span class="dot dot--lo" style="margin-top:5px"></span><div><div class="val">Unmatched row — "Rebar supply, misc"</div><div class="src">$18,200 · your_bid.xlsx row 9</div></div><span class="chip chip--dgr">Needs mapping</span></div>
+      </div>
+
+      <div class="state" id="g3" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">3</span>
+        <div class="lbl" style="margin-bottom:8px">Required attachments</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+          <span class="att done">✓ Bid bond letter</span>
+          <span class="att missing">⚠ Current FL license — missing</span>
+          <span class="att">＋ W-9 (optional)</span>
+        </div>
+        <div class="lbl" style="margin-bottom:8px">Addenda acknowledgment</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r-sm)"><span style="font-size:13px">Addendum 01</span><span class="chip chip--ok">Acknowledged</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border:1px solid var(--danger-line);border-radius:var(--r-sm);background:var(--danger-wash)"><span style="font-size:13px">Addendum 02</span><span class="chip chip--dgr">Not acknowledged</span></div>
+        </div>
+      </div>
+
+      <div class="state" id="g4" style="position:relative">
+        <span class="pin onf" style="left:-6px;top:8px">4</span>
+        <div class="card" style="border-left:2px solid var(--danger-fill);margin-bottom:16px">
+          <div style="font:600 14px var(--font-display);color:var(--danger-text);margin-bottom:6px">Can't submit yet — 3 issues</div>
+          <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--text-dim);line-height:1.9">
+            <li>Line 3 (Waterproofing) has no price and isn't marked excluded</li>
+            <li>Current FL license not attached</li>
+            <li>Addendum 02 not acknowledged</li>
+          </ul>
+        </div>
+        <table class="tbl">
+          <thead><tr><th style="width:34px">#</th><th>Description</th><th class="n" style="width:130px">Your price</th></tr></thead>
+          <tbody>
+            <tr class="is-err"><td class="mono">3</td><td>Waterproofing membrane at grade</td><td class="n"><input class="qcell err" placeholder="required"></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px"><span class="btn" disabled>Submit quote — resolve issues first</span></div>
+      </div>
+
+    </div>
+    <div class="plm-foot"><span>Questions about this scope? <b>Submit an RFI →</b></span><span>Signed in via invitation link</span></div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>The entry table is the excel-fluent estimator's home surface</b> — tabbable cells, a running total, and a unit-price preference toggle rather than a separate mode.</span></li>
+    <li><span class="pin">2</span><span><b>Upload reuses the exact trust mechanism from Batch 1 intake and the internal parse flows</b> — confidence dot, source citation, low-confidence rows front-loaded for review. A parsed sub quote is bid_line with <span class="mono">source='parsed'</span> per the data model.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Attachments and addenda sit together</b> because they're both submission gates, not content — grouping them signals "handle these before you touch pricing."</span></li>
+    <li><span class="pin">4</span><span><b>Validation is itemized, not a single generic error</b> — a sub should never have to guess which of several requirements they missed, and the offending row gets the same left-edge flag treatment as long-lead (3.7).</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 4.8 ═══════ -->
+<section class="screen" id="s48">
+  <header><span class="no">4.8</span><h2>Planroom — RFI</h2><span class="reg reg--ext">External · planroom</span>
+    <span class="job">One job: let a sub ask a question without a phone tag loop, and know they'll hear back without checking manually.</span></header>
+
+  <div class="tabs" role="tablist" data-g="h">
+    <button role="tab" aria-selected="true" data-t="h1">Submit</button>
+    <button role="tab" aria-selected="false" data-t="h2">Notify-me email capture</button>
+    <button role="tab" aria-selected="false" data-t="h3">Get help</button>
+  </div>
+
+  <div class="frame plm">
+    <div class="plm-hdr"><div class="id"><svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="var(--accent-strong)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg><div><div class="pj">West Henry Logistics — Planroom</div><div class="addr">3A Concrete</div></div></div><div class="right"><span class="plm-count">21d 4h left</span></div></div>
+    <div class="plm-tabs"><span>Scope</span><span>Documents</span><span>Addenda</span><span>Submit quote</span><span class="on">RFI</span><span>Prequal</span></div>
+    <div class="plm-main">
+
+      <div class="state on" id="h1" style="position:relative;max-width:480px">
+        <span class="pin onf" style="left:-6px;top:8px">1</span>
+        <div class="lbl" style="margin-bottom:8px">Ask a question</div>
+        <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;margin-bottom:10px;color:var(--text-faint)">Subject — e.g. "Footing depth at grid C-4"</div>
+        <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;margin-bottom:10px;min-height:80px;color:var(--text-faint)">Question detail…</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span class="chip chip--info">Ref: S-101 p.1</span><span style="font-size:11px;color:var(--text-dim)">attached from Annotate (4.5)</span></div>
+        <span class="btn btn--acc">Submit RFI</span>
+      </div>
+
+      <div class="state" id="h2" style="position:relative;max-width:440px">
+        <span class="pin onf" style="left:-6px;top:8px">2</span>
+        <div class="card" style="border-left:2px solid var(--success-line)">
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span class="dot dot--hi"></span><span style="font:600 14px var(--font-display)">RFI #14 submitted</span></div>
+          <p style="font-size:12.5px;color:var(--text-dim);margin:0 0 10px">We'll email <b style="color:var(--text)">marcus@baylineconcrete.com</b> when this is answered — no need to check back manually.</p>
+          <div style="display:flex;align-items:center;gap:8px"><span class="tgl on"></span><span style="font-size:12.5px">Also notify me of other addenda on this project</span></div>
+        </div>
+      </div>
+
+      <div class="state" id="h3" style="position:relative;max-width:400px">
+        <span class="pin onf" style="left:-6px;top:8px">3</span>
+        <div class="card">
+          <div class="lbl" style="margin-bottom:10px">Need to talk to someone?</div>
+          <div style="font-size:13.5px;line-height:2">
+            Estimating team — West Henry Logistics<br>
+            📞 <b>(352) 555-0148</b><br>
+            ✉️ <b>estimating@lemabuilders.com</b>
+          </div>
+          <p style="font-size:11.5px;color:var(--text-dim);margin-top:10px">Typical response time: within 1 business day.</p>
+        </div>
+      </div>
+
+    </div>
+    <div class="plm-foot"><span>2 RFIs on this project so far</span><span>Signed in via invitation link</span></div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>An RFI can carry a document reference forward from Annotate</b> (4.5) — the question and the thing it's about travel together instead of "see attached screenshot."</span></li>
+    <li><span class="pin">2</span><span><b>Confirmation states the notification channel explicitly</b> — a sub without an account needs to know exactly how they'll be reached.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>A human fallback is always one tab away,</b> not buried — not every question fits a form, and the roadmap asks for phone/email explicitly.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 4.9 ═══════ -->
+<section class="screen" id="s49">
+  <header><span class="no">4.9</span><h2>Planroom — prequal</h2><span class="reg reg--ext">External · planroom</span>
+    <span class="job">One job: keep the subcontractor database current with the least possible typing, asking again only when something's actually gone stale.</span></header>
+
+  <div class="tabs" role="tablist" data-g="i">
+    <button role="tab" aria-selected="true" data-t="i1">License/phone autofill prompt</button>
+    <button role="tab" aria-selected="false" data-t="i2">Full form</button>
+    <button role="tab" aria-selected="false" data-t="i3">Post-bid feedback request</button>
+  </div>
+
+  <div class="frame plm">
+    <div class="plm-hdr"><div class="id"><svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="var(--accent-strong)" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/></g></svg><div><div class="pj">West Henry Logistics — Planroom</div><div class="addr">3A Concrete</div></div></div><div class="right"><span class="plm-count">21d 4h left</span></div></div>
+    <div class="plm-tabs"><span>Scope</span><span>Documents</span><span>Addenda</span><span>Submit quote</span><span>RFI</span><span class="on">Prequal</span></div>
+    <div class="plm-main">
+
+      <div class="state on" id="i1" style="position:relative;max-width:460px">
+        <span class="pin onf" style="left:-6px;top:8px">1</span>
+        <div class="card">
+          <div class="lbl" style="margin-bottom:8px">On file for Bayline Concrete</div>
+          <div style="font-size:13px;line-height:1.9">FL Lic. #CGC1521 — verified 3mo ago<br>Phone (352) 555-0177 — unverified</div>
+          <div style="display:flex;gap:8px;margin-top:12px"><span class="btn btn--sm">Looks right</span><span class="btn btn--sm btn--acc">Update phone</span></div>
+        </div>
+      </div>
+
+      <div class="state" id="i2" style="position:relative;max-width:560px">
+        <span class="pin onf" style="left:-6px;top:8px">2</span>
+        <div class="lbl" style="margin-bottom:10px">Full prequalification</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div><div class="lbl">Company</div><div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;margin-top:5px">Bayline Concrete</div></div>
+          <div><div class="lbl">EIN</div><div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;margin-top:5px" class="mono">••-•••1234</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div><div class="lbl">Bonding capacity</div><div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;margin-top:5px" class="mono">$5,000,000</div></div>
+          <div><div class="lbl">FL license</div><div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;margin-top:5px">CGC1521 <span class="btn btn--sm" style="margin-left:6px;padding:3px 9px">⇪ Upload</span></div></div>
+        </div>
+        <div class="lbl">Trades</div>
+        <div style="display:flex;gap:6px;margin:6px 0 14px"><span class="chip chip--acc">Concrete</span><span class="chip">Site work</span></div>
+        <span class="btn btn--acc">Save prequal</span>
+      </div>
+
+      <div class="state" id="i3" style="position:relative;max-width:440px">
+        <span class="pin onf" style="left:-6px;top:8px">3</span>
+        <div class="card">
+          <div class="lbl" style="margin-bottom:8px">How was bidding this project?</div>
+          <div class="stars" style="font-size:22px;margin-bottom:12px">★★★★<b>★</b></div>
+          <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;color:var(--text-faint);margin-bottom:12px">Optional comment…</div>
+          <span class="btn btn--acc">Send feedback</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="plm-foot"><span>Your info is used only for this and future LEMA invitations</span><span>Signed in via invitation link</span></div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Autofill prompt appears only when something's actually stale or missing,</b> not on every visit — the goal is asking once, not nagging.</span></li>
+    <li><span class="pin">2</span><span><b>Full form exists for first-time subs</b> with nothing on file yet; returning bidders mostly see 1.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Feedback is requested once, after submission,</b> not mid-bid — timing it post-bid means it's never mistaken for a gate on submitting.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 4.10 ═══════ -->
+<section class="screen" id="s410">
+  <header><span class="no">4.10</span><h2>Planroom — no-bid</h2><span class="reg reg--ext">External · planroom</span>
+    <span class="job">One job: make declining as easy as bidding, because a fast honest no-bid is more useful to the estimator than silence.</span></header>
+
+  <div class="frame plm"><div class="plm-main" style="max-width:460px">
+    <div class="lbl" style="margin-bottom:10px">Decline to bid 3A — Concrete</div>
+    <div class="rad is-sel"><i></i>Too busy right now</div>
+    <div class="rad"><i></i>Not our scope of work</div>
+    <div class="rad"><i></i>Timeline doesn't work</div>
+    <div class="rad"><i></i>Other</div>
+    <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;color:var(--text-faint);margin:6px 0 16px">Optional note for the estimator…</div>
+    <div style="display:flex;gap:8px"><span class="btn btn--gh">Cancel</span><span class="btn btn--acc">Submit no-bid</span></div>
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>No-bid is a first-class outcome, not a dead end reached by ignoring the invitation</b> — the reason feeds straight back into <span class="mono">invitation.intent</span>, which is what makes the ITB tool's "3 no-bid, 4 pending" counts possible.</span></li>
+  </ol></div>
+</section>
+
+<p class="callout"><b>What Batch 4 commits us to.</b> The planroom is now a proven second visual register — paper surface, no dark shell, no account chrome — reused identically across eight screens without inventing a new pattern per screen. Addenda acknowledgment becomes a hard gate on quote submission (4.6→4.7), which the data model already supports via <span class="mono">bid.addenda_acked[]</span>. Parsed sub quotes reuse the exact provenance mechanic from intake and internal parsing — <span class="mono">bid_line.source='parsed'</span> is now demonstrated end-to-end, not just named in the schema. And the field-level privacy question stays explicitly open: 4.4's package-level lock is real and specced (Q-09), but nothing here should be read as a stand-in for the abandoned E-13→E-19 redaction model — Batch 5's bid tab is the next place that gap could start to matter, once a sub's actual price is on screen next to a plug.</p>
+
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.tabs[role=tablist]').forEach(function(g){
+  g.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-t]'); if(!b) return;
+    g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected','false')});
+    b.setAttribute('aria-selected','true');
+    var frame=g.nextElementSibling;
+    frame.querySelectorAll('.state').forEach(function(s){s.classList.remove('on')});
+    var t=frame.querySelector('#'+b.dataset.t); if(t) t.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>

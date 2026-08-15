@@ -10,8 +10,9 @@ Paste this as the first message in the new chat, with `DECISION_LOG.md` attached
 >
 > Do this:
 >
-> 1. **Draw Batch 4 — ITB & sub-facing planroom** per the index in `STEP1_PLAN.md` (screens 4.1 → 4.10). This is priority #2 (D-07). Note R-04: the planroom is a separate visual register with its own auth (magic link, no account) — don't reuse the internal shell chrome wholesale.
-> 2. Keep updating `DECISION_LOG.md` as we go, same convention as the last four sessions.
+> 1. **Draw Batch 5 — Bid tab & budget** per the index in `STEP1_PLAN.md` (screens 5.1 → 5.4). Note: this is the first screen where the open field-level privacy question (E-13 → E-19) becomes load-bearing — a sub's real price sits next to a plug in the leveling grid. Flag it explicitly before drawing rather than quietly assuming a redaction model that was never specced.
+> 2. Keep updating `DECISION_LOG.md` as we go, same convention as the last five sessions.
+> 3. **GitHub issue tracking is live** on `hcobuilders/platter_app` — new E-## edits get opened as issues using the template established in S9 (title `E-## — <change>`, body: Change / Rationale / Applies to / Status; labels `enhancement` + `batch-N`). Check current issues before creating new ones so the template stays consistent.
 >
 > One thing carried forward, not blocking: Q-13, which historical project seeds the Postgres database (blocks Step 3, not wireframes).
 
@@ -31,8 +32,11 @@ Paste this as the first message in the new chat, with `DECISION_LOG.md` attached
 | `design/wireframes/batch-1-intake-parse.html` | Intake & parse review — 5 screens, 22 states |
 | `design/wireframes/batch-2-dashboard-shell.html` | Dashboard & shell — 5 screens, 21 states |
 | `design/wireframes/batch-3-project-workspace.html` | Project workspace & scope — 7 screens, 23 states |
+| `design/wireframes/batch-4-itb-planroom.html` | ITB & sub-facing planroom — 10 screens, 32 states |
 
-**Schedule position:** Step 1 of 8 (wireframes). Batches 1–3 drawn, 4–6 remaining. Steps 2–8 (approval → interactive build → Railway → integrations) not started.
+**Schedule position:** Step 1 of 8 (wireframes). Batches 1–4 drawn, 5–6 remaining. Steps 2–8 (approval → interactive build → Railway → integrations) not started.
+
+**GitHub:** `hcobuilders/platter_app` (branch `Step_1_DESIGN`) now tracks E-## edits as issues — established S9, no prior issues existed to inherit a template from, so one was designed from the existing decision-log convention.
 
 **Build decisions already made:** Postgres + seeded real project from day one (D-08); 3 users, no RBAC (D-09); Microsoft Graph for email behind a `Mailer` interface (D-14); SharePoint treated as a write-back contract, not storage (D-15); command registry built first as it now serves three surfaces (R-05, D-36).
 
