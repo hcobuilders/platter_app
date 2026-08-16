@@ -22,18 +22,26 @@ async function getProject(number: string) {
 // display toggle (D-11: storage stays CSI 2026, 16-div is a transform only).
 // Only the divisions this seed data actually uses are mapped.
 const DIVISION_48: Record<string, string> = {
+  "02": "Existing Conditions & Demolition",
   "03": "Concrete",
   "05": "Metals",
+  "06": "Wood, Plastics & Composites",
   "07": "Thermal & Moisture Protection",
+  "08": "Openings",
   "09": "Finishes",
+  "22": "Plumbing",
   "23": "HVAC",
   "26": "Electrical",
 };
 const DIVISION_16: Record<string, { code: string; name: string }> = {
+  "02": { code: "02", name: "Site Work" },
   "03": { code: "03", name: "Concrete" },
   "05": { code: "05", name: "Metals" },
+  "06": { code: "06", name: "Wood & Plastics" },
   "07": { code: "07", name: "Moisture Protection" },
+  "08": { code: "08", name: "Doors & Windows" },
   "09": { code: "09", name: "Finishes" },
+  "22": { code: "15", name: "Mechanical" },
   "23": { code: "15", name: "Mechanical" },
   "26": { code: "16", name: "Electrical" },
 };
