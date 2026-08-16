@@ -680,9 +680,10 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 
       <div class="state on" id="g1" style="position:relative">
         <span class="pin onf" style="left:-6px;top:8px">1</span>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;font-size:11.5px;color:var(--success-text)"><span class="dot dot--hi"></span>Saved automatically — close this tab anytime, everything's here when you come back via your invitation link</div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <div style="display:flex;align-items:center;gap:10px"><span class="tgl"></span><span style="font-size:12.5px">I prefer to quote unit prices</span></div>
-          <span class="btn btn--sm">＋ Add line</span>
+          <span class="btn btn--sm">＋ Add your own line</span>
         </div>
         <table class="tbl">
           <thead><tr><th style="width:34px">#</th><th>Description</th><th>Kind</th><th class="n">Qty</th><th style="width:70px">Unit</th><th class="n" style="width:130px">Your price</th><th style="width:60px">Incl.</th></tr></thead>
@@ -690,9 +691,11 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
             <tr><td class="mono">1</td><td>Cast-in-place foundation walls</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">1,240</td><td class="mono">CY</td><td class="n"><input class="qcell" value="$187,400"></td><td><input type="checkbox" checked></td></tr>
             <tr><td class="mono">2</td><td>Slab on grade, 6" reinforced</td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">42,000</td><td class="mono">SF</td><td class="n"><input class="qcell" value="$294,000"></td><td><input type="checkbox" checked></td></tr>
             <tr><td class="mono">4</td><td>Alternate — polished slab finish</td><td><span class="kb kb--alt">Alternate</span></td><td class="n mono">42,000</td><td class="mono">SF</td><td class="n"><input class="qcell" value="$31,500"></td><td><input type="checkbox"></td></tr>
-            <tr><td class="mono">+</td><td colspan="5" style="color:var(--text-faint)">Add a line not in scope — clarification, VA option, etc.</td><td></td></tr>
+            <tr style="box-shadow:inset 3px 0 0 var(--danger-fill)"><td class="mono">+</td><td>Rebar supply upgraded to Grade 75 <span class="chip chip--dgr" style="margin-left:6px">Sub-added · differs from scope</span></td><td><span class="kb kb--inc">Inclusion</span></td><td class="n mono">—</td><td class="mono">LS</td><td class="n"><input class="qcell" value="$12,400"></td><td><input type="checkbox" checked></td></tr>
+            <tr style="box-shadow:inset 3px 0 0 var(--danger-fill)"><td class="mono">+</td><td>Excludes saw-cutting of control joints <span class="chip chip--dgr" style="margin-left:6px">Sub-added · differs from scope</span></td><td><span class="kb kb--exc">Exclusion</span></td><td class="n mono">—</td><td class="mono">—</td><td class="n" style="color:var(--text-faint)">—</td><td></td></tr>
+            <tr><td class="mono">+</td><td colspan="5" style="color:var(--text-faint)">Add a line — inclusion, exclusion, or anything else you'd include with this package</td><td></td></tr>
           </tbody>
-          <tfoot><tr><td colspan="5" style="text-align:right;font:600 12.5px var(--font-body);padding:11px 12px">Total (included lines)</td><td class="n mono" style="font-weight:700;padding:11px 12px">$481,400</td><td></td></tr></tfoot>
+          <tfoot><tr><td colspan="5" style="text-align:right;font:600 12.5px var(--font-body);padding:11px 12px">Total (included lines)</td><td class="n mono" style="font-weight:700;padding:11px 12px">$493,800</td><td></td></tr></tfoot>
         </table>
       </div>
 
@@ -744,7 +747,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
   </div>
 
   <div class="ann"><ol>
-    <li><span class="pin">1</span><span><b>The entry table is the excel-fluent estimator's home surface</b> — tabbable cells, a running total, and a unit-price preference toggle rather than a separate mode.</span></li>
+    <li><span class="pin">1</span><span><b>The entry table is the excel-fluent estimator's home surface,</b> and a sub can now add their own inclusion or exclusion lines when their scope genuinely differs from what LEMA identified — always flagged as sub-added, never silently blended into the priced total. Everything here saves as you go; closing the tab never loses pricing already entered.</span></li>
     <li><span class="pin">2</span><span><b>Upload reuses the exact trust mechanism from Batch 1 intake and the internal parse flows</b> — confidence dot, source citation, low-confidence rows front-loaded for review. A parsed sub quote is bid_line with <span class="mono">source='parsed'</span> per the data model.</span></li>
   </ol><ol>
     <li><span class="pin">3</span><span><b>Attachments and addenda sit together</b> because they're both submission gates, not content — grouping them signals "handle these before you touch pricing."</span></li>
@@ -775,6 +778,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
         <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;margin-bottom:10px;min-height:80px;color:var(--text-faint)">Question detail…</div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span class="chip chip--info">Ref: S-101 p.1</span><span style="font-size:11px;color:var(--text-dim)">attached from Annotate (4.5)</span></div>
         <span class="btn btn--acc">Submit RFI</span>
+        <p style="font-size:11px;color:var(--text-faint);margin-top:10px">Draft saves automatically as you type — safe to close this tab and finish later.</p>
       </div>
 
       <div class="state" id="h2" style="position:relative;max-width:440px">
@@ -850,6 +854,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
         <div class="lbl">Trades</div>
         <div style="display:flex;gap:6px;margin:6px 0 14px"><span class="chip chip--acc">Concrete</span><span class="chip">Site work</span></div>
         <span class="btn btn--acc">Save prequal</span>
+        <p style="font-size:11px;color:var(--text-faint);margin-top:10px">Saves automatically — nothing is lost if you close this tab.</p>
       </div>
 
       <div class="state" id="i3" style="position:relative;max-width:440px">
@@ -857,8 +862,12 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
         <div class="card">
           <div class="lbl" style="margin-bottom:8px">How was bidding this project?</div>
           <div class="stars" style="font-size:22px;margin-bottom:12px">★★★★<b>★</b></div>
-          <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;color:var(--text-faint);margin-bottom:12px">Optional comment…</div>
+          <div style="border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;color:var(--text-faint);margin-bottom:14px">Optional comment…</div>
           <span class="btn btn--acc">Send feedback</span>
+          <hr style="border:none;border-top:1px solid var(--border-hairline);margin:18px 0">
+          <div class="lbl" style="margin-bottom:6px">Want our feedback on your bid?</div>
+          <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px">Ask the estimating team how your number compared — where you were competitive and where you weren't.</p>
+          <span class="btn btn--sm">Request feedback on our bid →</span>
         </div>
       </div>
 
@@ -870,7 +879,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
     <li><span class="pin">1</span><span><b>Autofill prompt appears only when something's actually stale or missing,</b> not on every visit — the goal is asking once, not nagging.</span></li>
     <li><span class="pin">2</span><span><b>Full form exists for first-time subs</b> with nothing on file yet; returning bidders mostly see 1.</span></li>
   </ol><ol>
-    <li><span class="pin">3</span><span><b>Feedback is requested once, after submission,</b> not mid-bid — timing it post-bid means it's never mistaken for a gate on submitting.</span></li>
+    <li><span class="pin">3</span><span><b>Feedback runs both directions.</b> A sub can rate their own bidding experience, and separately request LEMA's feedback on their bid — two different asks, previously conflated under one label. Both live on the same post-bid screen, requested once after submission so neither reads as a gate on submitting.</span></li>
   </ol></div>
 </section>
 
@@ -895,6 +904,8 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 </section>
 
 <p class="callout"><b>What Batch 4 commits us to.</b> The planroom is now a proven second visual register — paper surface, no dark shell, no account chrome — reused identically across eight screens without inventing a new pattern per screen. Addenda acknowledgment becomes a hard gate on quote submission (4.6→4.7), which the data model already supports via <span class="mono">bid.addenda_acked[]</span>. Parsed sub quotes reuse the exact provenance mechanic from intake and internal parsing — <span class="mono">bid_line.source='parsed'</span> is now demonstrated end-to-end, not just named in the schema. And the field-level privacy question stays explicitly open: 4.4's package-level lock is real and specced (Q-09), but nothing here should be read as a stand-in for the abandoned E-13→E-19 redaction model — Batch 5's bid tab is the next place that gap could start to matter, once a sub's actual price is on screen next to a plug.</p>
+
+<p class="callout"><b>E-31 → E-33 (owner feedback, this session).</b> All planroom draft state — quote pricing, sub-added lines, RFI drafts, prequal edits — persists server-side keyed to the invitation token, never to the browser tab (E-31); nothing here is a local-only form. Post-bid feedback now runs both directions: the existing sub-rates-experience flow stays, alongside a new sub-requests-LEMA's-feedback-on-their-bid option, since those were two different asks previously collapsed into one (E-32). And 4.7's entry table lets a sub add their own inclusion/exclusion lines, always flagged <span class="mono">Sub-added · differs from scope</span> rather than blended silently into the total (E-33) — <b>this is a new obligation for Batch 5's bid tab:</b> a sub-added line has no matching <span class="mono">scope_line_item_id</span>, so the leveling grid needs a distinct rendering path for a priced line that doesn't map back to anything the GC authored.</p>
 
 </main>
 </div>

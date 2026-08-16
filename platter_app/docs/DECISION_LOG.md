@@ -107,6 +107,14 @@ Applies to: Batch 2 card component and 2.2 layout. E-09 and E-10 are component-l
 | E-30 | **Audit chip contrast after E-26/E-27.** The `*-text` shades were tuned against Floral White; re-verify each at 4.5:1 against the new cool greys and darken where needed. | Changing the ground invalidates the contrast work in D-20. This is a check, not a guess. |
 | E-21 | **Projects carry a blanket privacy default set at creation** (e.g. public bid vs confidential negotiated work), which seeds every field's classification. Per-field locks still override. | Resolves the S8 open question. Default-plus-override beats per-field-only: a confidential job shouldn't require locking thirty fields by hand. |
 
+## 2c. Staged edits — applied to Batch 4, S10
+
+| # | Change | Notes |
+|---|---|---|
+| E-31 | **All planroom draft state persists server-side, keyed to the invitation token, never to the browser tab.** Quote pricing, sub-added lines, RFI drafts, and prequal edits all autosave; a sub who closes the tab mid-bid gets everything back by reopening the same magic link. | Owner: "make sure all the work the contractor completes stays populated even if they close the tab." The magic-link session has no account (D-10), so the invitation token is the only durable handle a sub has — nothing can be trusted to survive tab-local only. |
+| E-32 | **Post-bid feedback now runs both directions.** The existing sub-rates-the-bidding-experience flow (star rating) stays as-is. Added: a separate "Request feedback on our bid" action so a sub can ask LEMA how their number compared. | Owner clarified "feedback requested" meant subs requesting *LEMA's* feedback on their bid, not just LEMA collecting feedback from subs — two different asks that 4.9's first draft had conflated into one. |
+| E-33 | **A sub can add their own inclusion/exclusion lines to the quote entry table** when their scope genuinely differs from what LEMA identified. Always rendered with a `Sub-added · differs from scope` flag — never blended silently into the priced total. | Owner: subs sometimes carry scope the GC's takeoff missed, or exclude something the GC assumed included. New obligation for Batch 5: a sub-added line has no matching `scope_line_item_id`, so the bid tab's leveling grid needs a distinct rendering path for a priced line that doesn't map back to a GC-authored scope row. |
+
 ---
 
 ## 3. Open questions
@@ -204,3 +212,14 @@ Applies to: Batch 2 card component and 2.2 layout. E-09 and E-10 are component-l
 - Verified in-browser: internal chrome renders identically to Batch 3, planroom register renders visually distinct (paper ground, no dark shell), tab-switching script works across both registers, no console errors from the page itself.
 - **GitHub issue tracking established.** Owner set up `hcobuilders/platter_app` for issue tracking but no issues or templates existed yet (checked via `gh issue list --state all` → empty, no `.github/ISSUE_TEMPLATE`). Owner chose: design a template from the existing E-## convention, backfill E-01→E-30 as closed issues, open new ones going forward. Template: title `E-## — <change>`, body sections Change / Rationale / Applies to / Status, labeled `enhancement` + a `batch-N` label per the batch it applies to.
 - Next: owner review of Batch 4, then Batch 5 — bid tab & budget. Bid tab is the first screen where the open privacy question (E-13→E-19) becomes load-bearing rather than deferrable — flag before drawing.
+
+### S10 — 2026-08-15 · Batch 4 feedback applied (E-31 → E-33)
+- Owner reviewed Batch 4 same session, no other comments — praised the batch overall and gave three edits.
+- **Logged and applied E-31 → E-33** directly to `batch-4-itb-planroom.html` (see §2c) since all three were easy fixes within the existing screens, per owner instruction: "if you can easily fix or close them do so."
+  - E-31: added a visible autosave indicator to 4.7's entry table and brief autosave notes to 4.8 (RFI) and 4.9 (prequal full form); annotation copy updated to state the persistence guarantee explicitly.
+  - E-32: 4.9's post-bid screen (i3) now has two sections — the existing star-rating sub→LEMA feedback, plus a new "Request feedback on our bid" action for LEMA→sub feedback. Annotation rewritten to explain both directions.
+  - E-33: 4.7's entry table gained two example sub-added rows (one inclusion, one exclusion), each carrying a `Sub-added · differs from scope` chip; the "add line" affordance copy was broadened accordingly. Flagged as a new Batch 5 obligation in the batch's closing callout — sub-added lines have no matching `scope_line_item_id`.
+- Verified all three changes landed in the DOM (`textContent` checks for each new string, 3 occurrences of the sub-added flag as expected: 2 table rows + 1 callout mention) and that no console errors were introduced.
+- **GitHub:** opened E-31, E-32, E-33 on `hcobuilders/platter_app` following the S9 template, then closed all three as completed since they were implemented in the same turn.
+- Also surfaced and resolved a false alarm: owner reported "not rendering correctly" after the Batch 4 delivery. Root cause was the review tool's own preview pane loading the file as a `data:` URL snapshot (files outside its recognized project root render that way), which breaks the relative `../tokens/tokens.css` link — not a defect in the shipped file. Noted for future sessions: don't chase phantom rendering bugs without first checking whether the viewer loaded the file as `file://` vs. a `data:` URL snapshot.
+- Next: Batch 5 — bid tab & budget. Same flag as S9 carries forward: this is where the undefined privacy model (E-13→E-19) and the new sub-added-line rendering path (E-33) both become load-bearing.

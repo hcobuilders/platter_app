@@ -6,13 +6,13 @@ Paste this as the first message in the new chat, with `DECISION_LOG.md` attached
 
 ## Prompt to paste
 
-> Continuing the Platter build. Read `DECISION_LOG.md` for full context — 37 locked decisions (D-01 → D-37), 27 applied staged edits (E-01 → E-12, E-20 → E-30), and one dropped group (E-13 → E-19, see below).
+> Continuing the Platter build. Read `DECISION_LOG.md` for full context — 37 locked decisions (D-01 → D-37), 30 applied staged edits (E-01 → E-12, E-20 → E-33 with gaps), and one dropped group (E-13 → E-19, see below).
 >
 > Do this:
 >
-> 1. **Draw Batch 5 — Bid tab & budget** per the index in `STEP1_PLAN.md` (screens 5.1 → 5.4). Note: this is the first screen where the open field-level privacy question (E-13 → E-19) becomes load-bearing — a sub's real price sits next to a plug in the leveling grid. Flag it explicitly before drawing rather than quietly assuming a redaction model that was never specced.
-> 2. Keep updating `DECISION_LOG.md` as we go, same convention as the last five sessions.
-> 3. **GitHub issue tracking is live** on `hcobuilders/platter_app` — new E-## edits get opened as issues using the template established in S9 (title `E-## — <change>`, body: Change / Rationale / Applies to / Status; labels `enhancement` + `batch-N`). Check current issues before creating new ones so the template stays consistent.
+> 1. **Draw Batch 5 — Bid tab & budget** per the index in `STEP1_PLAN.md` (screens 5.1 → 5.4). Two things are load-bearing here, not deferrable: the open field-level privacy question (E-13 → E-19) — a sub's real price sits next to a plug in the leveling grid — and E-33's sub-added scope lines, which have no matching `scope_line_item_id` and need their own rendering path in the leveling grid.
+> 2. Keep updating `DECISION_LOG.md` as we go, same convention as the last six sessions.
+> 3. **GitHub issue tracking is live** on `hcobuilders/platter_app` — new E-## edits get opened as issues using the template established in S9 (title `E-## — <change>`, body: Change / Rationale / Applies to / Status; labels `enhancement` + `batch-N`), and closed immediately if implemented same-session. Check current issues before creating new ones so the template stays consistent.
 >
 > One thing carried forward, not blocking: Q-13, which historical project seeds the Postgres database (blocks Step 3, not wireframes).
 
