@@ -165,6 +165,19 @@
   --rail-w: 236px;
   --rail-collapsed: 60px;
   --cmd-h: 38px;
+
+  /* ---------- TABLE VIEW MODES ---------- */
+  /* S35: the vocabulary for the column filter/hide/reorder/export
+     framework. A dense table carries data-table-mode="normal" (the
+     default, interactive on-screen view) or "export" (the reduced set
+     a GC would hand to a lender or owner — think print/PDF/CSV). Each
+     column opts in per mode with data-col-modes, a space-separated
+     list of the modes it appears in; a column with no data-col-modes
+     attribute shows in every mode. Reorder/persistence of the chosen
+     column set is a separate concern from this on/off axis and isn't
+     settled by these tokens — this is naming only, not the build. */
+  --tbl-mode-normal: normal;
+  --tbl-mode-export: export;
 }
 
 /* Motion is a preference, not a given. */
@@ -178,3 +191,9 @@
   outline-offset: 2px;
   border-radius: var(--r-xs);
 }
+
+/* Table view-mode mechanics (S35) — attribute-driven, framework-agnostic.
+   A column absent from the current mode's list is hidden; a column with
+   no data-col-modes attribute is always shown. */
+table[data-table-mode="export"] [data-col-modes]:not([data-col-modes~="export"]) { display: none; }
+table[data-table-mode="normal"] [data-col-modes]:not([data-col-modes~="normal"]) { display: none; }

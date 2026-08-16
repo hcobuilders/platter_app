@@ -473,6 +473,7 @@ h3.grp{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:up
     </table>
   </div>
   <p class="rule"><b>Row state is carried on the left edge,</b> not by filling the whole row — apricot inset for selection, grapefruit for flagged. Fills would fight the numbers, which are what the user is actually reading.</p>
+  <p class="rule"><b>Column visibility is a mode, not per-column state (S35).</b> <code style="font:400 12px var(--font-data);color:var(--info-text)">data-table-mode="normal"|"export"</code> on the table, <code style="font:400 12px var(--font-data);color:var(--info-text)">data-col-modes="normal export"</code> on each column that opts in (omit it to show everywhere) — see <code style="font:400 12px var(--font-data);color:var(--info-text)">--tbl-mode-normal</code> / <code style="font:400 12px var(--font-data);color:var(--info-text)">--tbl-mode-export</code> in tokens. "Hide column" toggles a column between modes; "Export" swaps the table's mode. Reorder and persistence of the chosen set are separate, not yet settled here.</p>
 </section>
 
 <!-- ══ NAV COMPONENTS ══ -->
