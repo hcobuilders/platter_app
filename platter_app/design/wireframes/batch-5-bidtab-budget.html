@@ -566,55 +566,67 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1280px}
 
   <div class="frame"><div class="body">
 
-    <div class="state on" id="d1" style="position:relative;max-width:480px">
+    <div class="state on" id="d1" style="position:relative;max-width:520px">
       <span class="pin onf" style="left:-9px;top:8px">1</span>
       <div class="lbl" style="margin-bottom:8px">Include in lifecycle analysis</div>
       <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm)"><span><input type="checkbox" checked> RTU package — HVAC</span><span class="mono" style="font-size:12px;color:var(--text-dim)">23A</span></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm)"><span><input type="checkbox" checked> TPO roof membrane</span><span class="mono" style="font-size:12px;color:var(--text-dim)">07A</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm)"><span><input type="checkbox" checked> RTU package — HVAC</span><span style="display:flex;gap:6px;align-items:center"><span class="mono" style="font-size:12px;color:var(--text-dim)">23A</span><span class="chip chip--acc">Comparing 2 scenarios</span></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm)"><span><input type="checkbox" checked> TPO roof membrane</span><span style="display:flex;gap:6px;align-items:center"><span class="mono" style="font-size:12px;color:var(--text-dim)">07A</span><span class="chip">Baseline only</span></span></div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm)"><span><input type="checkbox"> Elevators</span><span class="mono" style="font-size:12px;color:var(--text-dim)">14A</span></div>
       </div>
-      <p style="font-size:12px;color:var(--text-dim);margin-top:12px">High replacement-cost, long-service-life systems are worth the analysis effort; a door hardware package usually isn't.</p>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:12px">High replacement-cost, long-service-life systems are worth the analysis effort. A system can run baseline-only (just track its own lifecycle cost) or compare against an alternate — the comparison is what actually informs a decision.</p>
     </div>
 
     <div class="state" id="d2" style="position:relative">
       <span class="pin onf" style="left:-9px;top:8px">2</span>
-      <table class="tbl">
-        <thead><tr><th>System</th><th class="n">Initial cost</th><th class="n">Service life</th><th class="n">Annual maint.</th></tr></thead>
+      <div class="lbl" style="margin-bottom:8px">RTU package — HVAC · 23A</div>
+      <div class="bwrap" style="margin-bottom:16px"><table class="bidtbl">
+        <thead><tr><th class="desc">Scenario</th><th>Initial cost</th><th>Svc. life</th><th>Replacement</th><th>Annual maint.</th><th>Annual energy</th><th>Salvage</th></tr></thead>
         <tbody>
-          <tr><td>RTU package — HVAC</td><td class="n mono">$840,000</td><td class="n mono">15 yr</td><td class="n mono">$18,000</td></tr>
-          <tr><td>TPO roof membrane</td><td class="n mono">$410,000</td><td class="n mono">20 yr</td><td class="n mono">$6,500</td></tr>
+          <tr><td class="desc">Current spec <span class="chip" style="margin-left:6px">Baseline</span></td><td class="n">$840,000</td><td class="n">15 yr</td><td class="n">$780,000</td><td class="n">$18,000</td><td class="n">$34,000</td><td class="n">10%</td></tr>
+          <tr><td class="desc">High-efficiency unit <span class="chip chip--acc" style="margin-left:6px">Alternate</span></td><td class="n">$1,050,000</td><td class="n">18 yr</td><td class="n">$920,000</td><td class="n">$15,000</td><td class="n">$22,000</td><td class="n">15%</td></tr>
         </tbody>
+      </table></div>
+      <div class="lbl" style="margin-bottom:8px">TPO roof membrane — 07A <span style="text-transform:none;letter-spacing:0;color:var(--text-dim)">(baseline only, no alternate under evaluation)</span></div>
+      <table class="tbl">
+        <thead><tr><th>Scenario</th><th class="n">Initial cost</th><th class="n">Service life</th><th class="n">Annual maint.</th></tr></thead>
+        <tbody><tr><td>Current spec <span class="chip" style="margin-left:6px">Baseline</span></td><td class="n mono">$410,000</td><td class="n mono">20 yr</td><td class="n mono">$6,500</td></tr></tbody>
       </table>
     </div>
 
     <div class="state" id="d3" style="position:relative">
       <span class="pin onf" style="left:-9px;top:8px">3</span>
-      <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">RTU service life — 15 yr is typical for this tonnage class</div><div class="src">industry benchmark, packaged rooftop units · 0.88</div></div><span class="btn btn--sm">Accept</span></div>
+      <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">RTU baseline service life — 15 yr is typical for this tonnage class</div><div class="src">industry benchmark, packaged rooftop units · 0.88</div></div><span class="btn btn--sm">Accept</span></div>
+      <div class="prov"><span class="dot dot--mid" style="margin-top:5px"></span><div><div class="val">High-efficiency alternate — ~35% lower annual energy vs. baseline</div><div class="src">manufacturer spec sheets, comparable tonnage · 0.81</div></div><span class="btn btn--sm">Accept</span></div>
       <div class="prov"><span class="dot dot--mid" style="margin-top:5px"></span><div><div class="val">TPO replacement cost — trending +4%/yr regionally</div><div class="src">researched, FL Gulf Coast region · 0.74</div></div><span class="btn btn--sm">Accept</span></div>
-      <p style="font-size:12px;color:var(--text-dim);margin-top:14px;max-width:70ch">Same provenance row, same confidence dot as every other AI-derived value in the app (D-26) — a researched benchmark gets exactly as much scrutiny as a parsed spec field.</p>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:14px;max-width:70ch">Same provenance row, same confidence dot as every other AI-derived value in the app (D-26) — a researched energy-savings claim for the alternate scenario gets exactly as much scrutiny as a parsed spec field.</p>
     </div>
 
     <div class="state" id="d4" style="position:relative;max-width:520px">
       <span class="pin onf" style="left:-9px;top:8px">4</span>
       <div class="tune"><span style="font-size:13px">Discount rate</span><input type="range" min="0" max="10" value="4" step="0.5"><span class="v">4.0%</span></div>
-      <div class="tune"><span style="font-size:13px">Escalation rate</span><input type="range" min="0" max="10" value="3" step="0.5"><span class="v">3.0%</span></div>
+      <div class="tune"><span style="font-size:13px">General escalation rate</span><input type="range" min="0" max="10" value="3" step="0.5"><span class="v">3.0%</span></div>
+      <div class="tune"><span style="font-size:13px">Energy escalation rate</span><input type="range" min="0" max="10" value="5" step="0.5"><span class="v">5.0%</span></div>
       <div class="tune"><span style="font-size:13px">Analysis period</span><input type="range" min="5" max="30" value="20" step="5"><span class="v">20 yr</span></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:14px;background:var(--bg-inset);border-radius:var(--r-md)"><span style="font-size:13px;font-weight:600">Net present lifecycle cost</span><span class="mono" style="font-size:16px;font-weight:700">$1,612,400</span></div>
-      <p style="font-size:12px;color:var(--text-dim);margin-top:12px">Every slider recalculates live. Saving a set of assumptions as a reusable default — so the next project doesn't start from 0% — happens in Automation &amp; customization (5.5).</p>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <div style="flex:1;padding:14px;background:var(--bg-inset);border-radius:var(--r-md)"><div class="lbl" style="margin-bottom:4px">Baseline NPV</div><span class="mono" style="font-size:16px;font-weight:700">$1,612,400</span></div>
+        <div style="flex:1;padding:14px;background:var(--bg-inset);border-radius:var(--r-md)"><div class="lbl" style="margin-bottom:4px">Alternate NPV</div><span class="mono" style="font-size:16px;font-weight:700">$1,427,800</span></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:14px;background:var(--success-wash);border-radius:var(--r-md)"><span style="font-size:13px;font-weight:600;color:var(--success-text)">High-efficiency alternate wins over 20 years</span><span class="delta down" style="font-size:15px">−$184,600</span></div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:12px">Every slider recalculates both scenarios live. Energy escalation is split out from the general rate on purpose — it's the input most likely to flip which column wins. Saving a tuned assumption set as a reusable default happens in Automation &amp; customization (5.5).</p>
     </div>
 
   </div></div>
 
   <div class="ann"><ol>
-    <li><span class="pin">1</span><span><b>Opting systems in is explicit</b> — lifecycle cost is expensive analytical effort, worth spending only where the tradeoff is real.</span></li>
-    <li><span class="pin">2</span><span><b>Data entry is the minimum three numbers</b> per system — initial cost, service life, annual maintenance — everything else in the model derives from these plus the tuned assumptions in 4.</span></li>
+    <li><span class="pin">1</span><span><b>Opting in is per-system, and comparison is optional per system.</b> Not every system has a real alternative worth pricing out — TPO here just tracks its own lifecycle cost, no second column forced on it.</span></li>
+    <li><span class="pin">2</span><span><b>Data entry is scenario-shaped, not system-shaped (D-43).</b> A system with an alternate under evaluation gets two rows sharing one set of fields — initial cost, service life, replacement cost, maintenance, <b>energy cost</b>, salvage value — so the comparison is native to the table, not bolted on after.</span></li>
   </ol><ol>
-    <li><span class="pin">3</span><span><b>Research citations name their source,</b> not just a number — "industry benchmark" vs. "regional trend" are different kinds of claim and read differently on confidence.</span></li>
-    <li><span class="pin">4</span><span><b>Tuning is the literal answer to "configure without code"</b> for this screen — discount rate, escalation, and analysis period are the three variables that actually move the answer, exposed as sliders with a live-recalculating result, not a hidden constant an estimator would need an engineer to change.</span></li>
+    <li><span class="pin">3</span><span><b>Research now also proposes the alternate's case,</b> not just the baseline's — an energy-savings claim is exactly the kind of number worth a citation and a confidence dot rather than a bare percentage.</span></li>
+    <li><span class="pin">4</span><span><b>The result is a comparison, not a number</b> — this is the actual payoff of D-43's scenario model. Splitting energy escalation from general escalation is what lets a pricier, more efficient option's advantage compound correctly over the analysis period instead of being averaged away.</span></li>
   </ol></div>
 
-  <p class="callout"><b>Open question — Q-16.</b> <span class="mono">STEP1_PLAN.md</span>'s data model (Part A) has no lifecycle-cost table. This batch doesn't invent one silently — a <span class="mono">lifecycle_line</span> table (system, initial_cost, service_life_yrs, annual_maintenance, source_confidence) is the obvious shape, but it's new schema surface not yet reviewed. Flagging rather than deciding.</p>
+  <p class="callout"><b>Q-16 — closed, S13 → D-43.</b> Lifecycle cost analysis is scenario-based: <span class="mono">lifecycle_scenario</span> (not a flat <span class="mono">lifecycle_line</span>), keyed to a system with a baseline and, optionally, one or more alternates. Energy cost and its own escalation rate are first-class fields, not folded into general maintenance or the project-wide escalation assumption — those are the two numbers most likely to actually change an owner's decision, which was the owner's explicit bar for this schema.</p>
 </section>
 
 <!-- ═══════ 5.5 ═══════ -->
