@@ -189,6 +189,32 @@ model ExtractedField {
   @@index([entityType, entityId])
 }
 
+enum EditSource {
+  user
+  agent
+  agent_confirmed
+}
+
+// Groundwork only (S37) — a lightweight, generic marker for who last wrote a
+// value that's already live on its entity, separate from ExtractedField's
+// staged/pending trust layer above. No agent writes to app data yet, so
+// nothing populates this table today; it exists so the first AI-driven write
+// path doesn't also have to invent the provenance model. Full confirmation
+// UI/workflow tracked separately (GH issue #39).
+model FieldEdit {
+  id          String     @id @default(cuid())
+  entityType  String
+  entityId    String
+  fieldPath   String
+  source      EditSource
+  agentName   String?
+  setAt       DateTime   @default(now())
+  confirmedBy String?
+  confirmedAt DateTime?
+
+  @@index([entityType, entityId])
+}
+
 model SpecSection {
   id         String    @id @default(cuid())
   projectId  String
