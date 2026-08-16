@@ -108,6 +108,7 @@ export default async function BudgetPage({
       {view === "table" && (
         <div>
           <ResizableColumns tableId="budget-tbl" />
+          <div className="bwrap">
           <table className="tbl" id="budget-tbl">
             <thead>
               <tr>
@@ -227,6 +228,7 @@ export default async function BudgetPage({
               </tr>
             </tfoot>
           </table>
+          </div>
           <p style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 10 }}>
             Changes are saved automatically — press Ctrl/Cmd+Z to undo the last edit. Current-value
             color follows E-02/E-39&apos;s rule — sea green once a real award is on record (Awarded to

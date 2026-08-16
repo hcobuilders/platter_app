@@ -93,6 +93,7 @@ export function ItbTable({ projectNumber, invitations }: { projectNumber: string
       )}
 
       <ResizableColumns tableId="itb-tbl" />
+      <div className="bwrap">
       <table className="tbl" id="itb-tbl">
         <thead>
           <tr>
@@ -183,6 +184,7 @@ export function ItbTable({ projectNumber, invitations }: { projectNumber: string
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

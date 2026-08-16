@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { Logo } from "@/components/Logo";
 import { ProjectNav } from "@/components/ProjectNav";
+import { CommandBar } from "@/components/CommandBar";
 
 async function getProject(number: string) {
   return prisma.project.findUnique({ where: { number } });
@@ -50,10 +51,7 @@ export default async function ProjectLayout({
         <ProjectNav number={number} />
         <div className="wmain">{children}</div>
       </div>
-      <div className="cmd">
-        <span style={{ color: "var(--accent-fill)", fontWeight: 700 }}>/</span> Type a command or a
-        project number
-      </div>
+      <CommandBar currentProjectNumber={number} />
     </div>
   );
 }

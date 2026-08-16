@@ -8,6 +8,11 @@
   --font-data: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   background: var(--bg-shell);
   color: var(--text-invert);

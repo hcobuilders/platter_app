@@ -1,16 +1,54 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { prisma } from "@/lib/db";
 import { Logo } from "@/components/Logo";
-import { formatCents } from "@/lib/format";
+import { CommandBar } from "@/components/CommandBar";
+import { NewProjectModal } from "@/components/NewProjectModal";
+import { DashboardBody, type CardProject } from "@/components/DashboardBody";
 
 export const dynamic = "force-dynamic";
 
-async function getProjects() {
-  return prisma.project.findMany({
+async function getProjects(): Promise<CardProject[]> {
+  const projects = await prisma.project.findMany({
     orderBy: { number: "asc" },
     include: {
+      dates: true,
       budgetLines: { select: { current: true } },
+      bidPackages: {
+        select: {
+          id: true,
+          _count: { select: { scopeLineItems: true } },
+          invitations: { select: { bids: { select: { id: true }, take: 1 } } },
+        },
+      },
     },
+  });
+
+  return projects.map((project) => {
+    const itbOut = project.dates.find((d) => d.kind === "itb_out");
+    const siteWalk = project.dates.find((d) => d.kind === "site_walk");
+    const bidsDue = project.dates.find((d) => d.kind === "submission_due");
+    const budgetTotal = project.budgetLines.reduce((sum, b) => sum + b.current, 0n);
+    const quotedCount = project.bidPackages.filter((p) => p.invitations.some((i) => i.bids.length > 0)).length;
+    const unresolvedCount = project.bidPackages.filter((p) => p._count.scopeLineItems === 0).length;
+
+    return {
+      number: project.number,
+      name: project.name,
+      status: project.status,
+      address: project.address,
+      bondPct: project.bondPct,
+      packageCount: project.bidPackages.length,
+      quotedCount,
+      unresolvedCount,
+      budgetTotal: Number(budgetTotal),
+      budgetVerified: project.budgetLines.length > 0,
+      itbOut: itbOut?.at.toISOString() ?? null,
+      siteWalk: siteWalk?.at.toISOString() ?? null,
+      siteWalkMandatory: siteWalk?.isMandatory ?? false,
+      bidsDue: bidsDue?.at.toISOString() ?? null,
+      awardTarget: null,
+    };
   });
 }
 
@@ -18,50 +56,43 @@ export default async function Home() {
   const projects = await getProjects();
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-16">
-      <div className="flex items-center gap-3 mb-10">
-        <Logo size={32} />
-        <span style={{ font: "var(--t-h1)" }}>Platter</span>
-      </div>
-
-      <div style={{ font: "var(--t-label)", color: "var(--accent-fill)", letterSpacing: "var(--track-label)", textTransform: "uppercase" }}>
-        Projects
-      </div>
-
-      <div className="mt-4 flex flex-col gap-3">
-        {projects.length === 0 && (
-          <p style={{ color: "var(--text-invert-dim)" }}>No projects yet.</p>
-        )}
-        {projects.map((project) => {
-          const total = project.budgetLines.reduce((sum, b) => sum + b.current, 0n);
-          return (
-            <Link
-              key={project.id}
-              href={`/projects/${project.number}`}
-              className="card"
-              style={{
-                background: "var(--bg-shell-raised)",
-                border: "1px solid var(--border-invert)",
-                color: "var(--text-invert)",
-                textDecoration: "none",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: 0, flex: "1 1 auto" }}>
-                <div style={{ font: "var(--t-h3)" }}>{project.name}</div>
-                <div style={{ font: "var(--t-data)", color: "var(--text-invert-dim)", marginTop: 4 }}>
-                  {project.number} · {project.status}
-                </div>
-              </div>
-              <div className="mono" style={{ fontSize: 18, color: "var(--text-invert)", flex: "0 0 auto", marginLeft: 16, whiteSpace: "nowrap" }}>
-                {formatCents(total)}
-              </div>
+    <div className="flex flex-col min-h-screen">
+      <div className="topnav">
+        <div className="left">
+          <Link href="/?new=1" className="qa">
+            ＋ New project
+          </Link>
+        </div>
+        <div className="center">
+          <div className="logo">
+            <Logo size={19} />
+          </div>
+          <nav>
+            <span className="on" style={{ color: "var(--accent-fill)" }}>
+              Files
+            </span>
+            <span>Network</span>
+            <span>Data</span>
+            <span>Tools</span>
+            <Link href="/settings" style={{ color: "inherit", textDecoration: "none" }}>
+              Settings
             </Link>
-          );
-        })}
+          </nav>
+        </div>
+        <div className="right">
+          <span className="search">Search projects…</span>
+          <div className="avatar">JL</div>
+        </div>
       </div>
-    </main>
+
+      <div className="appbody flex-1" style={{ padding: "22px clamp(16px,3vw,32px)" }}>
+        <DashboardBody projects={projects} />
+      </div>
+
+      <CommandBar />
+      <Suspense fallback={null}>
+        <NewProjectModal />
+      </Suspense>
+    </div>
   );
 }

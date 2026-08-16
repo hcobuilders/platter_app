@@ -60,7 +60,8 @@ export default async function ScopePage({
           Scope worksheet — {pkg.code} {pkg.name}
         </div>
         <ResizableColumns tableId="scope-tbl" />
-        <table className="tbl mt-2" id="scope-tbl">
+        <div className="bwrap mt-2">
+        <table className="tbl" id="scope-tbl">
           <thead>
             <tr>
               <th style={{ width: 40 }}>#</th>
@@ -140,6 +141,7 @@ export default async function ScopePage({
             })}
           </tbody>
         </table>
+        </div>
         {/* Row-scoped forms live outside the table entirely — <tr> may only contain <td>/<th>.
             Every input/select/button above associates to its row's form via the form="" attribute. */}
         {pkg.scopeLineItems.map((line) => (

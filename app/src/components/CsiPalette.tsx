@@ -3,16 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { findCsiMatches, type CsiCode } from "@/lib/csi-codes";
 
-// Global "/csi" command palette — type "/csi" anywhere outside a text field
-// (or press Cmd/Ctrl+K) to search MasterFormat codes and copy one to the
-// clipboard. Typed keys are buffered so "/csi" can be detected without a
-// dedicated hotkey.
+// CSI code palette — press Cmd/Ctrl+K, or select "csi" from the main
+// command bar (/), to search MasterFormat codes and copy one to the
+// clipboard. The "/csi" text-buffer trigger was retired once "/" became the
+// main app command bar's own trigger character (they collided).
 export function CsiPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIdx, setActiveIdx] = useState(0);
   const [copied, setCopied] = useState<string | null>(null);
-  const bufferRef = useRef("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   function openPalette() {
@@ -24,33 +23,19 @@ export function CsiPalette() {
   }
 
   useEffect(() => {
-    function isTypingTarget(el: EventTarget | null) {
-      if (!(el instanceof HTMLElement)) return false;
-      const tag = el.tagName;
-      return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || el.isContentEditable;
-    }
-
     function onKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         openPalette();
-        return;
-      }
-      if (open) return;
-      if (isTypingTarget(e.target)) return;
-      if (e.key.length === 1) {
-        bufferRef.current = (bufferRef.current + e.key).slice(-4);
-        if (bufferRef.current === "/csi") {
-          openPalette();
-          bufferRef.current = "";
-        }
-      } else if (e.key !== "Shift") {
-        bufferRef.current = "";
       }
     }
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+    window.addEventListener("platter:open-csi", openPalette);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("platter:open-csi", openPalette);
+    };
+  }, []);
 
   const matches: CsiCode[] = query.trim().length >= 1 ? findCsiMatches(query, 12) : findCsiMatches("0", 12);
 
