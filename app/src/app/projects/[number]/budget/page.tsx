@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
 import { updateBudgetLine, saveBudgetRevision, rollbackToRevision } from "./actions";
 import { CurrencyInput } from "@/components/CurrencyInput";
-import { AutoSubmitField } from "@/components/AutoSubmitField";
+import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 import { UndoListener } from "@/components/UndoListener";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { ResizableColumns } from "@/components/ResizableColumns";
@@ -15,7 +15,21 @@ async function getProject(number: string) {
   return prisma.project.findUnique({
     where: { number },
     include: {
-      budgetLines: { orderBy: [{ csiCode: "asc" }, { description: "asc" }], include: { bidPackage: true } },
+      budgetLines: {
+        orderBy: [{ csiCode: "asc" }, { description: "asc" }],
+        include: {
+          bidPackage: {
+            include: {
+              invitations: {
+                include: {
+                  subcontractor: true,
+                  bids: { orderBy: { submittedAt: "desc" }, take: 1 },
+                },
+              },
+            },
+          },
+        },
+      },
       budgetRevisions: { orderBy: { revNo: "desc" } },
     },
   });
@@ -147,6 +161,17 @@ export default async function BudgetPage({
                     {group.lines.map((line) => {
               const formId = `bl-${line.id}`;
               const verified = Boolean(line.awardedTo);
+              const leveledSubs = (line.bidPackage?.invitations ?? [])
+                .filter((inv) => inv.bids[0]?.submittedAt)
+                .map((inv) => inv.subcontractor.name);
+              const awardedToOptions = [
+                { value: "", label: leveledSubs.length ? "— select —" : "— no leveled bids yet —" },
+                ...leveledSubs.map((n) => ({ value: n, label: n })),
+                // Keep whatever's already on record even if it's not a leveled sub
+                // (manually entered before this became a dropdown), so switching
+                // to a dropdown never silently drops existing data.
+                ...(line.awardedTo && !leveledSubs.includes(line.awardedTo) ? [{ value: line.awardedTo, label: `${line.awardedTo} (not in bid tab)` }] : []),
+              ];
               return (
                 <tr key={line.id}>
                   <td className="mono" style={{ paddingLeft: 28, color: "var(--text-faint)" }}>
@@ -193,7 +218,7 @@ export default async function BudgetPage({
                       />
                     </td>
                     <td>
-                      <AutoSubmitField form={formId} className="tfld" name="awardedTo" defaultValue={line.awardedTo ?? ""} />
+                      <AutoSubmitSelect form={formId} className="tfld" name="awardedTo" defaultValue={line.awardedTo ?? ""} options={awardedToOptions} />
                     </td>
                     <td>
                       {line.tags.map((t) => (
