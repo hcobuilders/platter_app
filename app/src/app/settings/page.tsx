@@ -42,7 +42,7 @@ export default async function SettingsPage({
           <div className="avatar">JL</div>
         </div>
       </div>
-      <div style={{ background: "var(--bg-surface)", minHeight: "calc(100vh - 55px)", padding: "24px 28px" }}>
+      <div style={{ background: "var(--bg-surface)", color: "var(--text)", minHeight: "calc(100vh - 55px)", padding: "24px 28px" }}>
         <div className="tabs">
           <a href="?view=flags" className={view === "flags" ? "on" : undefined}>
             Flags

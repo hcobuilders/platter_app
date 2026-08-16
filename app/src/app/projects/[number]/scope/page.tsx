@@ -118,7 +118,7 @@ export default async function ScopePage({
                     />
                   </td>
                   <td>
-                    <select form={formId} className="fld" name="kind" defaultValue={line.kind}>
+                    <select form={formId} className="fld" name="kind" defaultValue={line.kind} style={{ minWidth: 90 }}>
                       {KIND_OPTIONS.map((k) => (
                         <option key={k} value={k}>
                           {KIND_LABEL[k]}

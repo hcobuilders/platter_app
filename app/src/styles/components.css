@@ -24,7 +24,7 @@
 .pnav a.is-disabled{color:var(--text-faint);pointer-events:none;cursor:not-allowed}
 .pnav a .dot2{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;flex:none}
 .pnav a.on .dot2{opacity:1;background:var(--accent-strong)}
-.wmain{padding:24px 28px;background:var(--bg-surface);min-height:100%}
+.wmain{padding:24px 28px;background:var(--bg-surface);color:var(--text);min-height:100%}
 .cmd{background:var(--bg-shell);border-top:1px solid rgba(0,0,0,.5);padding:10px 18px;display:flex;align-items:center;gap:12px;font:400 12.5px/1 var(--font-data);color:var(--text-invert-dim)}
 
 /* ── chip / status (E-29) ── */
