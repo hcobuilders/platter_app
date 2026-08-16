@@ -1,7 +1,10 @@
+import { Fragment } from "react";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
 import { updateBudgetLine, saveBudgetRevision } from "./actions";
+import { CurrencyInput } from "@/components/CurrencyInput";
+import { AutoSubmitField } from "@/components/AutoSubmitField";
 
 export const dynamic = "force-dynamic";
 
@@ -9,18 +12,38 @@ async function getProject(number: string) {
   return prisma.project.findUnique({
     where: { number },
     include: {
-      budgetLines: { orderBy: { csiCode: "asc" } },
+      budgetLines: { orderBy: { csiCode: "asc" }, include: { bidPackage: true } },
       budgetRevisions: { orderBy: { revNo: "desc" } },
     },
   });
 }
+
+// CSI 2026 (current) division -> legacy 16-division MasterFormat, for the
+// display toggle (D-11: storage stays CSI 2026, 16-div is a transform only).
+// Only the divisions this seed data actually uses are mapped.
+const DIVISION_48: Record<string, string> = {
+  "03": "Concrete",
+  "05": "Metals",
+  "07": "Thermal & Moisture Protection",
+  "09": "Finishes",
+  "23": "HVAC",
+  "26": "Electrical",
+};
+const DIVISION_16: Record<string, { code: string; name: string }> = {
+  "03": { code: "03", name: "Concrete" },
+  "05": { code: "05", name: "Metals" },
+  "07": { code: "07", name: "Moisture Protection" },
+  "09": { code: "09", name: "Finishes" },
+  "23": { code: "15", name: "Mechanical" },
+  "26": { code: "16", name: "Electrical" },
+};
 
 export default async function BudgetPage({
   params,
   searchParams,
 }: {
   params: Promise<{ number: string }>;
-  searchParams: Promise<{ view?: string; revA?: string; revB?: string }>;
+  searchParams: Promise<{ view?: string; revA?: string; revB?: string; divView?: string }>;
 }) {
   const { number } = await params;
   const sp = await searchParams;
@@ -28,20 +51,46 @@ export default async function BudgetPage({
   if (!project) notFound();
 
   const view = sp.view ?? "table";
+  const divView = sp.divView === "16" ? "16" : "48";
 
   const total = project.budgetLines.reduce((s, b) => s + b.budget, 0n);
   const currentTotal = project.budgetLines.reduce((s, b) => s + b.current, 0n);
   const buyoutTotal = project.budgetLines.reduce((s, b) => s + (b.buyoutExpected ?? 0n), 0n);
 
+  // Group lines under their division — CSI 2026 (raw csiCode) or the
+  // legacy-16 transform, per the toggle.
+  type Group = { code: string; name: string; lines: typeof project.budgetLines };
+  const groups = new Map<string, Group>();
+  for (const line of project.budgetLines) {
+    const raw = line.csiCode ?? "00";
+    const key = divView === "16" ? (DIVISION_16[raw]?.code ?? raw) : raw;
+    const name = divView === "16" ? (DIVISION_16[raw]?.name ?? "Other") : (DIVISION_48[raw] ?? "Other");
+    if (!groups.has(key)) groups.set(key, { code: key, name, lines: [] });
+    groups.get(key)!.lines.push(line);
+  }
+  const sortedGroups = Array.from(groups.values()).sort((a, b) => a.code.localeCompare(b.code));
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="tabs">
-        <a href="?view=table" className={view === "table" ? "on" : undefined}>
-          Main view
-        </a>
-        <a href="?view=revisions" className={view === "revisions" ? "on" : undefined}>
-          Revisions
-        </a>
+      <div className="flex justify-between items-center">
+        <div className="tabs">
+          <a href={`?view=table&divView=${divView}`} className={view === "table" ? "on" : undefined}>
+            Main view
+          </a>
+          <a href="?view=revisions" className={view === "revisions" ? "on" : undefined}>
+            Revisions
+          </a>
+        </div>
+        {view === "table" && (
+          <div className="tabs">
+            <a href="?view=table&divView=48" className={divView === "48" ? "on" : undefined}>
+              CSI 2026
+            </a>
+            <a href="?view=table&divView=16" className={divView === "16" ? "on" : undefined}>
+              16-division
+            </a>
+          </div>
+        )}
       </div>
 
       {view === "table" && (
@@ -56,56 +105,81 @@ export default async function BudgetPage({
                 <th className="n">Buyout exp.</th>
                 <th>Awarded to</th>
                 <th>Tags</th>
-                <th></th>
               </tr>
             </thead>
             <tbody>
-              {project.budgetLines.map((line) => {
-                const formId = `bl-${line.id}`;
-                const verified = Boolean(line.awardedTo);
+              {sortedGroups.map((group) => {
+                const groupBudget = group.lines.reduce((s, b) => s + b.budget, 0n);
+                const groupCurrent = group.lines.reduce((s, b) => s + b.current, 0n);
+                const groupBuyout = group.lines.reduce((s, b) => s + (b.buyoutExpected ?? 0n), 0n);
                 return (
-                  <tr key={line.id}>
-                    <td className="mono">{line.csiCode}</td>
-                    <td>{line.description}</td>
+                  <Fragment key={group.code}>
+                    <tr style={{ background: "var(--bg-inset)" }}>
+                      <td className="mono" style={{ fontWeight: 700 }}>
+                        {group.code}
+                      </td>
+                      <td style={{ fontWeight: 700 }}>{group.name}</td>
+                      <td className="n mono" style={{ fontWeight: 700 }}>
+                        {formatCents(groupBudget)}
+                      </td>
+                      <td className="n mono" style={{ fontWeight: 700 }}>
+                        {formatCents(groupCurrent)}
+                      </td>
+                      <td className="n mono" style={{ fontWeight: 700 }}>
+                        {formatCents(groupBuyout)}
+                      </td>
+                      <td colSpan={2}></td>
+                    </tr>
+                    {group.lines.map((line) => {
+              const formId = `bl-${line.id}`;
+              const verified = Boolean(line.awardedTo);
+              return (
+                <tr key={line.id}>
+                  <td className="mono" style={{ paddingLeft: 28, color: "var(--text-faint)" }}>
+                    {line.bidPackage?.code ?? ""}
+                  </td>
+                  <td style={{ paddingLeft: 28 }}>
+                    {line.bidPackage ? (
+                      <>
+                        <span className="chip" style={{ marginRight: 8 }}>
+                          {line.bidPackage.code}
+                        </span>
+                        {line.bidPackage.name}
+                      </>
+                    ) : (
+                      line.description
+                    )}
+                  </td>
                     <td className="n">
-                      <input
+                      <CurrencyInput
                         form={formId}
-                        className="fld"
+                        className="tfld n"
                         name="budget"
-                        type="number"
-                        step="0.01"
                         defaultValue={Number(line.budget) / 100}
-                        style={{ width: 110, textAlign: "right" }}
+                        autoSubmit
                       />
                     </td>
                     <td className="n">
-                      <input
+                      <CurrencyInput
                         form={formId}
-                        className="fld"
+                        className="tfld n"
                         name="current"
-                        type="number"
-                        step="0.01"
                         defaultValue={Number(line.current) / 100}
-                        style={{
-                          width: 110,
-                          textAlign: "right",
-                          color: verified ? "var(--success-text)" : "var(--info-text)",
-                        }}
+                        style={{ color: verified ? "var(--success-text)" : "var(--info-text)" }}
+                        autoSubmit
                       />
                     </td>
                     <td className="n">
-                      <input
+                      <CurrencyInput
                         form={formId}
-                        className="fld"
+                        className="tfld n"
                         name="buyoutExpected"
-                        type="number"
-                        step="0.01"
                         defaultValue={line.buyoutExpected ? Number(line.buyoutExpected) / 100 : ""}
-                        style={{ width: 110, textAlign: "right" }}
+                        autoSubmit
                       />
                     </td>
                     <td>
-                      <input form={formId} className="fld" name="awardedTo" defaultValue={line.awardedTo ?? ""} style={{ width: 140 }} />
+                      <AutoSubmitField form={formId} className="tfld" name="awardedTo" defaultValue={line.awardedTo ?? ""} />
                     </td>
                     <td>
                       {line.tags.map((t) => (
@@ -114,12 +188,10 @@ export default async function BudgetPage({
                         </span>
                       ))}
                     </td>
-                    <td>
-                      <button form={formId} className="btn btn--sm" type="submit">
-                        Save
-                      </button>
-                    </td>
                   </tr>
+                );
+                    })}
+                  </Fragment>
                 );
               })}
             </tbody>
@@ -139,13 +211,13 @@ export default async function BudgetPage({
                 </td>
                 <td></td>
                 <td></td>
-                <td></td>
               </tr>
             </tfoot>
           </table>
           <p style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 10 }}>
-            Current-value color follows E-02/E-39&apos;s rule — sea green once a real award is on
-            record (Awarded to is set), cerulean while it&apos;s still an estimate.
+            Changes are saved automatically. Current-value color follows E-02/E-39&apos;s rule —
+            sea green once a real award is on record (Awarded to is set), cerulean while it&apos;s
+            still an estimate.
           </p>
 
           {project.budgetLines.map((line) => (

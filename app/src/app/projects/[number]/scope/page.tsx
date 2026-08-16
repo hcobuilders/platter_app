@@ -98,27 +98,27 @@ export default async function ScopePage({
                 <tr key={line.id}>
                   <td className="mono">{line.seq}</td>
                   <td>
-                    <input form={formId} className="fld" name="csiCode" defaultValue={line.csiCode ?? ""} style={{ width: 90 }} />
+                    <input form={formId} className="tfld mono" name="csiCode" defaultValue={line.csiCode ?? ""} style={{ width: 90 }} />
                   </td>
                   <td>
-                    <input form={formId} className="fld" name="description" defaultValue={line.description} style={{ minWidth: 220 }} />
+                    <input form={formId} className="tfld" name="description" defaultValue={line.description} style={{ minWidth: 220 }} />
                   </td>
                   <td>
-                    <input form={formId} className="fld" name="unit" defaultValue={line.unit ?? ""} style={{ width: 60 }} />
+                    <input form={formId} className="tfld" name="unit" defaultValue={line.unit ?? ""} style={{ width: 60 }} />
                   </td>
                   <td className="n">
                     <input
                       form={formId}
-                      className="fld"
+                      className="tfld n"
                       name="qty"
                       type="number"
                       step="any"
                       defaultValue={line.qty ?? ""}
-                      style={{ width: 80, textAlign: "right" }}
+                      style={{ width: 80 }}
                     />
                   </td>
                   <td>
-                    <select form={formId} className="fld" name="kind" defaultValue={line.kind} style={{ minWidth: 90 }}>
+                    <select form={formId} className="tfld" name="kind" defaultValue={line.kind} style={{ minWidth: 90 }}>
                       {KIND_OPTIONS.map((k) => (
                         <option key={k} value={k}>
                           {KIND_LABEL[k]}
@@ -138,7 +138,7 @@ export default async function ScopePage({
                   <td>
                     <input
                       form={formId}
-                      className="fld"
+                      className="tfld n"
                       name="longLeadWeeks"
                       type="number"
                       defaultValue={line.longLeadWeeks ?? ""}

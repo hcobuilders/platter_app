@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { submitQuote, declineToBid } from "./actions";
+import { CurrencyInput } from "@/components/CurrencyInput";
 
 export const dynamic = "force-dynamic";
 
@@ -74,13 +75,11 @@ export default async function QuotePage({ params }: { params: Promise<{ token: s
                     />
                   </td>
                   <td className="n">
-                    <input
-                      className="fld"
+                    <CurrencyInput
+                      className="tfld n"
                       name={`amount-${line.id}`}
-                      type="number"
-                      step="0.01"
                       defaultValue={existing ? Number(existing.amount) / 100 : ""}
-                      style={{ width: 130, textAlign: "right" }}
+                      style={{ width: 130 }}
                     />
                   </td>
                 </tr>

@@ -47,7 +47,7 @@ async function main() {
 
   const templates = await Promise.all(
     [
-      { code: "3A", name: "Concrete", csiCodes: ["03 10 00", "03 20 00", "03 30 00"], defaultFlags: ["Schedule required"] },
+      { code: "3A", name: "CIP Concrete", csiCodes: ["03 10 00", "03 20 00", "03 30 00"], defaultFlags: ["Schedule required"] },
       { code: "5A", name: "Structural Steel", csiCodes: ["05 12 00"], defaultFlags: [] },
       { code: "9A", name: "Drywall & Framing", csiCodes: ["09 21 00"], defaultFlags: [] },
     ].map((t) => prisma.packageTemplate.upsert({ where: { code: t.code }, update: {}, create: t }))
@@ -75,19 +75,47 @@ async function main() {
     },
   });
 
-  // ── Package 3A — Concrete, fully modeled through scope/bid/budget ──
+  // ── Package 3A — CIP Concrete, fully modeled through scope/bid/budget ──
   const pkg3A = await prisma.bidPackage.upsert({
     where: { projectId_code: { projectId: project.id, code: "3A" } },
-    update: {},
+    update: { name: "CIP Concrete" },
     create: {
       projectId: project.id,
       code: "3A",
-      name: "Concrete",
+      name: "CIP Concrete",
       csiCodes: ["03 10 00", "03 20 00", "03 30 00"],
       status: "leveling",
       budgetAmount: 1_350_000_00n,
       requiresBond: true,
       templateId: templateByCode["3A"].id,
+    },
+  });
+
+  // Two more packages under the same CSI division (03) — demonstrates
+  // multiple packages nesting under one division summary in the budget
+  // table, and package code/name shown as genuinely separate fields.
+  const pkg3B = await prisma.bidPackage.upsert({
+    where: { projectId_code: { projectId: project.id, code: "3B" } },
+    update: { name: "Site Concrete" },
+    create: {
+      projectId: project.id,
+      code: "3B",
+      name: "Site Concrete",
+      csiCodes: ["03 30 00"],
+      status: "scoping",
+      budgetAmount: 180_000_00n,
+    },
+  });
+  const pkg3C = await prisma.bidPackage.upsert({
+    where: { projectId_code: { projectId: project.id, code: "3C" } },
+    update: { name: "Precast Concrete Structure" },
+    create: {
+      projectId: project.id,
+      code: "3C",
+      name: "Precast Concrete Structure",
+      csiCodes: ["03 40 00"],
+      status: "scoping",
+      budgetAmount: 420_000_00n,
     },
   });
 
@@ -183,8 +211,16 @@ async function main() {
   void bidBayline;
 
   // ── Budget (matches 5.2's main view, post-E-39 color fix) ──────
+  // Division 03 carries three packages (3A/3B/3C) — the budget table
+  // groups these under one "03 — Concrete" division summary row.
   await prisma.budgetLine.create({
-    data: { projectId: project.id, bidPackageId: pkg3A.id, csiCode: "03", description: "3A — Concrete", budget: 1_350_000_00n, current: 1_308_600_00n, buyoutExpected: 1_290_000_00n, awardedTo: "Bayline Concrete", tags: ["Buyout ready"] },
+    data: { projectId: project.id, bidPackageId: pkg3A.id, csiCode: "03", description: "3A — CIP Concrete", budget: 1_350_000_00n, current: 1_308_600_00n, buyoutExpected: 1_290_000_00n, awardedTo: "Bayline Concrete", tags: ["Buyout ready"] },
+  });
+  await prisma.budgetLine.create({
+    data: { projectId: project.id, bidPackageId: pkg3B.id, csiCode: "03", description: "3B — Site Concrete", budget: 180_000_00n, current: 180_000_00n, tags: [] },
+  });
+  await prisma.budgetLine.create({
+    data: { projectId: project.id, bidPackageId: pkg3C.id, csiCode: "03", description: "3C — Precast Concrete Structure", budget: 420_000_00n, current: 420_000_00n, tags: [] },
   });
   await prisma.budgetLine.create({
     data: { projectId: project.id, csiCode: "05", description: "5A — Structural Steel", budget: 1_980_000_00n, current: 1_940_000_00n, tags: ["Long lead"] },

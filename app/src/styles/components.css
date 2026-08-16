@@ -71,6 +71,13 @@
 .mono{font-family:var(--font-data);font-variant-numeric:tabular-nums}
 .fld{border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;background:var(--bg-surface-raised);font-family:inherit;width:100%}
 .fld:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px}
+
+/* In-table editable cells — no visible box until hovered/focused, so a
+   table full of editable values still reads as a clean table, not a form. */
+.tfld{border:1px solid transparent;border-radius:var(--r-xs);padding:4px 6px;margin:-4px -6px;font-size:13px;font-family:inherit;color:inherit;background:transparent;width:100%}
+.tfld:hover{background:var(--bg-inset)}
+.tfld:focus-visible{outline:none;border-color:var(--border-strong);background:var(--bg-surface-raised);box-shadow:0 0 0 2px var(--accent-wash)}
+.tfld.n{font-family:var(--font-data);font-variant-numeric:tabular-nums;text-align:right}
 .cf{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .lbl{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
 
