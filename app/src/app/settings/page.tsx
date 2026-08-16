@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Logo } from "@/components/Logo";
-import { createFlag, deleteFlag, createTrade, deleteTrade, createTag, deleteTag } from "./actions";
+import { createFlag, deleteFlag, createTrade, deleteTrade, createTag, deleteTag, uploadBidBondTemplate } from "./actions";
 import { CsiCodeInput } from "@/components/CsiCodeInput";
 
 export const dynamic = "force-dynamic";
@@ -19,10 +19,11 @@ export default async function SettingsPage({
 }) {
   const { view = "flags" } = await searchParams;
 
-  const [flags, trades, tags] = await Promise.all([
+  const [flags, trades, tags, bidBondTemplate] = await Promise.all([
     prisma.flag.findMany({ orderBy: { label: "asc" }, include: { _count: { select: { projectFlags: true } } } }),
     prisma.trade.findMany({ orderBy: { name: "asc" } }),
     prisma.tag.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { projectTags: true } } } }),
+    prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
   ]);
 
   return (
@@ -53,6 +54,9 @@ export default async function SettingsPage({
           </a>
           <a href="?view=tags" className={view === "tags" ? "on" : undefined}>
             Tags
+          </a>
+          <a href="?view=templates" className={view === "templates" ? "on" : undefined}>
+            Templates
           </a>
         </div>
 
@@ -197,6 +201,53 @@ export default async function SettingsPage({
                   Add tag
                 </button>
               </form>
+            </div>
+          </div>
+        )}
+
+        {view === "templates" && (
+          <div className="flex flex-col gap-6" style={{ maxWidth: 520 }}>
+            <div>
+              <div className="lbl" style={{ marginBottom: 8 }}>
+                Bid bond template
+              </div>
+              {bidBondTemplate ? (
+                <div className="cclist">
+                  <span>
+                    {bidBondTemplate.filename}
+                    <span style={{ color: "var(--text-faint)", marginLeft: 8, fontSize: 11.5 }}>
+                      uploaded {bidBondTemplate.uploadedAt.toLocaleDateString()}
+                    </span>
+                  </span>
+                  <a href="/api/bid-bond-template" className="btn btn--sm">
+                    Download
+                  </a>
+                </div>
+              ) : (
+                <p style={{ color: "var(--text-dim)", fontSize: 13 }}>No template uploaded yet.</p>
+              )}
+            </div>
+            <div className="card">
+              <div className="lbl" style={{ marginBottom: 10 }}>
+                {bidBondTemplate ? "Replace template" : "Upload template"}
+              </div>
+              <form
+                action={async (fd) => {
+                  "use server";
+                  await uploadBidBondTemplate(fd);
+                }}
+                className="flex flex-col gap-3"
+              >
+                <input className="fld" name="template" type="file" required />
+                <button className="btn btn--acc" type="submit" style={{ width: "fit-content" }}>
+                  Upload
+                </button>
+              </form>
+              <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 10 }}>
+                Stored on the app&apos;s own volume for now — will move to SharePoint/OneDrive once
+                that integration is wired up. Shown as a download whenever a project or package has
+                &quot;Bid bond required&quot; checked.
+              </p>
             </div>
           </div>
         )}

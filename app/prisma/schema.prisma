@@ -468,6 +468,19 @@ model LifecycleScenario {
   sourcePage            Int?
 }
 
+// Small global files the app itself owns (e.g. the bid bond template) —
+// stored on the app service's persistent volume until SharePoint/OneDrive
+// integration replaces this. Keyed by a fixed string so there's one row per
+// purpose rather than a generic document library.
+model AppFile {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  filename    String
+  storagePath String
+  mimeType    String?
+  uploadedAt  DateTime @default(now())
+}
+
 // ── Settings — controlled vocabularies (E-05/E-06, D-41, Batch 6) ──────
 
 enum FlagType {

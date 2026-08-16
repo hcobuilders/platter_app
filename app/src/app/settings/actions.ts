@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { FlagType } from "@/generated/prisma/enums";
+import { saveFile } from "@/lib/storage";
 
 function str(fd: FormData, key: string): string {
   return String(fd.get(key) ?? "").trim();
@@ -46,5 +47,21 @@ export async function createTag(formData: FormData) {
 export async function deleteTag(id: string) {
   await prisma.projectTag.deleteMany({ where: { tagId: id } });
   await prisma.tag.delete({ where: { id } });
+  revalidatePath("/settings");
+}
+
+export async function uploadBidBondTemplate(formData: FormData) {
+  const file = formData.get("template");
+  if (!(file instanceof File) || file.size === 0) return;
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const storagePath = await saveFile(`bid-bond-template/${file.name}`, buffer);
+
+  await prisma.appFile.upsert({
+    where: { key: "bid_bond_template" },
+    update: { filename: file.name, storagePath, mimeType: file.type || null, uploadedAt: new Date() },
+    create: { key: "bid_bond_template", filename: file.name, storagePath, mimeType: file.type || null },
+  });
+
   revalidatePath("/settings");
 }

@@ -102,6 +102,11 @@ export default async function ProjectOverviewPage({
               ]}
             />
           </div>
+          {project.bidBondRequired && (
+            <a href="/api/bid-bond-template" className="btn btn--sm btn--acc">
+              Download bid bond template
+            </a>
+          )}
         </form>
       </section>
 
