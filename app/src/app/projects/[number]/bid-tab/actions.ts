@@ -64,3 +64,15 @@ export async function setLineIncluded(projectNumber: string, bidLineId: string, 
   });
   revalidatePath(`/projects/${projectNumber}/bid-tab`);
 }
+
+// Direct GC edit of a matched cell's price — e.g. correcting a parsed value
+// or entering a price taken over the phone. Marks the line's source as
+// "ours" so the grid's source badge reflects that this number no longer
+// came verbatim from the sub's own submission.
+export async function updateBidLineAmount(projectNumber: string, bidLineId: string, amountCents: bigint) {
+  await prisma.bidLine.update({
+    where: { id: bidLineId },
+    data: { amount: amountCents, source: "ours", confidence: null },
+  });
+  revalidatePath(`/projects/${projectNumber}/bid-tab`);
+}

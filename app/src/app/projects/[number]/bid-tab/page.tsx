@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
 import { acceptPlug, acceptSubAddedAsScopeLine, trackOnlySubAdded, setLineIncluded } from "./actions";
 import { ResizableColumns } from "@/components/ResizableColumns";
+import { BidCellInput } from "./BidCellInput";
 
 export const dynamic = "force-dynamic";
 
@@ -156,7 +157,7 @@ export default async function BidTabPage({
             </tr>
           </thead>
           <tbody>
-            {pkg.scopeLineItems.map((line) => (
+            {pkg.scopeLineItems.map((line, rowIdx) => (
               <tr key={line.id}>
                 <td className="desc">
                   {line.description}{" "}
@@ -164,7 +165,7 @@ export default async function BidTabPage({
                     {KIND_LABEL[line.kind]}
                   </span>
                 </td>
-                {invitations.map((inv) => {
+                {invitations.map((inv, colIdx) => {
                   if (inv.intent === "no_bid") {
                     return (
                       <td key={inv.id} style={{ color: "var(--text-faint)", textAlign: "center" }}>
@@ -207,9 +208,15 @@ export default async function BidTabPage({
                   const isAltOrVA = line.kind === "alternate" || line.kind === "va_option";
                   return (
                     <td key={inv.id} className="n">
-                      <span style={matched.included ? undefined : { color: "var(--text-faint)", textDecoration: "line-through" }}>
-                        {formatCents(matched.amount)}
-                      </span>
+                      <div style={matched.included ? undefined : { opacity: 0.5, textDecoration: "line-through" }}>
+                        <BidCellInput
+                          bidLineId={matched.id}
+                          projectNumber={number}
+                          defaultAmountCents={matched.amount}
+                          row={rowIdx}
+                          col={colIdx}
+                        />
+                      </div>
                       <div className={`srcb srcb--${matched.source}`}>
                         <i />
                         {SOURCE_LABEL[matched.source]}
