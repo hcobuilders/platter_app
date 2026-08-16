@@ -155,7 +155,16 @@ Every screen and state I'll draw, in build order. Batches 1–5 are phase 1 (the
 | 5.5 | Automation & customization *(added S11, D-41 — not in the original index)* | No-code rule builder (condition → action) for plug recommendations and gap-flagging thresholds · reusable custom-column library · notification preferences |
 
 ### Batch 6 — Settings (minimal, phase 1)
-Theme + accent, contact info & signature, OAuth connections, trades/tags/package templates.
+| # | Screen | States |
+|---|---|---|
+| 6.1 | Appearance | Theme (light active, dark disabled-with-reason) · display preferences (compact rows, reduce motion, default budget view) · brand palette (read-only reference) |
+| 6.2 | Profile & signature | Contact info · signature & avatar |
+| 6.3 | Connected accounts | Overview (Outlook connected, SharePoint not yet) · Outlook detail (sending identity, send test, disconnect) · connect flow |
+| 6.4 | Flags library *(closes E-06)* | List · new/edit flag (type-derived color) · merge flags |
+| 6.5 | Trades & tags | Trades list · tags list |
+| 6.6 | Package templates | List · new/edit template |
+
+Expanded from the original one-line spec into concrete screens in S12; the Flags panel obligation (E-06) is folded in as 6.4.
 
 ### Phase 2 (wireframed later)
 Subcontract workflow · submittal workflow · documents & templates builder · project intelligence + printable report · full sub database management.

@@ -6,15 +6,16 @@ Paste this as the first message in the new chat, with `DECISION_LOG.md` attached
 
 ## Prompt to paste
 
-> Continuing the Platter build. Read `DECISION_LOG.md` for full context — 41 locked decisions (D-01 → D-41), 33 applied staged edits (E-01 → E-12, E-20 → E-33 with gaps), and one dropped group (E-13 → E-19, see below).
+> Continuing the Platter build. Read `DECISION_LOG.md` for full context — 42 locked decisions (D-01 → D-42), 33 applied staged edits (E-01 → E-12, E-20 → E-33 with gaps), and one dropped group (E-13 → E-19, see below).
 >
-> Do this:
+> **Step 1 (wireframes) is complete — all 6 batches, 38 screens / 134 states.** There is no Batch 7. What happens next depends entirely on what the owner says when they open this chat:
 >
-> 1. **Draw Batch 6 — Settings** per the index in `STEP1_PLAN.md` (minimal, phase 1: theme + accent, contact info & signature, OAuth connections, trades/tags/package templates). It also now owes: the Flags panel (E-06, controlled vocabulary CRUD), and per D-41's closing note, Settings should reuse 5.5's rule/custom-field pattern rather than invent a second customization UI.
-> 2. Keep updating `DECISION_LOG.md` as we go, same convention as the last seven sessions.
-> 3. **GitHub issue tracking is live** on `hcobuilders/platter_app` — new E-## edits get opened as issues using the template established in S9 (title `E-## — <change>`, body: Change / Rationale / Applies to / Status; labels `enhancement` + `batch-N`), and closed immediately if implemented same-session. Check current issues before creating new ones so the template stays consistent.
+> 1. If they're bringing feedback on Batch 5 or 6 (the two batches not yet reviewed as of S12), stage it the same way every prior batch's feedback was handled — apply it directly if it's easy, log it as the next E-## number, open+close a GitHub issue for it.
+> 2. If they say to proceed, the next real step is **Step 2 — owner approval of the full wireframe set**, then **Step 3 — the interactive click-through prototype on real Postgres** (D-08/R-02). That's a different kind of work (a real build, not another wireframe batch) — don't default into drawing more screens without confirming that's actually next.
+> 3. Keep updating `DECISION_LOG.md` as we go, same convention as the last eight sessions.
+> 4. **GitHub issue tracking is live** on `hcobuilders/platter_app` — new E-## edits get opened as issues using the template established in S9 (title `E-## — <change>`, body: Change / Rationale / Applies to / Status; labels `enhancement` + `batch-N`), and closed immediately if implemented same-session. Locked decisions (D-##) don't get issues — only staged E-## edits do, per precedent set in S11/S12.
 >
-> Things carried forward, not blocking: Q-13 (which historical project seeds the Postgres database), Q-16 (lifecycle-cost table shape, new schema surface raised in Batch 5, not yet reviewed).
+> Open questions carried forward, none blocking: Q-05, Q-06, Q-09, Q-12, Q-13, Q-14, Q-15, Q-16.
 
 ---
 
@@ -34,8 +35,9 @@ Paste this as the first message in the new chat, with `DECISION_LOG.md` attached
 | `design/wireframes/batch-3-project-workspace.html` | Project workspace & scope — 7 screens, 23 states |
 | `design/wireframes/batch-4-itb-planroom.html` | ITB & sub-facing planroom — 10 screens, 32 states |
 | `design/wireframes/batch-5-bidtab-budget.html` | Bid tab & budget — 5 screens, 21 states (includes 5.5, added beyond the original plan) |
+| `design/wireframes/batch-6-settings.html` | Settings — 6 screens, 15 states |
 
-**Schedule position:** Step 1 of 8 (wireframes). Batches 1–5 drawn, 6 remaining. Steps 2–8 (approval → interactive build → Railway → integrations) not started.
+**Schedule position:** Step 1 of 8 (wireframes) — **complete**, 38 screens / 134 states across 6 batches. Step 2 (owner approval) is next; Steps 3–8 (interactive build → Railway → integrations) not started.
 
 **GitHub:** `hcobuilders/platter_app` (branch `Step_1_DESIGN`) now tracks E-## edits as issues — established S9, no prior issues existed to inherit a template from, so one was designed from the existing decision-log convention.
 

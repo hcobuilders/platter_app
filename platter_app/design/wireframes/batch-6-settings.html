@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platter — Batch 6 Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(1100px 620px at 86% -10%,rgba(34,124,157,.24),transparent 62%),radial-gradient(820px 520px at 2% 104%,rgba(23,195,178,.1),transparent 60%);background-attachment:fixed}
+.doc{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.rail{border-right:1px solid var(--border-invert);padding:24px 0 80px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.rail .brand{display:flex;align-items:center;gap:10px;padding:0 20px 22px}
+.rail .brand b{font:700 20px/1 var(--font-display);letter-spacing:-.04em}
+.rail h4{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:16px 20px 8px;margin:0}
+.rail a{display:block;padding:8px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:14px;border-left:2px solid transparent}
+.rail a:hover{color:var(--text-invert);background:var(--bg-shell-raised)}
+.rail a.on{color:var(--text-invert);border-left-color:var(--accent-fill);background:var(--bg-shell-raised)}
+.rail a i{font-style:normal;font:400 11px var(--font-data);color:var(--accent-fill);margin-right:8px}
+main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
+.hdr{border-bottom:1px solid var(--border-invert);padding-bottom:22px}
+.eyebrow{font:500 10.5px/1 var(--font-data);letter-spacing:.15em;text-transform:uppercase;color:var(--accent-fill);margin:0 0 9px}
+.hdr h1{font:700 clamp(32px,5.2vw,49px)/1 var(--font-display);letter-spacing:-.035em;margin:0}
+.hdr p{color:var(--text-invert-dim);max-width:70ch;margin:14px 0 0}
+.hdr .flag{margin-top:16px;display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border-invert);border-left:2px solid var(--accent-fill);border-radius:var(--r-sm);background:var(--bg-shell-raised);max-width:70ch;font-size:12.5px;color:var(--text-invert-dim)}
+.hdr .flag b{color:var(--text-invert)}
+.screen{margin-top:62px;scroll-margin-top:20px}
+.screen>header{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--border-invert);padding-bottom:12px;margin-bottom:16px}
+.screen>header .no{font:400 12px var(--font-data);color:var(--accent-fill)}
+.screen>header h2{font:600 22px/1.1 var(--font-display);letter-spacing:-.02em;margin:0}
+.screen>header .job{color:var(--text-invert-dim);font-size:13px;flex-basis:100%;max-width:76ch}
+.tabs{display:flex;gap:3px;flex-wrap:wrap;margin:0 0 14px;padding:3px;background:var(--bg-shell-raised);border-radius:var(--r-pill);width:fit-content}
+.tabs button{all:unset;cursor:pointer;padding:7px 15px;font:500 10.5px/1 var(--font-data);letter-spacing:.07em;text-transform:uppercase;color:var(--text-invert-dim);border-radius:var(--r-pill)}
+.tabs button:hover{color:var(--text-invert)}
+.tabs button[aria-selected=true]{background:var(--accent-fill);color:var(--accent-on);font-weight:700}
+.tabs button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.frame{background:var(--bg-surface);color:var(--text);border-radius:var(--r-xl);overflow:hidden;position:relative;box-shadow:var(--e-3)}
+.state{display:none}.state.on{display:block}
+.body{padding:22px}
+.ann{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 26px}
+.ann ol{margin:0;padding:0}
+.ann li{list-style:none;display:grid;grid-template-columns:22px 1fr;gap:9px;padding:8px 0;font-size:13px;color:var(--text-invert-dim);border-top:1px solid var(--border-invert)}
+.ann b{color:var(--text-invert);font-weight:600}
+.pin{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--accent-fill);color:var(--accent-on);font:700 10px var(--font-data);margin-top:1px}
+.pin.onf{position:absolute;z-index:6;box-shadow:0 0 0 2.5px var(--bg-surface),0 2px 6px rgba(14,31,39,.3)}
+.callout{border-left:2px solid var(--accent-line);padding:2px 0 2px 16px;margin:26px 0 0;color:var(--text-invert-dim);font-size:14px;max-width:76ch}
+.callout b{color:var(--text-invert)}
+.lbl{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
+
+/* ── internal app chrome ── */
+.topnav{background:var(--bg-shell);color:var(--text-invert);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:11px 18px;gap:16px}
+.topnav .left{display:flex;gap:10px;align-items:center}
+.topnav .center{display:flex;gap:12px;align-items:center;justify-self:center}
+.topnav .right{display:flex;gap:16px;align-items:center;justify-self:end}
+.topnav .logo{display:flex;align-items:center;gap:8px}
+.topnav .crumb{font:400 11px/1 var(--font-data);color:var(--text-invert-faint)}
+.topnav .pname{font:600 15px/1 var(--font-display);letter-spacing:-.02em}
+.topnav nav{display:flex;gap:17px;font:500 10.5px/1 var(--font-data);letter-spacing:.09em;text-transform:uppercase;color:var(--text-invert-dim)}
+.topnav nav span.on{color:var(--accent-fill)}
+.avatar{width:27px;height:27px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 10.5px var(--font-data);color:#fff}
+.wshell{display:grid;grid-template-columns:198px 1fr;min-height:460px}
+.pnav{border-right:1px solid var(--border);padding:14px 0}
+.pnav a{display:flex;align-items:center;gap:9px;padding:9px 16px;font:500 12.5px/1 var(--font-body);color:var(--text-dim);text-decoration:none;border-left:2px solid transparent}
+.pnav a.on{color:var(--text);border-left-color:var(--accent-strong);background:var(--bg-inset);font-weight:600}
+.pnav a:hover{color:var(--text);background:var(--bg-inset)}
+.pnav a .dot2{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;flex:none}
+.pnav a.on .dot2{opacity:1;background:var(--accent-strong)}
+.wmain{padding:20px 22px}
+.cmd{background:var(--bg-shell);border-top:1px solid rgba(0,0,0,.5);padding:10px 18px;display:flex;align-items:center;gap:12px;font:400 12.5px/1 var(--font-data);color:var(--text-invert-dim)}
+
+/* ── chip / status ── */
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x);border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);white-space:nowrap}
+.chip--acc{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
+.chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
+.chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
+.chip--dgr{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
+
+/* ── buttons / toggle ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 14px/1 var(--font-body);padding:10px 17px;min-height:36px;
+  border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text);cursor:pointer}
+.btn--pri{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
+.btn--acc{background:linear-gradient(135deg,var(--c-apricot-300),var(--accent-strong));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--gh{background:transparent;border-color:transparent;color:var(--text-dim)}
+.btn--sm{padding:6px 13px;min-height:29px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.tgl{width:34px;height:20px;border-radius:var(--r-pill);background:var(--border-strong);display:inline-block;position:relative;cursor:pointer;flex:none}
+.tgl::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:var(--e-1)}
+.tgl.on{background:var(--accent-strong)}
+.tgl.on::after{left:16px}
+
+/* ── card / table / provenance ── */
+.card{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);padding:16px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised);border-radius:var(--r-md);overflow:hidden}
+.tbl th{font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;
+  padding:11px 12px;border-bottom:1px solid var(--border-strong);background:var(--bg-inset);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border-hairline);vertical-align:top}
+.tbl th.n,.tbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.tbl tbody tr:hover{background:var(--accent-wash)}
+.fld{border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;background:var(--bg-surface-raised)}
+.cf{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── reused from 5.5: list-row pattern for settings CRUD (D-41) ── */
+.rule{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:8px;background:var(--bg-surface-raised)}
+.rule .rtxt{flex:1;font-size:13px;line-height:1.6}
+.rule .rtxt b{font-family:var(--font-data);font-weight:600;background:var(--bg-inset);padding:1px 7px;border-radius:var(--r-xs);font-size:12px}
+.cclist{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;font-size:13px}
+.ftype{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-dim)}
+.ftype i{width:8px;height:8px;border-radius:50%;flex:none}
+.ftype--req i{background:var(--danger-fill)}
+.ftype--info i{background:var(--info-fill)}
+.ftype--risk i{background:var(--accent-strong)}
+
+@media(max-width:900px){.doc{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border-invert)}.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.cf{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<aside class="rail">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
+    <b>Platter</b>
+  </div>
+  <h4>Batch 6 — Settings</h4>
+  <a href="#s61"><i>6.1</i>Appearance</a>
+  <a href="#s62"><i>6.2</i>Profile &amp; signature</a>
+  <a href="#s63"><i>6.3</i>Connected accounts</a>
+  <a href="#s64"><i>6.4</i>Flags library</a>
+  <a href="#s65"><i>6.5</i>Trades &amp; tags</a>
+  <a href="#s66"><i>6.6</i>Package templates</a>
+  <h4>Done</h4>
+  <a href="#" style="opacity:.4"><i>1.x</i>Intake &amp; parse</a>
+  <a href="#" style="opacity:.4"><i>2.x</i>Dashboard &amp; shell</a>
+  <a href="#" style="opacity:.4"><i>3.x</i>Workspace &amp; scope</a>
+  <a href="#" style="opacity:.4"><i>4.x</i>ITB &amp; planroom</a>
+  <a href="#" style="opacity:.4"><i>5.x</i>Bid tab &amp; budget</a>
+  <h4>Next</h4>
+  <a href="#" style="opacity:.4">Step 2 · owner approval</a>
+</aside>
+
+<main>
+  <div class="hdr">
+    <p class="eyebrow">Step 1 · Wireframes · Batch 6 of 6</p>
+    <h1>Settings</h1>
+    <p>Minimal, phase 1, per the roadmap: theme, contact info, one OAuth connection, and the three controlled vocabularies the rest of the app already depends on. The last batch of Step 1 — after this, all 40 screens across six batches are drawn.</p>
+    <div class="flag"><span>⚙</span><span><b>Reuses 5.5's pattern rather than inventing a fourth.</b> Flags, trades, tags and package templates are all the same list-row shape (<span class="mono">.rule</span> / <span class="mono">.cclist</span>) as the automation rules and custom columns in Batch 5 — one CRUD pattern for every controlled vocabulary in the app, per D-41's closing note.</span></div>
+  </div>
+
+<!-- ═══════ 6.1 ═══════ -->
+<section class="screen" id="s61">
+  <header><span class="no">6.1</span><h2>Appearance</h2>
+    <span class="job">One job: the handful of display preferences that are genuinely personal, without opening the door to re-skinning a system that gets its integrity from fixed semantic color.</span></header>
+
+  <div class="tabs" role="tablist" data-g="a">
+    <button role="tab" aria-selected="true" data-t="a1">Theme</button>
+    <button role="tab" aria-selected="false" data-t="a2">Display preferences</button>
+    <button role="tab" aria-selected="false" data-t="a3">Brand — read only</button>
+  </div>
+
+  <div class="frame">
+    <div class="topnav">
+      <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n1" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n1)"/></g></svg></div><span class="crumb">/ Settings /</span></div>
+      <div class="center"><span class="pname">Settings</span></div>
+      <div class="right"><nav><span>Network</span><span>Data</span><span>Tools</span><span class="on">Settings</span></nav><div class="avatar">JL</div></div>
+    </div>
+    <div class="wshell">
+      <nav class="pnav">
+        <a class="on" href="#"><span class="dot2"></span>Appearance</a>
+        <a href="#"><span class="dot2"></span>Profile &amp; signature</a>
+        <a href="#"><span class="dot2"></span>Connected accounts</a>
+        <a href="#"><span class="dot2"></span>Flags</a>
+        <a href="#"><span class="dot2"></span>Trades &amp; tags</a>
+        <a href="#"><span class="dot2"></span>Package templates</a>
+      </nav>
+      <div class="wmain">
+
+        <div class="state on" id="a1" style="position:relative;max-width:480px">
+          <span class="pin onf" style="left:-9px;top:8px">1</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-hairline)"><span style="font-size:13px">Light — Vellum work surface, Slate shell (default)</span><span class="chip chip--acc">Active</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;opacity:.55"><span style="font-size:13px">Full dark mode</span><span class="chip chip--dgr">Coming in a later phase</span></div>
+          <p style="font-size:12px;color:var(--text-dim);margin-top:10px">D-12 fixes the dark-shell / light-work-surface split as the phase-1 theme; a full dark mode is scoped but not built. Shown disabled-with-reason rather than hidden, matching D-37's pattern for any not-yet-available seam.</p>
+        </div>
+
+        <div class="state" id="a2" style="position:relative;max-width:480px">
+          <span class="pin onf" style="left:-9px;top:8px">2</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border-hairline)"><span style="font-size:13px">Compact table rows</span><span class="tgl"></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border-hairline)"><span style="font-size:13px">Reduce motion</span><span class="tgl"></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0"><span style="font-size:13px">Default budget view</span><span style="display:flex;gap:6px"><span class="chip chip--acc">CSI 2026</span><span class="chip">16-division</span></span></div>
+          <p style="font-size:12px;color:var(--text-dim);margin-top:10px">"Reduce motion" is a manual override of the same <span class="mono">prefers-reduced-motion</span> the whole app already respects at the OS level — useful when the OS default doesn't match what someone wants inside Platter specifically.</p>
+        </div>
+
+        <div class="state" id="a3" style="position:relative;max-width:480px">
+          <span class="pin onf" style="left:-9px;top:8px">3</span>
+          <div class="card">
+            <div class="lbl" style="margin-bottom:10px">Palette — Cerulean &amp; Apricot</div>
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <span style="width:28px;height:28px;border-radius:var(--r-sm);background:var(--c-cerulean-500)"></span>
+              <span style="width:28px;height:28px;border-radius:var(--r-sm);background:var(--accent-strong)"></span>
+              <span style="width:28px;height:28px;border-radius:var(--r-sm);background:var(--c-sea-500)"></span>
+              <span style="width:28px;height:28px;border-radius:var(--r-sm);background:var(--c-coral-500)"></span>
+            </div>
+            <p style="font-size:12px;color:var(--text-dim);margin:0">Not editable here — D-19's semantic mapping (apricot=selection, cerulean=data, sea green=confirmed, grapefruit=flag) is load-bearing across every screen in the app. A user-editable accent would break the vocabulary everyone else also depends on, so this panel is reference only.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="cmd"><span style="color:var(--accent-fill);font-weight:700">/</span> Type a command or a project number</div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Dark mode is shown, not hidden, even though it isn't built</b> — the user should see the seam exists rather than wonder if it's missing entirely.</span></li>
+    <li><span class="pin">2</span><span><b>Display preferences stop at genuinely personal, low-stakes choices.</b> Nothing here changes what a color means, only how dense the layout reads or whether motion plays.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>"Accent" from the roadmap's one-line spec resolved as read-only brand reference, not a color picker</b> — a decision worth stating plainly (D-42) rather than silently picking the more permissive reading and quietly undermining D-19.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 6.2 ═══════ -->
+<section class="screen" id="s62">
+  <header><span class="no">6.2</span><h2>Profile &amp; signature</h2>
+    <span class="job">One job: the identity that stamps every <span class="mono">created_by</span> (D-09) and signs every outbound document.</span></header>
+
+  <div class="tabs" role="tablist" data-g="b">
+    <button role="tab" aria-selected="true" data-t="b1">Contact info</button>
+    <button role="tab" aria-selected="false" data-t="b2">Signature &amp; avatar</button>
+  </div>
+
+  <div class="frame"><div class="body">
+
+    <div class="state on" id="b1" style="position:relative;max-width:480px">
+      <span class="pin onf" style="left:-9px;top:8px">1</span>
+      <div class="cf" style="margin-bottom:12px"><div><div class="lbl">Name</div><div class="fld" style="margin-top:5px">Jordan Larsen</div></div><div><div class="lbl">Title</div><div class="fld" style="margin-top:5px">Senior Estimator</div></div></div>
+      <div class="cf"><div><div class="lbl">Email</div><div class="fld" style="margin-top:5px">jlarsen@lemabuilders.com</div></div><div><div class="lbl">Phone</div><div class="fld" style="margin-top:5px">(352) 555-0148</div></div></div>
+      <span class="btn btn--acc" style="margin-top:14px">Save</span>
+    </div>
+
+    <div class="state" id="b2" style="position:relative;max-width:480px">
+      <span class="pin onf" style="left:-9px;top:8px">2</span>
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px">
+        <div class="avatar" style="width:52px;height:52px;font-size:16px">JL</div>
+        <span class="btn btn--sm">Upload photo</span>
+      </div>
+      <div class="lbl" style="margin-bottom:8px">Email signature</div>
+      <div class="fld" style="min-height:80px;color:var(--text-faint)">Jordan Larsen<br>Senior Estimator, LEMA<br>(352) 555-0148</div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Used on ITB invitations (4.2) and any generated document that closes with a named sender rather than the shared estimating mailbox.</p>
+    </div>
+
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Same four fields the audit trail already needs</b> (D-09's <span class="mono">created_by</span> stamp) — nothing speculative added for a phase-1 profile screen.</span></li>
+  </ol><ol>
+    <li><span class="pin">2</span><span><b>Signature is plain text, not a rich editor</b> — it appears inside already-styled templates (4.2's invite composer), so it only needs to supply words, not formatting.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 6.3 ═══════ -->
+<section class="screen" id="s63">
+  <header><span class="no">6.3</span><h2>Connected accounts</h2>
+    <span class="job">One job: make the email identity ITB invitations actually send from (D-14) visible and swappable, and be honest about what isn't connected yet.</span></header>
+
+  <div class="tabs" role="tablist" data-g="c">
+    <button role="tab" aria-selected="true" data-t="c1">Overview</button>
+    <button role="tab" aria-selected="false" data-t="c2">Outlook — connected</button>
+    <button role="tab" aria-selected="false" data-t="c3">Connect flow</button>
+  </div>
+
+  <div class="frame"><div class="body">
+
+    <div class="state on" id="c1" style="position:relative;max-width:520px">
+      <span class="pin onf" style="left:-9px;top:8px">1</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border-hairline)">
+        <span style="display:flex;align-items:center;gap:10px"><span class="dot" style="width:9px;height:9px;border-radius:2px;background:var(--info-fill)"></span>Outlook / Microsoft Graph</span>
+        <span class="chip chip--ok">Connected</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;opacity:.55">
+        <span style="display:flex;align-items:center;gap:10px"><span class="dot" style="width:9px;height:9px;border-radius:2px;background:var(--border-strong)"></span>SharePoint</span>
+        <span class="chip chip--dgr">Not available ↗</span>
+      </div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:10px">SharePoint is a write-back contract (D-15) already, just not wired to an OAuth connection here yet — Q-15 (one site vs. per-project) is still open and blocks this specifically.</p>
+    </div>
+
+    <div class="state" id="c2" style="position:relative;max-width:480px">
+      <span class="pin onf" style="left:-9px;top:8px">2</span>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px"><div><div class="lbl">Sending identity</div><div style="font-size:14px;margin-top:4px">estimating@lemabuilders.com</div></div><span class="chip chip--ok">Verified</span></div>
+        <div class="lbl" style="margin-bottom:6px">Send ITB invitations as</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px"><span class="chip chip--acc">Estimating mailbox (shared)</span><span class="chip">Jordan Larsen (personal)</span></div>
+        <div style="display:flex;gap:8px"><span class="btn btn--sm">Send test email</span><span class="btn btn--sm btn--gh" style="color:var(--danger-text)">Disconnect</span></div>
+      </div>
+    </div>
+
+    <div class="state" id="c3" style="position:relative;max-width:420px">
+      <span class="pin onf" style="left:-9px;top:8px">3</span>
+      <div class="card" style="text-align:center;padding:28px 20px">
+        <div style="font:600 15px var(--font-display);margin-bottom:8px">Connect Microsoft Outlook</div>
+        <p style="font-size:12.5px;color:var(--text-dim);margin:0 0 18px">Platter will request permission to send mail as this account. You'll be redirected to Microsoft to sign in.</p>
+        <span class="btn btn--pri">Continue with Microsoft →</span>
+      </div>
+    </div>
+
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>What's connected and what isn't sit in one list,</b> not split across a "connections" page and a separate "coming soon" mention — D-37's disabled-with-reason pattern applied to account connections specifically.</span></li>
+    <li><span class="pin">2</span><span><b>Shared mailbox vs. personal identity is a real choice exposed here,</b> not hard-coded — closes D-14's "sending identity picker" requirement directly.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>The consent screen states what permission is being requested</b> before redirecting — Graph's <span class="mono">Mail.Send</span> scope (or <span class="mono">Mail.ReadWrite</span> if Q-14 resolves toward ingesting replies) shouldn't be a surprise mid-flow.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 6.4 ═══════ -->
+<section class="screen" id="s64">
+  <header><span class="no">6.4</span><h2>Flags library</h2>
+    <span class="job">One job: the one place flags get created, so "Bond 100%" never quietly forks into three spellings across projects (E-05).</span></header>
+
+  <div class="tabs" role="tablist" data-g="d">
+    <button role="tab" aria-selected="true" data-t="d1">List</button>
+    <button role="tab" aria-selected="false" data-t="d2">New / edit flag</button>
+    <button role="tab" aria-selected="false" data-t="d3">Merge flags</button>
+  </div>
+
+  <div class="frame"><div class="body">
+
+    <div class="state on" id="d1" style="position:relative">
+      <span class="pin onf" style="left:-9px;top:8px">1</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">7 flags</span><span class="btn btn--sm btn--acc">＋ New flag</span></div>
+      <div class="rule"><div class="rtxt"><b>Bond required</b> — 100% payment &amp; performance bond required with bid <span class="ftype ftype--req" style="margin-left:8px"><i></i>Requirement</span></div><span style="font-size:11.5px;color:var(--text-dim);margin-top:4px">Used on 12 projects</span><span class="btn btn--sm">Edit</span></div>
+      <div class="rule"><div class="rtxt"><b>Mandatory walk</b> — site visit attendance required to bid <span class="ftype ftype--req" style="margin-left:8px"><i></i>Requirement</span></div><span style="font-size:11.5px;color:var(--text-dim);margin-top:4px">Used on 9 projects</span><span class="btn btn--sm">Edit</span></div>
+      <div class="rule"><div class="rtxt"><b>Schedule required</b> — preliminary/CPM schedule due with bid <span class="ftype ftype--req" style="margin-left:8px"><i></i>Requirement</span></div><span style="font-size:11.5px;color:var(--text-dim);margin-top:4px">Used on 6 projects · added E-04</span><span class="btn btn--sm">Edit</span></div>
+      <div class="rule"><div class="rtxt"><b>MBE/WBE goal</b> — participation goal noted for this package <span class="ftype ftype--info" style="margin-left:8px"><i></i>Informational</span></div><span style="font-size:11.5px;color:var(--text-dim);margin-top:4px">Used on 4 projects</span><span class="btn btn--sm">Edit</span></div>
+      <div class="rule"><div class="rtxt"><b>Long lead</b> — material lead time may affect schedule <span class="ftype ftype--risk" style="margin-left:8px"><i></i>Risk</span></div><span style="font-size:11.5px;color:var(--text-dim);margin-top:4px">Used on 8 projects</span><span class="btn btn--sm">Edit</span></div>
+    </div>
+
+    <div class="state" id="d2" style="position:relative;max-width:480px">
+      <span class="pin onf" style="left:-9px;top:8px">2</span>
+      <div class="lbl" style="margin-bottom:6px">Label</div>
+      <div class="fld" style="margin-bottom:12px">Schedule required</div>
+      <div class="lbl" style="margin-bottom:6px">Type — sets color automatically (E-20)</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <span class="chip chip--dgr">Requirement</span><span class="chip">Informational</span><span class="chip">Risk</span>
+      </div>
+      <div class="lbl" style="margin-bottom:6px">Description</div>
+      <div class="fld" style="margin-bottom:12px;color:var(--text-faint)">Shown on the parse review and the project card tag popover…</div>
+      <div class="lbl" style="margin-bottom:6px">Parse keywords <span style="text-transform:none;letter-spacing:0;color:var(--text-dim)">— optional, helps auto-detection</span></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"><span class="chip chip--info">CPM schedule</span><span class="chip chip--info">preliminary schedule</span><span class="chip chip--info">Div 01 32 00</span><span class="chip" style="border-style:dashed">＋ Add</span></div>
+      <span class="btn btn--acc">Save flag</span>
+      <p style="font-size:11.5px;color:var(--text-dim);margin-top:10px">Color is never chosen here — picking a type is the only input, and E-20 derives the chip color from it. No color picker exists on this form.</p>
+    </div>
+
+    <div class="state" id="d3" style="position:relative;max-width:480px">
+      <span class="pin onf" style="left:-9px;top:8px">3</span>
+      <div class="card">
+        <div class="lbl" style="margin-bottom:10px">Merge into one flag</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><input type="checkbox" checked><span style="font-size:13px">"Mandatory site walk" <span style="color:var(--text-faint)">· 2 projects</span></span></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><input type="checkbox" checked><span style="font-size:13px">"Site walk mandatory" <span style="color:var(--text-faint)">· 1 project</span></span></div>
+        <div class="lbl" style="margin-bottom:6px">Keep as</div>
+        <div class="fld" style="margin-bottom:14px">Mandatory walk</div>
+        <span class="btn btn--acc">Merge 3 usages into "Mandatory walk"</span>
+        <p style="font-size:11.5px;color:var(--text-dim);margin-top:10px">Every project referencing either duplicate is repointed atomically — this is what keeps cross-project flag reporting trustworthy (E-05's original rationale).</p>
+      </div>
+    </div>
+
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Same list-row shape as 5.5's rule builder</b> — label in mono-badge, description, usage metadata, an edit action. Nothing new to learn for a user who's already configured a bid-tab rule.</span></li>
+    <li><span class="pin">2</span><span><b>Type replaces color as the only classification input,</b> closing the loop E-20 opened — a flag's color has never been a free choice, and this is the screen that makes that visible instead of implicit.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Merge is the direct answer to E-05's original fear</b> — near-duplicate flags reaching the library despite the closed vocabulary get a real repair path instead of living forever as clutter.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 6.5 ═══════ -->
+<section class="screen" id="s65">
+  <header><span class="no">6.5</span><h2>Trades &amp; tags</h2>
+    <span class="job">One job: the two lightweight vocabularies that power sub matching (4.1) and project-card filtering (2.1), kept as short, controlled lists rather than free text.</span></header>
+
+  <div class="tabs" role="tablist" data-g="e">
+    <button role="tab" aria-selected="true" data-t="e1">Trades</button>
+    <button role="tab" aria-selected="false" data-t="e2">Tags</button>
+  </div>
+
+  <div class="frame"><div class="body">
+
+    <div class="state on" id="e1" style="position:relative;max-width:520px">
+      <span class="pin onf" style="left:-9px;top:8px">1</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">14 trades</span><span class="btn btn--sm btn--acc">＋ New trade</span></div>
+      <div class="cclist"><span>Concrete <span style="color:var(--text-faint);margin-left:8px">CSI 03 · 22 subs</span></span><span class="btn btn--sm">Edit</span></div>
+      <div class="cclist"><span>Structural Steel <span style="color:var(--text-faint);margin-left:8px">CSI 05 · 11 subs</span></span><span class="btn btn--sm">Edit</span></div>
+      <div class="cclist"><span>Drywall &amp; Framing <span style="color:var(--text-faint);margin-left:8px">CSI 09 · 18 subs</span></span><span class="btn btn--sm">Edit</span></div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:10px">This is what powers the "exact vs. adjacent" trade match in the ITB tool (4.1) — a sub's <span class="mono">trades[]</span> array is checked against this same list.</p>
+    </div>
+
+    <div class="state" id="e2" style="position:relative;max-width:520px">
+      <span class="pin onf" style="left:-9px;top:8px">2</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">9 project tags</span><span class="btn btn--sm btn--acc">＋ New tag</span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="chip chip--acc">Design-build</span><span class="chip">Hard bid</span><span class="chip">CM at-risk</span><span class="chip">Public</span><span class="chip">Negotiated</span><span class="chip">Fast-track</span>
+      </div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:12px">Free-form tags on the project card popover, distinct from Flags (6.4) — tags describe the project itself, flags describe a bid requirement. Different vocabularies, deliberately not merged.</p>
+    </div>
+
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Trades are the join key between packages and subs</b> — editing here is low-frequency, high-consequence, so it lives in Settings rather than being editable inline anywhere else.</span></li>
+  </ol><ol>
+    <li><span class="pin">2</span><span><b>Tags stay separate from flags on purpose.</b> A flag drives bid-submission behavior (required attachments, addenda gating); a tag is descriptive metadata. Collapsing them into one system would make flags mean less.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 6.6 ═══════ -->
+<section class="screen" id="s66">
+  <header><span class="no">6.6</span><h2>Package templates</h2>
+    <span class="job">One job: let a package an estimator builds once — code, CSI mapping, standard requirements — become the starting point for the same package on the next project, instead of rebuilding it from nothing.</span></header>
+
+  <div class="tabs" role="tablist" data-g="f">
+    <button role="tab" aria-selected="true" data-t="f1">List</button>
+    <button role="tab" aria-selected="false" data-t="f2">New / edit template</button>
+  </div>
+
+  <div class="frame"><div class="body">
+
+    <div class="state on" id="f1" style="position:relative">
+      <span class="pin onf" style="left:-9px;top:8px">1</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">5 templates</span><span class="btn btn--sm btn--acc">＋ New template</span></div>
+      <table class="tbl">
+        <thead><tr><th>Code</th><th>Name</th><th>CSI</th><th class="n">Default lines</th><th>Used on</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">3A</td><td>Concrete</td><td class="mono">03 30 00</td><td class="n mono">6</td><td class="mono">7 projects</td></tr>
+          <tr><td class="mono">5A</td><td>Structural Steel</td><td class="mono">05 12 00</td><td class="n mono">4</td><td class="mono">5 projects</td></tr>
+          <tr><td class="mono">9A</td><td>Drywall &amp; Framing</td><td class="mono">09 21 00</td><td class="n mono">8</td><td class="mono">9 projects</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="state" id="f2" style="position:relative;max-width:520px">
+      <span class="pin onf" style="left:-9px;top:8px">2</span>
+      <div class="cf" style="margin-bottom:12px"><div><div class="lbl">Code (D-16)</div><div class="fld" style="margin-top:5px">3A</div></div><div><div class="lbl">Name</div><div class="fld" style="margin-top:5px">Concrete</div></div></div>
+      <div class="lbl" style="margin-bottom:6px">Default CSI codes</div>
+      <div style="display:flex;gap:6px;margin-bottom:12px"><span class="chip chip--info">03 10 00</span><span class="chip chip--info">03 20 00</span><span class="chip chip--info">03 30 00</span></div>
+      <div class="lbl" style="margin-bottom:6px">Default flags applied</div>
+      <div style="display:flex;gap:6px;margin-bottom:14px"><span class="chip chip--dgr">Schedule required</span></div>
+      <span class="btn btn--acc">Save template</span>
+      <p style="font-size:11.5px;color:var(--text-dim);margin-top:10px">Applying a template in the scope tool (3.3–3.6) seeds the package's code, CSI mapping, and flags — line items still come from whichever of the three scope flows the estimator picks.</p>
+    </div>
+
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>"Used on" is what makes a template worth maintaining</b> — a template nobody's applied in months is a candidate to prune, and this is the number that would say so.</span></li>
+  </ol><ol>
+    <li><span class="pin">2</span><span><b>A template seeds structure, not content</b> — CSI mapping and default flags, not pre-written scope lines. Line-item authorship still runs through the three flows in Batch 3; a template shouldn't quietly bypass the trust mechanisms built into scoring, spec review, or manual entry.</span></li>
+  </ol></div>
+</section>
+
+<p class="callout"><b>What Batch 6 closes out.</b> This is the last screen of Step 1 — 40 screens across six batches, drawn from one data model and one token file, with no screen contradicting an earlier locked decision. Every controlled vocabulary the app relies on (flags, trades, tags, package templates, and Batch 5's automation rules and custom columns) now shares one CRUD shape, established once in 5.5 and reused three more times here rather than reinvented. Two things stay open on purpose rather than guessed at: Q-15 (SharePoint site structure) blocks 6.3's second connection, and dark mode's toggle is visible but inert until a real phase-2 pass. Step 1 is done; Step 2 is owner approval of the full set before anything becomes a real build.</p>
+
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.tabs[role=tablist]').forEach(function(g){
+  g.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-t]'); if(!b) return;
+    g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected','false')});
+    b.setAttribute('aria-selected','true');
+    var frame=g.nextElementSibling;
+    frame.querySelectorAll('.state').forEach(function(s){s.classList.remove('on')});
+    var t=frame.querySelector('#'+b.dataset.t); if(t) t.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>

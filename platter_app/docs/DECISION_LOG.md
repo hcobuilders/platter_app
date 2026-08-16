@@ -5,7 +5,7 @@ Paste this file into any new chat to restore full context.
 
 **Product:** Platter — preconstruction command center (LEMA, Florida GC)
 **Owner:** single design/build stakeholder, iterating per the 8-step schedule in `PLATTER_APP.md`
-**Status:** Step 0 — discovery & identity. Step 1 (wireframes) not yet started.
+**Status:** Step 1 (wireframes) complete — all 6 batches drawn, 38 screens / 134 states total. Awaiting owner approval before Step 2.
 
 ---
 
@@ -54,6 +54,7 @@ Paste this file into any new chat to restore full context.
 | D-39 | **The card-footer confidence ladder stays two states (E-03)** — the bid tab and budget table don't carry a separate internal four-state model. Any value needing more nuance than "AI-derived vs. verified" gets it from the provenance row's confidence dot + citation, not a parallel ladder. | Closes the open question E-03 left dangling for Batch 5. Reusing the provenance row (D-26) instead of inventing budget-specific states keeps one trust mechanism instead of two. | S11 |
 | D-40 | **Financial deltas (revision compare, lifecycle cost) use a dedicated up/down convention** — grapefruit for cost growth, sea green for savings — kept deliberately separate from D-19's status intents. | A revision showing a cost increase in grapefruit must never be misread as the same "flagged/overdue" signal grapefruit carries elsewhere. Same hues, different vocabulary, scoped narrowly to financial direction. | S11 |
 | D-41 | **Batch 5 adds a fifth screen, 5.5 Automation & customization, beyond the original `STEP1_PLAN.md` index** — a no-code rule builder (condition → action, all dropdowns) and a reusable custom-column library, both built from the same field/operator building blocks. | Owner: make the bid tab and budget "pretty user customisable so I can configure actions without needing to write new code." Plug-recommendation rules, gap-flagging thresholds, and custom budget columns are exactly the kind of tuning that shouldn't require a code change — this gives them one shared, visible surface instead of being buried as constants. | S11 |
+| D-42 | **Settings' "theme + accent" resolves as: theme = light/dark mode toggle (dark shown disabled-with-reason, D-37 style, since D-12 defers it to phase 2); accent = a read-only brand-palette reference panel, not a color picker.** No settings screen lets a user change what a semantic color means. | The roadmap's one-line Batch 6 spec was ambiguous enough to admit a user-editable accent color, which would directly break D-19's fixed semantic mapping every other batch depends on. Resolving the ambiguity explicitly, in the permissive direction's opposite, rather than silently picking whichever reading was easier to build. | S12 |
 
 ---
 
@@ -242,3 +243,13 @@ Applies to: Batch 2 card component and 2.2 layout. E-09 and E-10 are component-l
 - **Raised Q-16**: `STEP1_PLAN.md`'s data model has no lifecycle-cost table; 5.4 needs one but it's new schema surface, not silently assumed.
 - Verified via a real local server (`http://localhost:5173` through `.claude/launch.json`'s `platter-static` config) rather than the file-preview pane, after S10's `data:`-URL false alarm — confirmed tokens.css loads, computed styles resolve correctly (dark shell background, accent color, JetBrains Mono), and tab-switching script fires correctly across all 5 screens. No console errors.
 - Next: owner review of Batch 5, then Batch 6 — Settings (minimal, phase 1): theme + accent, contact info & signature, OAuth connections, trades/tags/package templates, and now also the Flags panel (E-06) and — per D-41's closing note — ideally the same rule/customization pattern established in 5.5, not a new one.
+
+### S12 — 2026-08-15 · Batch 6 drawn — Step 1 complete
+- Owner: proceed straight to Batch 6.
+- **Delivered Batch 6 wireframes** — `batch-6-settings.html`, 6 screens (6.1–6.6), 15 states. The roadmap's Batch 6 description was a single line ("theme + accent, contact info & signature, OAuth connections, trades/tags/package templates"), not a full states table like Batches 1–5 — expanded it into concrete screens, then added the Flags panel obligation from E-06 that no prior batch had drawn yet.
+- **Closed E-06** (Settings Flags panel): 6.4 gives flags full CRUD — list, new/edit, merge — reusing 5.5's list-row shape rather than a new pattern (D-41's closing note now demonstrated three times: Flags, Trades & tags, Package templates all share it).
+- **Resolved an ambiguity in the roadmap rather than guessing silently: D-42.** "Theme + accent" could plausibly mean a user-editable accent color, which would break D-19's fixed semantic mapping. Resolved explicitly as: theme = light/dark toggle (dark disabled-with-reason per D-37, deferred to phase 2 per D-12), accent = read-only brand reference. No color picker exists anywhere in Settings.
+- Verified via the local `platter-static` server (`http://localhost:5173`) — tokens.css loads, computed styles correct, tab-switching fires across all 6 screens, no console errors. Noted for future sessions: the preview server doesn't always survive between tool calls in this environment — check `preview_list`/logs and restart if a `navigate` comes back denied before assuming the file is broken.
+- **Step 1 (wireframes) is now complete: 38 screens / 134 states across 6 batches**, all built from one token file and one data model, with no batch contradicting an earlier locked decision. Updated the document header's status line accordingly.
+- No new GitHub issues this session — Batch 6 came from expanding an under-specified plan line and closing an existing obligation (E-06), not new owner feedback on already-shipped work, so nothing fit the E-## template. D-42 follows the same precedent as D-38→D-41: locked decisions don't get issues, only staged E-## edits do.
+- Next: **Step 2 — owner approval of the full wireframe set** (all 6 batches) before Step 3 (interactive click-through prototype on real Postgres). Open items carried forward, none blocking: Q-05, Q-06, Q-09 (self-resolved assumption, not confirmed), Q-12, Q-13, Q-14, Q-15, Q-16.
