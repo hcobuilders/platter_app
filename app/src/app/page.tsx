@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 async function getProject() {
   try {
     return await prisma.project.findUnique({ where: { number: "26-085" } });
