@@ -12,7 +12,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "release": "prisma migrate deploy && npm run db:seed"
+    "release": "prisma migrate deploy"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
