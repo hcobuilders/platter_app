@@ -111,6 +111,23 @@ export default async function ProjectOverviewPage({
       </section>
 
       <section>
+        <div className="lbl" style={{ marginBottom: 8 }}>
+          Project links
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <button className="btn btn--sm btn--gh" type="button" disabled title="Not connected">
+            Procore ↗
+          </button>
+          <button className="btn btn--sm btn--gh" type="button" disabled title="Not connected">
+            SharePoint ↗
+          </button>
+          <button className="btn btn--sm btn--gh" type="button" disabled title="Not connected">
+            Consight ↗
+          </button>
+        </div>
+      </section>
+
+      <section>
         <div className="lbl">Flags</div>
         <div className="mt-2 flex gap-2 flex-wrap">
           {project.projectFlags.length === 0 && <span style={{ color: "var(--text-faint)" }}>None</span>}
