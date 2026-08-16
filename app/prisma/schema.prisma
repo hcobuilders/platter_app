@@ -1,0 +1,517 @@
+// Platter — Step 3 schema
+// Source of truth for the shape: /docs/STEP1_PLAN.md Part A, plus the
+// controlled vocabularies Batch 6 (Settings) depends on. Money is always
+// integer cents (BigInt, never float) — see STEP1_PLAN.md "two decisions
+// worth flagging."
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Project spine ──────────────────────────────────────────────
+
+enum ProjectStatus {
+  draft
+  scoping
+  bidding
+  leveling
+  submitted
+  awarded
+  lost
+}
+
+model Project {
+  id                String        @id @default(cuid())
+  number            String        @unique
+  name              String
+  address           String?
+  lat               Float?
+  lng               Float?
+  owner             String?
+  architectOfRecord String?
+  deliveryMethod    String?
+  bondPct           Float?
+  retainagePct      Float?
+  status            ProjectStatus @default(draft)
+  externalIds       Json          @default("{}")
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  dates           ProjectDate[]
+  notes           ProjectNote[]
+  documents       Document[]
+  specSections    SpecSection[]
+  bidPackages     BidPackage[]
+  addenda         Addendum[]
+  rfis            Rfi[]
+  communications  Communication[]
+  budgetLines     BudgetLine[]
+  budgetRevisions BudgetRevision[]
+  projectFlags    ProjectFlag[]
+  projectTags     ProjectTag[]
+}
+
+enum ProjectDateKind {
+  itb_out
+  site_walk
+  rfi_cutoff
+  addenda_cutoff
+  submission_due
+  award_target
+}
+
+model ProjectDate {
+  id          String          @id @default(cuid())
+  projectId   String
+  project     Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kind        ProjectDateKind
+  at          DateTime
+  isMandatory Boolean         @default(false)
+  notes       String?
+}
+
+model ProjectNote {
+  id        String    @id @default(cuid())
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  body      String
+  author    String
+  pinnedAt  DateTime?
+  createdAt DateTime  @default(now())
+}
+
+// Generic audit trail — every mutation across every entity (D-09).
+model AuditEvent {
+  id       String   @id @default(cuid())
+  entity   String
+  entityId String
+  field    String
+  oldValue String?
+  newValue String?
+  actor    String
+  at       DateTime @default(now())
+
+  @@index([entity, entityId])
+}
+
+// ── Documents & parsing (priority #1) ──────────────────────────
+
+enum DocumentKind {
+  spec
+  drawing
+  addendum
+  geotech
+  itb
+  contract
+  other
+}
+
+enum ParseStatus {
+  pending
+  running
+  needs_review
+  confirmed
+  failed
+}
+
+model Document {
+  id           String       @id @default(cuid())
+  projectId    String
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  filename     String
+  storageKey   String
+  sharepointId String?
+  kind         DocumentKind
+  discipline   String?
+  sheetNo      String?
+  pageCount    Int?
+  ocrRequired  Boolean      @default(false)
+  parseStatus  ParseStatus  @default(pending)
+  createdAt    DateTime     @default(now())
+
+  parseRuns       ParseRun[]
+  specSections    SpecSection[]
+  extractedFields ExtractedField[]
+}
+
+model ParseRun {
+  id            String    @id @default(cuid())
+  documentId    String
+  document      Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  model         String
+  promptVersion String
+  startedAt     DateTime  @default(now())
+  finishedAt    DateTime?
+  tokenCost     Int?
+  error         String?
+
+  extractedFields ExtractedField[]
+}
+
+enum ExtractedFieldState {
+  pending
+  confirmed
+  corrected
+  rejected
+}
+
+// The trust layer (D-13/R-06) — every AI-derived value anywhere in the app
+// carries confidence + document + page + bbox + confirmation state. Nothing
+// parsed is written straight to its target entity; it lands here first.
+model ExtractedField {
+  id          String              @id @default(cuid())
+  entityType  String
+  entityId    String
+  fieldPath   String
+  valueJson   Json
+  confidence  Float
+  documentId  String?
+  document    Document?           @relation(fields: [documentId], references: [id])
+  page        Int?
+  bbox        Json?
+  state       ExtractedFieldState @default(pending)
+  confirmedBy String?
+  confirmedAt DateTime?
+  parseRunId  String?
+  parseRun    ParseRun?           @relation(fields: [parseRunId], references: [id])
+  createdAt   DateTime            @default(now())
+
+  @@index([entityType, entityId])
+}
+
+model SpecSection {
+  id         String    @id @default(cuid())
+  projectId  String
+  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  csiCode    String
+  title      String
+  documentId String?
+  document   Document? @relation(fields: [documentId], references: [id])
+  pageFrom   Int?
+  pageTo     Int?
+
+  scopeLineItems ScopeLineItem[]
+}
+
+// ── Scope & packages ────────────────────────────────────────────
+
+model BidPackage {
+  id           String           @id @default(cuid())
+  projectId    String
+  project      Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  code         String
+  name         String
+  csiCodes     String[]
+  status       String           @default("draft")
+  dueAt        DateTime?
+  budgetAmount BigInt?
+  requiresBond Boolean          @default(false)
+  longLead     Boolean          @default(false)
+  templateId   String?
+  template     PackageTemplate? @relation(fields: [templateId], references: [id])
+
+  scopeLineItems ScopeLineItem[]
+  invitations    Invitation[]
+  budgetLines    BudgetLine[]
+
+  @@unique([projectId, code])
+}
+
+enum ScopeLineKind {
+  inclusion
+  exclusion
+  alternate
+  allowance
+  unit_price
+  clarification
+  va_option
+}
+
+// The atom (STEP1_PLAN.md Part A) — every sub's price attaches to this
+// shared line id, which is what makes bid leveling stop being a manual
+// mapping exercise: gaps are lines with no bid_line, plugs are a bid_line
+// tagged source = plug.
+model ScopeLineItem {
+  id                String        @id @default(cuid())
+  bidPackageId      String
+  bidPackage        BidPackage    @relation(fields: [bidPackageId], references: [id], onDelete: Cascade)
+  seq               Int
+  csiCode           String?
+  description       String
+  unit              String?
+  qty               Float?
+  kind              ScopeLineKind
+  isRequired        Boolean       @default(true)
+  submittalRequired Boolean       @default(false)
+  longLeadWeeks     Int?
+  specSectionId     String?
+  specSection       SpecSection?  @relation(fields: [specSectionId], references: [id])
+  sourceDocumentId  String?
+  sourcePage        Int?
+
+  bidLines           BidLine[]
+  lifecycleScenarios LifecycleScenario[]
+}
+
+// ── Bidding ──────────────────────────────────────────────────────
+
+model Subcontractor {
+  id             String    @id @default(cuid())
+  name           String
+  dba            String?
+  ein            String?
+  flLicense      String?
+  trades         String[]
+  groups         String[]
+  rating         Float?
+  lastVerifiedAt DateTime?
+  prequalJson    Json?
+  notes          String?
+
+  contacts       SubContact[]
+  invitations    Invitation[]
+  communications Communication[]
+}
+
+model SubContact {
+  id              String        @id @default(cuid())
+  subcontractorId String
+  subcontractor   Subcontractor @relation(fields: [subcontractorId], references: [id], onDelete: Cascade)
+  name            String
+  email           String?
+  phone           String?
+  isItbContact    Boolean       @default(false)
+}
+
+enum InvitationIntent {
+  none
+  bidding
+  no_bid
+}
+
+model Invitation {
+  id                String           @id @default(cuid())
+  bidPackageId      String
+  bidPackage        BidPackage       @relation(fields: [bidPackageId], references: [id], onDelete: Cascade)
+  subcontractorId   String
+  subcontractor     Subcontractor    @relation(fields: [subcontractorId], references: [id])
+  token             String           @unique
+  sentAt            DateTime?
+  openedAt          DateTime?
+  intent            InvitationIntent @default(none)
+  feedbackRequested Boolean          @default(false)
+
+  bids Bid[]
+  rfis Rfi[]
+
+  @@unique([bidPackageId, subcontractorId])
+}
+
+enum BidSource {
+  portal
+  xlsx_upload
+  manual
+}
+
+model Bid {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  submittedAt  DateTime?
+  total        BigInt?
+  addendaAcked String[]
+  source       BidSource  @default(portal)
+  attachments  String[]
+
+  bidLines BidLine[]
+}
+
+enum BidLineSource {
+  sub
+  parsed
+  plug
+  ours
+}
+
+model BidLine {
+  id              String         @id @default(cuid())
+  bidId           String
+  bid             Bid            @relation(fields: [bidId], references: [id], onDelete: Cascade)
+  scopeLineItemId String?
+  scopeLineItem   ScopeLineItem? @relation(fields: [scopeLineItemId], references: [id])
+  amount          BigInt
+  unitPrice       BigInt?
+  qty             Float?
+  included        Boolean        @default(true)
+  note            String?
+  source          BidLineSource
+  confidence      Float?
+}
+
+model Addendum {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  number     Int
+  issuedAt   DateTime @default(now())
+  documentId String?
+  scope      String   @default("all") // "all" or a trade/package scope key
+  trades     String[]
+
+  @@unique([projectId, number])
+}
+
+model Rfi {
+  id               String      @id @default(cuid())
+  projectId        String
+  project          Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fromInvitationId String?
+  fromInvitation   Invitation? @relation(fields: [fromInvitationId], references: [id])
+  body             String
+  status           String      @default("open")
+  routedTo         String?
+  answer           String?
+  answeredAt       DateTime?
+  createdAt        DateTime    @default(now())
+}
+
+model Communication {
+  id              String         @id @default(cuid())
+  projectId       String
+  project         Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  subcontractorId String?
+  subcontractor   Subcontractor? @relation(fields: [subcontractorId], references: [id])
+  kind            String
+  body            String
+  at              DateTime       @default(now())
+  author          String
+}
+
+// ── Money ────────────────────────────────────────────────────────
+
+model BudgetLine {
+  id             String      @id @default(cuid())
+  projectId      String
+  project        Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  bidPackageId   String?
+  bidPackage     BidPackage? @relation(fields: [bidPackageId], references: [id])
+  csiCode        String?
+  description    String
+  budget         BigInt
+  current        BigInt
+  buyoutExpected BigInt?
+  awardedTo      String?
+  note           String?
+  tags           String[]
+
+  lifecycleScenarios LifecycleScenario[]
+}
+
+// Revisions store full JSONB snapshots, not diffs — comparison is computed
+// at read time (STEP1_PLAN.md "Money").
+model BudgetRevision {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  revNo     Int
+  snapshot  Json
+  note      String?
+  createdBy String
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, revNo])
+}
+
+// Scenario-based lifecycle cost (D-43, closes Q-16). A baseline vs. one or
+// more alternates for the same system — comparison is the point, not a
+// flat one-row-per-system shape.
+model LifecycleScenario {
+  id                    String         @id @default(cuid())
+  budgetLineId          String?
+  budgetLine            BudgetLine?    @relation(fields: [budgetLineId], references: [id])
+  scopeLineItemId       String?
+  scopeLineItem         ScopeLineItem? @relation(fields: [scopeLineItemId], references: [id])
+  label                 String
+  isBaseline            Boolean        @default(true)
+  initialCost           BigInt
+  installYear           Int?
+  serviceLifeYrs        Int
+  replacementCost       BigInt?
+  annualMaintenanceCost BigInt
+  annualEnergyCost      BigInt
+  energyEscalationRate  Float
+  salvageValuePct       Float
+  confidence            Float?
+  sourceDocumentId      String?
+  sourcePage            Int?
+}
+
+// ── Settings — controlled vocabularies (E-05/E-06, D-41, Batch 6) ──────
+
+enum FlagType {
+  requirement
+  informational
+  risk
+}
+
+model Flag {
+  id            String   @id @default(cuid())
+  label         String   @unique
+  type          FlagType
+  description   String?
+  parseKeywords String[]
+
+  projectFlags ProjectFlag[]
+}
+
+model ProjectFlag {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  flagId    String
+  flag      Flag    @relation(fields: [flagId], references: [id])
+
+  @@unique([projectId, flagId])
+}
+
+model Trade {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  csiCode String?
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+
+  projectTags ProjectTag[]
+}
+
+model ProjectTag {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tagId     String
+  tag       Tag     @relation(fields: [tagId], references: [id])
+
+  @@unique([projectId, tagId])
+}
+
+model PackageTemplate {
+  id           String   @id @default(cuid())
+  code         String   @unique
+  name         String
+  csiCodes     String[]
+  defaultFlags String[]
+
+  bidPackages BidPackage[]
+}
+
+// ── Deferred to phase 2 (STEP1_PLAN.md) ─────────────────────────
+// subcontract, submittal, document_template, intelligence_report —
+// not modeled yet, intentionally.

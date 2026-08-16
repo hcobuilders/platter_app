@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+:root {
+  --font-display: var(--font-archivo), "Archivo Expanded", system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-data: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  background: var(--bg-shell);
+  color: var(--text-invert);
+  font: var(--t-body);
+  margin: 0;
+}
