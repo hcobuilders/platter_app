@@ -419,8 +419,8 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1280px}
           <table class="tbl">
             <thead><tr><th>CSI</th><th>Package</th><th class="n">Budget</th><th class="n">Current</th><th class="n">Buyout exp.</th><th>Awarded to</th><th>Tags</th></tr></thead>
             <tbody>
-              <tr><td class="mono">03</td><td>3A — Concrete</td><td class="n mono">$1,350,000</td><td class="n mono" style="color:var(--info-text)">$1,308,600</td><td class="n mono">$1,290,000</td><td>Bayline Concrete</td><td><span class="chip">Buyout ready</span></td></tr>
-              <tr><td class="mono">05</td><td>5A — Structural Steel</td><td class="n mono">$1,980,000</td><td class="n mono" style="color:var(--success-text)">$1,940,000</td><td class="n mono">—</td><td style="color:var(--text-faint)">—</td><td><span class="chip chip--risk">Long lead</span></td></tr>
+              <tr><td class="mono">03</td><td>3A — Concrete</td><td class="n mono">$1,350,000</td><td class="n mono" style="color:var(--success-text)">$1,308,600</td><td class="n mono">$1,290,000</td><td>Bayline Concrete</td><td><span class="chip">Buyout ready</span></td></tr>
+              <tr><td class="mono">05</td><td>5A — Structural Steel</td><td class="n mono">$1,980,000</td><td class="n mono" style="color:var(--info-text)">$1,940,000</td><td class="n mono">—</td><td style="color:var(--text-faint)">—</td><td><span class="chip chip--risk">Long lead</span></td></tr>
               <tr><td class="mono">09</td><td>9A — Drywall &amp; Framing</td><td class="n mono">$640,000</td><td class="n mono">$640,000</td><td class="n mono">—</td><td style="color:var(--text-faint)">—</td><td></td></tr>
               <tr><td class="mono">26</td><td>26A — Electrical</td><td class="n mono">$3,500,000</td><td class="n mono" style="color:var(--info-text)">$3,500,000</td><td class="n mono">—</td><td style="color:var(--text-faint)">—</td><td><span class="chip chip--dgr">Schedule required</span></td></tr>
             </tbody>
@@ -489,7 +489,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1280px}
     <li><span class="pin">2</span><span><b>Custom columns are the clearest instance of the "no new code" requirement.</b> A formula is assembled from field chips and an operator, not typed as an expression — reused as the exact same building block the automation rule builder uses in 5.5, so an estimator only learns one interaction pattern.</span></li>
   </ol><ol>
     <li><span class="pin">3</span><span><b>Right-click surfaces the same actions the roadmap asked for</b> without a second toolbar competing for space above the table.</span></li>
-    <li><span class="pin">4</span><span><b>Change log tags reuse the Flags controlled vocabulary</b> (E-05/E-06) rather than inventing a second tagging system — "Buyout," "Scope change" and "Unit cost update" live in the same Settings library as bid-requirement flags.</span></li>
+    <li><span class="pin">4</span><span><b>Change log tags follow the same Settings-managed, closed-vocabulary pattern as Flags</b> (E-05/E-06) and Trades &amp; Tags (6.5) — edited only in Settings, never free-typed inline — but they're their own list, not stored inside the Flags library. "Buyout," "Scope change" and "Unit cost update" describe what changed to a budget line, not a bid submission requirement, so they don't belong in 6.4's flags (which are strictly bid-requirement vocabulary). A dedicated change-log-tags panel, same list-row CRUD shape as 6.4/6.5/6.6, is a small drawn-later obligation this creates.</span></li>
   </ol></div>
 </section>
 

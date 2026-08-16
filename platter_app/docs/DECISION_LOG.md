@@ -5,7 +5,7 @@ Paste this file into any new chat to restore full context.
 
 **Product:** Platter — preconstruction command center (LEMA, Florida GC)
 **Owner:** single design/build stakeholder, iterating per the 8-step schedule in `PLATTER_APP.md`
-**Status:** Step 1 (wireframes) complete — all 6 batches drawn, 38 screens / 134 states total. Awaiting owner approval before Step 2.
+**Status:** Step 1 (wireframes) complete — all 6 batches drawn, 40 screens / 134 states total. **Step 2 (owner approval) closed S15** — owner approved the full set, 2 self-review fixes applied to Batch 5 first. Step 3 (interactive prototype on real Postgres) is next.
 
 ---
 
@@ -132,6 +132,15 @@ Applies to: Batch 2 card component and 2.2 layout. E-09 and E-10 are component-l
 | E-36 | **Fixed 5.1's "Package total (included)" arithmetic.** GC estimate corrected $533,000 → $505,000 (was wrongly folding in the unincluded Alternate line); Bayline corrected $493,800 → $481,400 (was wrongly folding in the still-undispositioned sub-added Rebar line). | Self-review caught the totals contradicting the screen's own annotation and the batch's closing callout, both of which explicitly promise sub-added lines are never silently blended into a total pre-disposition (E-33). |
 | E-37 | **Batch 6 list-screen headers now state "N · showing M"** where the header count exceeds the sample rows actually rendered (flags 7→showing 5, trades 14→showing 3, tags 9→showing 6, templates 5→showing 3). | Self-review caught header counts implying a fuller list than what was drawn, breaking the exact-count convention Batch 5 established (5.5 "3 active rules" = 3 shown). Kept the larger, more realistic totals rather than shrinking them to match the sample, and said so explicitly instead of quietly picking one. |
 | E-38 | **5.4's Tuning tab now labels which system its NPV comparison is for** ("RTU package — HVAC · 23A"), previously implied only by elimination. | Minor clarity gap caught in the same review pass — cheap to fix, no reason to leave it implicit. |
+
+---
+
+## 2e. Self-review fixes — applied to Batch 5, S15
+
+| # | Change | Notes |
+|---|---|---|
+| E-39 | **Fixed 5.2's budget-table current-value colors for 3A and 5A**, which had E-02's ladder inverted. 3A (awarded to Bayline, "Buyout ready") was cerulean (estimate); 5A (no award yet) was sea green (verified). Swapped so 3A → sea green, 5A → cerulean. | Owner asked for a pre-Step-2-close review pass. This is the trust-color system the README's "four ideas" section calls load-bearing (D-26/E-02/D-39) — a reader would have learned the color backwards from the one table meant to teach it. |
+| E-40 | **Corrected 5.2's change-log-tags annotation.** It had claimed "Buyout"/"Scope change"/"Unit cost update" live inside the Flags library (6.4) — they don't; 6.4 only lists 5 bid-requirement flags. Rewritten to describe change-log tags as their own Settings-managed closed vocabulary, following the same CRUD pattern as Flags/Trades/Tags without being stored as one. | Batch 5's own claim contradicted what Batch 6 actually built. Creates a small forward obligation: a change-log-tags panel in Settings, same list-row shape as 6.4/6.5/6.6, not yet drawn — noted, not built, since it wasn't part of what was asked. |
 
 ---
 
@@ -284,3 +293,11 @@ Applies to: Batch 2 card component and 2.2 layout. E-09 and E-10 are component-l
 - Checked and found clean: every tab-button/state-id pair in both files, every internal anchor target, no accidental duplicate ids, and D-43's Setup→Data entry→AI research→Tuning consistency in 5.4 (the scenario rework from S13 holds together).
 - **Tied cross-batch navigation together** — every wireframe file's "Done"/"Next" rail sections were inert placeholder links (`href="#"`, dimmed) left over from when batches were drawn incrementally and later batches didn't exist yet. Replaced with real relative links to every other batch's HTML file (all six files live in the same folder, so `batch-N-slug.html` resolves regardless of how the file is opened), and completed each file's list to reference all five other batches rather than only the ones adjacent at time of authoring. Batch 6's "Next → Step 2 · owner approval" stays an inert label since there's no wireframe page for it.
 - Next: same as S13 — Step 2 (owner approval) is the open item. No outstanding defects known in any of the 6 batches as of this session.
+
+### S15 — 2026-08-16 · Step 2 — owner approval closed
+- Owner opened a new chat, confirmed all 6 batches "looked good," and asked to be told anything worth catching before Step 2 formally closes.
+- Ran an independent review pass on Batches 5 & 6 beyond S14's scope (S14 checked token compliance, tab/anchor wiring, flag-color semantics, arithmetic; this pass cross-checked stated rules against rendered data and cross-batch claims against what was actually built).
+- **Found and fixed two real issues, logged as E-39 → E-40** (see §2e): 5.2's budget-table current-value color had E-02's verified/estimate ladder inverted on the 3A/5A rows — the awarded, buyout-ready package read as the less-trusted color and vice versa; and 5.2's change-log-tags annotation claimed those tags lived inside 6.4's Flags library, which they don't. Both fixed directly, per the same "easily fixable, just fix it" convention as S10/S14.
+- Verified all dollar arithmetic across 5.1–5.4 (package totals, budget/current/buyout totals, revision deltas, NPV comparison) independently — all correct, no further issues found.
+- **Step 2 (owner approval of the full wireframe set) is closed.** Owner approved all 6 batches / 40 screens / 134 states. `README.md` and `HANDOFF.md` updated to point at Step 3 next.
+- Next: **Step 3 — interactive click-through prototype on real Postgres** (D-08/R-02), scoped to the phase-1 vertical slice (R-03): Project → Scope → ITB → Planroom → Bid Tab → Budget.

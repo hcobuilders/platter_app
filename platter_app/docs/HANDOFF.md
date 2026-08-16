@@ -6,16 +6,18 @@ Paste this as the first message in the new chat, with `DECISION_LOG.md` attached
 
 ## Prompt to paste
 
-> Continuing the Platter build. Read `DECISION_LOG.md` for full context — 42 locked decisions (D-01 → D-42), 33 applied staged edits (E-01 → E-12, E-20 → E-33 with gaps), and one dropped group (E-13 → E-19, see below).
+> Continuing the Platter build. Read `DECISION_LOG.md` for full context — 45 locked decisions (D-01 → D-45), 40 applied staged edits (E-01 → E-40 with a gap at E-13 → E-19, dropped), and no open questions (Q-01 → Q-16 all resolved).
 >
-> **Step 1 (wireframes) is complete — all 6 batches, 38 screens / 134 states.** There is no Batch 7. What happens next depends entirely on what the owner says when they open this chat:
+> **Step 1 (wireframes) and Step 2 (owner approval) are both closed as of S15.** All 6 batches / 40 screens / 134 states are approved, with two self-review fixes (E-39/E-40) applied to Batch 5 as part of closing Step 2.
 >
-> 1. If they're bringing feedback on Batch 5 or 6 (the two batches not yet reviewed as of S12), stage it the same way every prior batch's feedback was handled — apply it directly if it's easy, log it as the next E-## number, open+close a GitHub issue for it.
-> 2. If they say to proceed, the next real step is **Step 2 — owner approval of the full wireframe set**, then **Step 3 — the interactive click-through prototype on real Postgres** (D-08/R-02). That's a different kind of work (a real build, not another wireframe batch) — don't default into drawing more screens without confirming that's actually next.
-> 3. Keep updating `DECISION_LOG.md` as we go, same convention as the last eight sessions.
-> 4. **GitHub issue tracking is live** on `hcobuilders/platter_app` — new E-## edits get opened as issues using the template established in S9 (title `E-## — <change>`, body: Change / Rationale / Applies to / Status; labels `enhancement` + `batch-N`), and closed immediately if implemented same-session. Locked decisions (D-##) don't get issues — only staged E-## edits do, per precedent set in S11/S12.
+> **Step 3 is next: the interactive click-through prototype on real Postgres** (D-08/R-02), scoped to the phase-1 vertical slice (R-03): Project → Scope → ITB → Planroom → Bid Tab → Budget. This is a different kind of work — a real build, not another wireframe batch or a review pass.
 >
-> Open questions carried forward, none blocking: Q-05, Q-06, Q-09, Q-12, Q-13, Q-14, Q-15, Q-16.
+> 1. If the owner is bringing new feedback on any batch, stage it the same way every prior round was handled — apply it directly if easy, log it as the next E-## number, open+close a GitHub issue for it.
+> 2. If the owner says to proceed with Step 3, start from the data model in `STEP1_PLAN.md` Part A and the component/token system in `design/system/design-system.html` — don't re-derive either from scratch.
+> 3. Keep updating `DECISION_LOG.md` as we go, same convention as the last fifteen sessions.
+> 4. **GitHub issue tracking is live** on `hcobuilders/platter_app` — new E-## edits get opened as issues using the S9 template (title `E-## — <change>`, body: Change / Rationale / Applies to / Status; labels `enhancement` + `batch-N`), closed immediately if implemented same-session. Locked decisions (D-##) don't get issues — only staged E-## edits do.
+>
+> One small open item carried into Step 3, not blocking: E-40 flagged a Settings panel for change-log tags (Buyout/Scope change/Unit cost update) that's referenced but not yet wireframed — draw it if Step 3 needs it, otherwise it can wait.
 
 ---
 
@@ -37,38 +39,31 @@ Paste this as the first message in the new chat, with `DECISION_LOG.md` attached
 | `design/wireframes/batch-5-bidtab-budget.html` | Bid tab & budget — 5 screens, 21 states (includes 5.5, added beyond the original plan) |
 | `design/wireframes/batch-6-settings.html` | Settings — 6 screens, 15 states |
 
-**Schedule position:** Step 1 of 8 (wireframes) — **complete**, 38 screens / 134 states across 6 batches. Step 2 (owner approval) is next; Steps 3–8 (interactive build → Railway → integrations) not started.
+**Schedule position:** Step 2 of 8 (owner approval) — **complete** as of S15. Step 3 (interactive build on real Postgres) is next; Steps 4–8 (Railway deploy → integrations) not started.
 
-**GitHub:** `hcobuilders/platter_app` (branch `Step_1_DESIGN`) now tracks E-## edits as issues — established S9, no prior issues existed to inherit a template from, so one was designed from the existing decision-log convention.
+**GitHub:** `hcobuilders/platter_app`, current branch tracks E-## edits as closed issues per the S9 template.
 
-**Build decisions already made:** Postgres + seeded real project from day one (D-08); 3 users, no RBAC (D-09); Microsoft Graph for email behind a `Mailer` interface (D-14); SharePoint treated as a write-back contract, not storage (D-15); command registry built first as it now serves three surfaces (R-05, D-36).
+**Build decisions already made:** Postgres + seeded real project from day one (D-08), seeded as "West Henry Logistics" 26-085 (D-44); 3 users, no RBAC (D-09); Microsoft Graph for email behind a `Mailer` interface (D-14); SharePoint one shared site, per-project folders, treated as a write-back contract (D-15/D-45); command registry built first as it now serves three surfaces (R-05, D-36); lifecycle cost is scenario-based, `lifecycle_scenario` not a flat line (D-43).
 
 ---
 
 ## The four ideas everything else hangs on
 
 1. **`scope_line_item` is the atom.** Each sub's price attaches to a shared line id, so bid leveling stops being a mapping exercise — gaps are lines with no bid, plugs are a bid line tagged `source = plug`.
-2. **Provenance is the trust mechanism.** Every AI-derived value carries confidence + document + page + bbox. Clicking it opens the source page with the region highlighted. It's a component, not a screen, so it looks identical everywhere — now proven across three different content types (project fields, scope lines, edit history) in Batch 3.
-3. **Semantic color, not decorative.** Orange = selection (with a stronger `accent-strong` variant for high-emphasis moments as of E-27), cerulean = data, sea green = confirmed, grapefruit = flags. The palette has changed twice, and the surface layering cooled once (E-26), without invalidating a single wireframe's structure — because meaning was assigned rather than color.
-4. **One privacy model — still undefined.** Field-level classification was supposed to drive both screen-share redaction and what a subcontractor sees in the planroom, per E-21/E-22/E-23. **The actual spec (E-13 → E-19) was never recovered — see below.** Don't assume it's built; it isn't.
+2. **Provenance is the trust mechanism.** Every AI-derived value carries confidence + document + page + bbox. Clicking it opens the source page with the region highlighted. It's a component, not a screen, so it looks identical everywhere — proven across project fields, scope lines, sub quotes, spec references, and lifecycle-cost research by the end of Batch 5.
+3. **Semantic color, not decorative.** Orange = selection (`accent-strong` for high-emphasis, E-27), cerulean = data / estimate-derived, sea green = confirmed / verified, grapefruit = flags. This is the system a S15 review caught actually inverted on two rows of the budget table (E-39) — worth remembering it's easy to get backwards when a screen has two states that both "look done."
+4. **One privacy model — still undefined.** Field-level classification (E-13 → E-19) was never recovered and was dropped (S8). Batch 5's presentation-mode toggle (D-38) is a narrow, explicit stand-in for the one place it became load-bearing (a sub's real price next to a plug) — not a general solution. Don't assume it's built anywhere else.
 
 ---
 
 ## E-13 → E-19: dropped, not applied
 
-The S7 session changelog in `DECISION_LOG.md` claimed E-13 → E-19 were staged (privacy/redaction requirements, the `YY-###` project number format), but the actual entries were never written into §2b — the table jumps from E-12 to E-20. This was discovered in S8, along with a byte-identical re-export the owner had of the same incomplete file. The original chat where they'd have been dictated wasn't reachable from this session. The owner chose to drop them rather than reconstruct from scratch.
+The S7 session changelog in `DECISION_LOG.md` claimed E-13 → E-19 were staged (privacy/redaction requirements, the `YY-###` project number format), but the actual entries were never written into §2b — the table jumps from E-12 to E-20. This was discovered in S8, along with a byte-identical re-export the owner had of the same incomplete file. The original chat where they'd have been dictated wasn't reachable. The owner chose to drop them rather than reconstruct from scratch.
 
-**Practical effect:** anything that reads as "privacy classification exists" in the decision log (E-21's blanket default, E-22/E-23's copy-respects-classification) is aspirational, not implemented. If a future batch needs field-level privacy (the planroom in Batch 4 is a plausible candidate, since it's the surface that decides what a sub sees), that's new design work, not a lookup.
+**Practical effect:** anything that reads as "privacy classification exists" in the decision log (E-21's blanket default, E-22/E-23's copy-respects-classification) is aspirational, not implemented. If Step 3 needs field-level privacy for real, that's new design work, not a lookup.
 
 ---
 
-## Open questions carried forward
+## Open questions
 
-| # | Question |
-|---|---|
-| Q-05 | How many active projects at once, and how many historical projects exist for the data-analysis goal? |
-| Q-06 | Is Consight import required for rev 1? What format does it export? |
-| Q-12 | LEMA brand constraints for outbound documents? |
-| Q-13 | Which historical project seeds the database? |
-| Q-14 | Does the estimating mailbox need to receive as well as send? (`Mail.Send` vs `Mail.ReadWrite`) |
-| Q-15 | SharePoint: one site per project, or all projects under one site? |
+None outstanding — Q-01 → Q-16 are all answered (see `DECISION_LOG.md` §3). Deliberately deferred to phase 2, not open: full dark mode (D-12), LEMA brand constraints for outbound documents (Q-12), Consight import (Q-06).

@@ -2,7 +2,7 @@
 
 Preconstruction command center for LEMA. Projects, scope, ITB, subcontractor planroom, bid leveling, budget.
 
-**Status:** Step 1 of 8 — wireframes. Batches 1–3 drawn and current against v1.1 tokens, 4–6 remaining. No application code yet.
+**Status:** Step 2 of 8 — owner approval closed. All 6 wireframe batches (40 screens / 134 states) approved. Step 3 (interactive prototype) is next. No application code yet.
 
 ---
 
@@ -23,7 +23,7 @@ design/
     tokens.json         ← same tokens, portable to Figma variables / Tailwind
   identity/             ← logo, palette, type, radius scale
   system/               ← living component reference, 20 components
-  wireframes/           ← annotated wireframes, one file per batch (1, 2, 3 drawn)
+  wireframes/           ← annotated wireframes, one file per batch (all 6 drawn and approved)
 docs/                   ← decisions, plan, handoff
 ```
 
@@ -31,13 +31,12 @@ docs/                   ← decisions, plan, handoff
 
 ## Next task
 
-**Batch 4 — ITB & sub-facing planroom** (priority #2 per D-07 — `STEP1_PLAN.md` §B, screens 4.1–4.10).
+**Step 3 — interactive click-through prototype on real Postgres** (D-08/R-02), scoped to the phase-1 vertical slice (R-03): Project → Scope → ITB → Planroom → Bid Tab → Budget.
 
-Staged edits E-01 → E-12 and E-20 → E-30 are applied across `tokens.css`/`.json`, `design-system.html`, `identity.html`, `mark.svg`, and Batches 1–2. `legacy-aliases.css` is gone — every file now references `tokens.css` directly. Batch 3 (project workspace + scope tool, 3.1–3.7) is drawn fresh against v1.1, no retrofit needed. What's still open:
+Step 1 (wireframes) and Step 2 (owner approval) are both closed as of S15 — see `docs/DECISION_LOG.md` for the full record. Everything staged against the wireframes (E-01 → E-40) is applied; no known defects remain in any of the 6 batches. Two things stay deliberately open into Step 3, not because they were missed:
 
-- **E-13 → E-19 (privacy/redaction requirements, `YY-###` project number format) were never recovered.** The S7 changelog claims they were staged, but the entries were never written into `DECISION_LOG.md` §2b, and the original chat that would have them isn't reachable from this session. Owner elected to drop rather than reconstruct (S8). Treat field-level privacy/redaction as **undefined**, not implemented, despite E-21/E-22/E-23 referencing it.
-- Q-13 (which historical project seeds the database) is still open — doesn't block wireframes, blocks Step 3.
-- Batch 3 introduces two obligations for Batch 5 (bid tab/budget): render the seven scope-line kind badges, and resolve exclusion cross-references (where excluded scope actually landed).
+- **E-13 → E-19 (privacy/redaction requirements) were never recovered** and were dropped rather than reconstructed (S8). Field-level privacy/redaction is **undefined**, not implemented — Batch 5's presentation-mode toggle (D-38) is a narrow, explicit stand-in, not a substitute for a real spec.
+- **E-40's change-log-tags Settings panel** is a small drawn-later obligation from S15's review — noted, not yet wireframed.
 
 ---
 
