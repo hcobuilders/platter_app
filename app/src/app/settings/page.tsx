@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Logo } from "@/components/Logo";
 import { createFlag, deleteFlag, createTrade, deleteTrade, createTag, deleteTag } from "./actions";
+import { CsiCodeInput } from "@/components/CsiCodeInput";
 
 export const dynamic = "force-dynamic";
 
@@ -147,7 +148,7 @@ export default async function SettingsPage({
                 className="cf"
               >
                 <input className="fld" name="name" placeholder="Name" required />
-                <input className="fld" name="csiCode" placeholder="CSI code" />
+                <CsiCodeInput className="fld" name="csiCode" placeholder="CSI code" />
                 <button className="btn btn--acc" type="submit" style={{ width: "fit-content" }}>
                   Add trade
                 </button>

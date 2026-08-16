@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { pushUndo } from "@/lib/undoStack";
 
 export function AutoSubmitField({
   name,
@@ -29,6 +30,7 @@ export function AutoSubmitField({
       defaultValue={defaultValue}
       onBlur={(e) => {
         if (e.currentTarget.value !== savedValueRef.current) {
+          if (form) pushUndo({ formId: form, fieldName: name, prevValue: savedValueRef.current });
           savedValueRef.current = e.currentTarget.value;
           e.currentTarget.form?.requestSubmit();
         }

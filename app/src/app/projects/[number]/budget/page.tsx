@@ -2,9 +2,12 @@ import { Fragment } from "react";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
-import { updateBudgetLine, saveBudgetRevision } from "./actions";
+import { updateBudgetLine, saveBudgetRevision, rollbackToRevision } from "./actions";
 import { CurrencyInput } from "@/components/CurrencyInput";
 import { AutoSubmitField } from "@/components/AutoSubmitField";
+import { UndoListener } from "@/components/UndoListener";
+import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
+import { ResizableColumns } from "@/components/ResizableColumns";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +15,7 @@ async function getProject(number: string) {
   return prisma.project.findUnique({
     where: { number },
     include: {
-      budgetLines: { orderBy: { csiCode: "asc" }, include: { bidPackage: true } },
+      budgetLines: { orderBy: [{ csiCode: "asc" }, { description: "asc" }], include: { bidPackage: true } },
       budgetRevisions: { orderBy: { revNo: "desc" } },
     },
   });
@@ -80,6 +83,7 @@ export default async function BudgetPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <UndoListener />
       <div className="flex justify-between items-center">
         <div className="tabs">
           <a href={`?view=table&divView=${divView}`} className={view === "table" ? "on" : undefined}>
@@ -103,7 +107,8 @@ export default async function BudgetPage({
 
       {view === "table" && (
         <div>
-          <table className="tbl">
+          <ResizableColumns tableId="budget-tbl" />
+          <table className="tbl" id="budget-tbl">
             <thead>
               <tr>
                 <th>CSI</th>
@@ -223,9 +228,9 @@ export default async function BudgetPage({
             </tfoot>
           </table>
           <p style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 10 }}>
-            Changes are saved automatically. Current-value color follows E-02/E-39&apos;s rule —
-            sea green once a real award is on record (Awarded to is set), cerulean while it&apos;s
-            still an estimate.
+            Changes are saved automatically — press Ctrl/Cmd+Z to undo the last edit. Current-value
+            color follows E-02/E-39&apos;s rule — sea green once a real award is on record (Awarded to
+            is set), cerulean while it&apos;s still an estimate.
           </p>
 
           {project.budgetLines.map((line) => (
@@ -294,10 +299,27 @@ function RevisionsView({
         <div className="lbl" style={{ marginBottom: 8 }}>
           History
         </div>
-        <div style={{ fontSize: 13, color: "var(--text-dim)", lineHeight: 2.1 }}>
-          {revisions.map((r) => (
-            <div key={r.id}>
-              Rev {r.revNo} — {r.note ?? "no note"} · {r.createdAt.toLocaleDateString()}
+        <div style={{ fontSize: 13, color: "var(--text-dim)" }}>
+          {revisions.map((r, i) => (
+            <div key={r.id} className="flex items-center gap-3" style={{ lineHeight: 2.1 }}>
+              <span>
+                Rev {r.revNo} — {r.note ?? "no note"} · {r.createdAt.toLocaleDateString()}
+              </span>
+              {i !== 0 && (
+                <form
+                  action={async () => {
+                    "use server";
+                    await rollbackToRevision(project.id, projectNumber, r.revNo);
+                  }}
+                >
+                  <ConfirmSubmitButton
+                    className="btn btn--sm btn--gh"
+                    confirmMessage={`Roll back live budget "current" values to Rev ${r.revNo}? This saves a new revision first so today's numbers aren't lost.`}
+                  >
+                    Roll back to this revision
+                  </ConfirmSubmitButton>
+                </form>
+              )}
             </div>
           ))}
           {revisions.length === 0 && <div>No revisions saved yet.</div>}

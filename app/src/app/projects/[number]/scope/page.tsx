@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { createScopeLine, updateScopeLine, deleteScopeLine } from "./actions";
 import { KindPicker } from "@/components/KindPicker";
+import { CsiCodeInput } from "@/components/CsiCodeInput";
+import { ResizableColumns } from "@/components/ResizableColumns";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +59,8 @@ export default async function ScopePage({
         <div className="lbl">
           Scope worksheet — {pkg.code} {pkg.name}
         </div>
-        <table className="tbl mt-2">
+        <ResizableColumns tableId="scope-tbl" />
+        <table className="tbl mt-2" id="scope-tbl">
           <thead>
             <tr>
               <th style={{ width: 40 }}>#</th>
@@ -79,7 +82,7 @@ export default async function ScopePage({
                 <tr key={line.id}>
                   <td className="mono">{line.seq}</td>
                   <td>
-                    <input form={formId} className="tfld mono" name="csiCode" defaultValue={line.csiCode ?? ""} style={{ width: 90 }} />
+                    <CsiCodeInput form={formId} className="tfld mono" name="csiCode" defaultValue={line.csiCode ?? ""} style={{ width: 90 }} />
                   </td>
                   <td>
                     <input form={formId} className="tfld" name="description" defaultValue={line.description} style={{ minWidth: 220 }} />
@@ -166,7 +169,7 @@ export default async function ScopePage({
           <div className="cf">
             <div>
               <div className="lbl">CSI code</div>
-              <input className="fld mt-1" name="csiCode" />
+              <CsiCodeInput className="fld mt-1" name="csiCode" />
             </div>
             <div>
               <div className="lbl">Unit</div>

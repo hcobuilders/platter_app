@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { pushUndo } from "@/lib/undoStack";
 
 const displayFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -54,6 +55,7 @@ export function CurrencyInput({
         onBlur={(e) => {
           setEditing(false);
           if (autoSubmit && raw !== savedValueRef.current) {
+            if (form) pushUndo({ formId: form, fieldName: name, prevValue: savedValueRef.current });
             savedValueRef.current = raw;
             e.currentTarget.form?.requestSubmit();
           }

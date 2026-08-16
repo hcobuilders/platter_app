@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
 import { acceptPlug, acceptSubAddedAsScopeLine, trackOnlySubAdded, setLineIncluded } from "./actions";
+import { ResizableColumns } from "@/components/ResizableColumns";
 
 export const dynamic = "force-dynamic";
 
@@ -142,7 +143,8 @@ export default async function BidTabPage({
       </div>
 
       <div className="bwrap">
-        <table className="bidtbl">
+        <ResizableColumns tableId="bidtab-tbl" />
+        <table className="bidtbl" id="bidtab-tbl">
           <thead>
             <tr>
               <th className="desc">

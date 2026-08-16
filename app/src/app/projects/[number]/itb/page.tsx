@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
-import { inviteSubcontractor, sendInvite } from "./actions";
+import { inviteSubcontractor } from "./actions";
+import { ItbTable } from "./ItbTable";
 
 export const dynamic = "force-dynamic";
 
@@ -28,12 +29,6 @@ async function getData(number: string, packageCode?: string) {
   return { project, pkg, availableSubs };
 }
 
-const INTENT_LABEL: Record<string, { label: string; chip: string }> = {
-  none: { label: "Awaiting response", chip: "chip" },
-  bidding: { label: "Bidding", chip: "chip chip--ok" },
-  no_bid: { label: "No bid", chip: "chip chip--dgr" },
-};
-
 export default async function ItbPage({
   params,
   searchParams,
@@ -57,55 +52,16 @@ export default async function ItbPage({
         <div className="lbl" style={{ marginBottom: 8 }}>
           Invited — {pkg.code} {pkg.name}
         </div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Subcontractor</th>
-              <th>Trades</th>
-              <th>Status</th>
-              <th>Sent</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {pkg.invitations.map((inv) => {
-              const intent = INTENT_LABEL[inv.intent];
-              return (
-                <tr key={inv.id}>
-                  <td>{inv.subcontractor.name}</td>
-                  <td style={{ color: "var(--text-dim)", fontSize: 12 }}>{inv.subcontractor.trades.join(", ")}</td>
-                  <td>
-                    <span className={intent.chip}>{intent.label}</span>
-                  </td>
-                  <td className="mono" style={{ fontSize: 12 }}>
-                    {inv.sentAt ? inv.sentAt.toLocaleDateString() : "—"}
-                  </td>
-                  <td>
-                    {!inv.sentAt && (
-                      <form
-                        action={async () => {
-                          "use server";
-                          await sendInvite(number, inv.id);
-                        }}
-                      >
-                        <button className="btn btn--sm btn--acc" type="submit">
-                          Send ITB
-                        </button>
-                      </form>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-            {pkg.invitations.length === 0 && (
-              <tr>
-                <td colSpan={5} style={{ color: "var(--text-faint)" }}>
-                  No invitations yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        <ItbTable
+          projectNumber={number}
+          invitations={pkg.invitations.map((inv) => ({
+            id: inv.id,
+            subcontractorName: inv.subcontractor.name,
+            trades: inv.subcontractor.trades,
+            intent: inv.intent,
+            sentAt: inv.sentAt,
+          }))}
+        />
         <p style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 10 }}>
           Sending is stubbed for this prototype — &quot;Send ITB&quot; marks the invitation sent
           without calling a real mail provider. Production swaps this for Microsoft Graph
