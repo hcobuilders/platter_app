@@ -10,6 +10,7 @@ export type CardProject = {
   status: string;
   address: string | null;
   bondPct: number | null;
+  bidBondRequired: boolean;
   packageCount: number;
   quotedCount: number;
   unresolvedCount: number;
@@ -142,7 +143,7 @@ function Card({ p }: { p: CardProject }) {
               </div>
             )}
           </div>
-          {p.bondPct ? <span className="chip chip--dgr">Bond {p.bondPct}%</span> : null}
+          {p.bidBondRequired ? <span className="chip chip--dgr">Bond {p.bondPct ?? 100}%</span> : null}
           {isDraft && p.unresolvedCount > 0 && <span className="chip">{p.unresolvedCount} unresolved</span>}
         </div>
       </div>

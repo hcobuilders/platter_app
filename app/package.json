@@ -12,7 +12,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "release": "prisma migrate deploy"
+    "release": "prisma migrate deploy && tsx prisma/backfill-bonding.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

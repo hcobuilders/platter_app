@@ -58,6 +58,7 @@ async function main() {
   const project = await prisma.project.upsert({
     where: { number: "26-085" },
     update: {
+      bidBondRequired: true,
       gcContactName: "Jordan Lang",
       gcContactEmail: "jlang@hcobuilders.com",
       gcContactPhone: "(352) 555-0148",
@@ -71,6 +72,8 @@ async function main() {
       deliveryMethod: "CM at-risk",
       bondPct: 100,
       retainagePct: 10,
+      bidBondRequired: true,
+      pAndPMode: "in_base",
       gcContactName: "Jordan Lang",
       gcContactEmail: "jlang@hcobuilders.com",
       gcContactPhone: "(352) 555-0148",

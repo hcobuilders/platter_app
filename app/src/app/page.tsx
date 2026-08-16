@@ -38,6 +38,7 @@ async function getProjects(): Promise<CardProject[]> {
       status: project.status,
       address: project.address,
       bondPct: project.bondPct,
+      bidBondRequired: project.bidBondRequired,
       packageCount: project.bidPackages.length,
       quotedCount,
       unresolvedCount,

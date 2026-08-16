@@ -37,6 +37,8 @@ model Project {
   deliveryMethod    String?
   bondPct           Float?
   retainagePct      Float?
+  bidBondRequired   Boolean       @default(false)
+  pAndPMode         PAndPMode?
   gcContactName     String?
   gcContactEmail    String?
   gcContactPhone    String?
@@ -203,6 +205,17 @@ model SpecSection {
 
 // ── Scope & packages ────────────────────────────────────────────
 
+// Bonding (E-owner rework, S19): a bid bond is either required or not — the
+// percentage is fixed at 100% whenever it applies (see Project.bondPct) — and
+// separately, payment & performance bonding is either carried in the base
+// bid or priced as an alternate. Both are project-wide by default; a package
+// can override requiresBond directly and pAndPMode via its own nullable
+// field (null = inherit the project's).
+enum PAndPMode {
+  in_base
+  alternate
+}
+
 model BidPackage {
   id           String           @id @default(cuid())
   projectId    String
@@ -214,6 +227,7 @@ model BidPackage {
   dueAt        DateTime?
   budgetAmount BigInt?
   requiresBond Boolean          @default(false)
+  pAndPMode    PAndPMode?
   longLead     Boolean          @default(false)
   templateId   String?
   template     PackageTemplate? @relation(fields: [templateId], references: [id])

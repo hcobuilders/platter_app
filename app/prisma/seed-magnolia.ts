@@ -63,6 +63,7 @@ async function main() {
   const project = await prisma.project.upsert({
     where: { number: "599-444" },
     update: {
+      bidBondRequired: true,
       gcContactName: "Jordan Lang",
       gcContactEmail: "jlang@hcobuilders.com",
       gcContactPhone: "(352) 555-0148",
@@ -75,6 +76,8 @@ async function main() {
       architectOfRecord: "Bentley Group, Inc. (Fernanda Alves Silva, RA)",
       deliveryMethod: "Hard bid",
       bondPct: 100,
+      bidBondRequired: true,
+      pAndPMode: "in_base",
       gcContactName: "Jordan Lang",
       gcContactEmail: "jlang@hcobuilders.com",
       gcContactPhone: "(352) 555-0148",
