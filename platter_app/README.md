@@ -2,7 +2,7 @@
 
 Preconstruction command center for LEMA. Projects, scope, ITB, subcontractor planroom, bid leveling, budget.
 
-**Status:** Step 2 of 8 — owner approval closed. All 6 wireframe batches (40 screens / 134 states) approved. Step 3 (interactive prototype) is next. No application code yet.
+**Status:** Step 3 of 8 — a working interactive prototype is live at **[platter.studio](https://platter.studio)**. All six vertical-slice workflows (Project, Scope, ITB, Planroom, Bid Tab, Budget) plus Settings run against real Postgres, closed loop proven end to end (a real Planroom quote submission flows straight into the internal Bid Tab). AI parsing and email sending are stubbed by design — see `docs/DECISION_LOG.md` S17.
 
 ---
 
@@ -31,12 +31,22 @@ docs/                   ← decisions, plan, handoff
 
 ## Next task
 
-**Step 3 — interactive click-through prototype on real Postgres** (D-08/R-02), scoped to the phase-1 vertical slice (R-03): Project → Scope → ITB → Planroom → Bid Tab → Budget.
+**Owner testing and iteration** on the live prototype at [platter.studio](https://platter.studio). The app lives in `/app` (Next.js + Prisma 7 on Railway Postgres) — see `app/README.md` for local dev setup.
 
-Step 1 (wireframes) and Step 2 (owner approval) are both closed as of S15 — see `docs/DECISION_LOG.md` for the full record. Everything staged against the wireframes (E-01 → E-40) is applied; no known defects remain in any of the 6 batches. Two things stay deliberately open into Step 3, not because they were missed:
+What's built (all real, verified against the database, not fixtures):
+- Dashboard, project overview, scope worksheet (full CRUD)
+- Bid Tab — comparison grid, gap/plug, sub-added disposition queue
+- Budget table + revisions
+- ITB tool (send stubbed)
+- Planroom — magic-link, sub-facing, real quote submission
+- Settings — Flags/Trades/Tags CRUD
 
-- **E-13 → E-19 (privacy/redaction requirements) were never recovered** and were dropped rather than reconstructed (S8). Field-level privacy/redaction is **undefined**, not implemented — Batch 5's presentation-mode toggle (D-38) is a narrow, explicit stand-in, not a substitute for a real spec.
-- **E-40's change-log-tags Settings panel** is a small drawn-later obligation from S15's review — noted, not yet wireframed.
+What's deliberately not built yet:
+- AI document parsing (stubbed per owner decision, S17)
+- Real email sending (stubbed per owner decision, S17)
+- Package templates, Appearance/Profile/Connected-accounts settings screens
+- Any auth gate on the internal side (matches D-09 — 3 users, no RBAC — but means no login exists yet)
+- **E-13 → E-19 (privacy/redaction requirements)** were never recovered and were dropped rather than reconstructed (S8). Field-level privacy/redaction is **undefined**, not implemented.
 
 ---
 

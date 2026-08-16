@@ -5,7 +5,7 @@ Paste this file into any new chat to restore full context.
 
 **Product:** Platter — preconstruction command center (LEMA, Florida GC)
 **Owner:** single design/build stakeholder, iterating per the 8-step schedule in `PLATTER_APP.md`
-**Status:** Step 1 (wireframes) complete — all 6 batches drawn, 40 screens / 134 states total. **Step 2 (owner approval) closed S15** — owner approved the full set, 2 self-review fixes applied to Batch 5 first. Step 3 (interactive prototype on real Postgres) is next.
+**Status:** Steps 1-2 complete. **Step 3 (interactive prototype) has a working vertical slice live at `platter.studio` as of S17** — all six workflows (Project, Scope, ITB, Planroom, Bid Tab, Budget, plus Settings) built against real Postgres, the closed loop proven end to end. AI parsing and email sending are stubbed by design; see S17 for the full scope note.
 
 ---
 
@@ -316,3 +316,20 @@ Applies to: Batch 2 card component and 2.2 layout. E-09 and E-10 are component-l
 - Generated a public Railway domain (`app-production-95f4.up.railway.app`) and confirmed the live homepage renders "West Henry Logistics · 26-085 · seeded and connected" — full loop verified end to end: schema → migration → seed → live app → real Postgres.
 - **Flagged, not resolved:** the app service's Railway config shows a custom domain, `platter.studio`, already attached — added by neither this session's tool calls nor anything in `create-deployment`/`update-service`'s history. Owner needs to confirm whether that's something they (or someone with dashboard access) configured directly, since it wasn't something this session provisioned.
 - Next: first real screen to build is an open choice — the vertical slice is Project → Scope → ITB → Planroom → Bid Tab → Budget, six workflows, none started yet beyond the schema they all share.
+
+### S17 — 2026-08-16 · The full vertical slice, built and live
+- Owner: build the whole vertical slice, working end to end, for a full day of testing/iteration starting tomorrow. Two scope calls made explicit up front rather than assumed: document parsing and ITB email sending are both **stubbed** for this pass (realistic canned data / marks-as-sent without a real provider) — owner's choice, to avoid burning the build window on external API/credential setup that doesn't change what's being proven.
+- **Built and shipped all six workflow areas**, each against real seeded Postgres data, each verified with Playwright against the actual database (not just typechecked) before being called done:
+  - Shared app shell — internal chrome (topnav/pnav) ported from the wireframes into real `components.css`, no auth gate (D-09).
+  - Dashboard + project overview.
+  - Scope worksheet — full `scope_line_item` CRUD.
+  - Bid Tab — the real comparison grid, live gap detection with a computed recommended plug (matches the wireframe's own `avg × 0.92` rule) and a working "Accept plug" action, sub-added line disposition queue (E-33).
+  - Budget table + revisions — editable, with the E-39-corrected verified/estimate color now computed from whether a real award is on record, revision snapshot/compare reproducing the wireframe's exact delta figures against real data.
+  - ITB tool — real invite/send flow (send stubbed per the scope call above).
+  - Planroom — separate visual register, magic-link token auth (no account, per D-10/R-04), a real quote-submission flow.
+  - Settings — real CRUD for Flags/Trades/Tags (the three vocabularies other screens actually depend on; Package templates and the static Appearance/Profile/Connected-accounts screens weren't built this pass since nothing else depends on them functionally).
+- **Proved the actual closed loop, not just six screens in isolation:** submitted a real quote through the Planroom as an uninvited-yet-pending sub, confirmed it landed correctly in the internal Bid Tab — right dollar amount, the alternate line defaulting unchecked, the sub-added line reaching the disposition queue, `invitation.intent` flipping to `bidding` — with zero manual data wiring between the external and internal surfaces. This is the first time the README's "four ideas" section has been demonstrated as working software rather than described.
+- Every feature commit followed the same discipline: typecheck + lint + production build clean, then a real Playwright round-trip against the database (create/edit/delete or submit, confirmed via direct SQL, then test data reverted) before pushing — not stopping at "it renders."
+- Caught and fixed one real bug along the way: the budget table's verified/estimate color (E-39, closed in S15) is now a computed rule (`awardedTo` presence) rather than static per-row styling, so it can't drift out of sync with the data again.
+- **Live at `platter.studio`** — all 11 routes across the vertical slice return 200 against the real production database (migrated, not reseeded again — the original S16 seed still stands).
+- Next: owner testing and iteration. Known deliberate gaps, not oversights: AI parsing and email sending are stubbed (flagged above); Package templates, Appearance, Profile, and Connected-accounts screens aren't built; no auth gate on the internal side (matches D-09's "3 users, no RBAC" but means the prototype itself has no login).

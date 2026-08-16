@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Platter — Step 3 prototype
 
-## Getting Started
+Next.js 16 (App Router) + Prisma 7 against Postgres. Live at [platter.studio](https://platter.studio), deployed on Railway.
 
-First, run the development server:
+See `../platter_app/docs/DECISION_LOG.md` (session S16/S17) for the full build history and `../platter_app/docs/STEP1_PLAN.md` for the data model this schema implements.
+
+## Local development
+
+You need a local Postgres instance:
 
 ```bash
+# Point at your local Postgres
+cp .env.example .env   # edit DATABASE_URL
+
+npm install
+npm run db:migrate      # applies prisma/migrations/
+npm run db:seed         # seeds West Henry Logistics (26-085)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script | What it does |
+|---|---|
+| `npm run dev` | Local dev server |
+| `npm run build` | `prisma generate && next build` |
+| `npm run db:migrate` | `prisma migrate dev` — creates/applies migrations locally |
+| `npm run db:deploy` | `prisma migrate deploy` — applies existing migrations, no diffing (what Railway's `release` script runs) |
+| `npm run db:seed` | Seeds the West Henry Logistics example project. **Not idempotent** for transactional rows (subs, bids, budget lines, lifecycle scenarios use plain `.create()`) — don't run twice against the same database. |
+| `npm run db:studio` | Prisma Studio, a GUI for browsing the database |
 
-## Learn More
+## Deployment (Railway)
 
-To learn more about Next.js, take a look at the following resources:
+Two services in the `Platter` Railway project: `Postgres` (managed template) and `app` (this repo, `rootDirectory=/app`, `DATABASE_URL=${{Postgres.DATABASE_URL}}`). The `app` service's `preDeployCommand` runs `npm run release` (currently `prisma migrate deploy`) before every deploy — pushing to `claude/project-setup-model-selection-ecsxrt` auto-deploys.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Note:** Railway's `preDeployCommand` is not shell-interpreted — a bare `"a && b"` string (even wrapped in `sh -c`) silently runs only the first command. Route anything multi-step through an `npm run` script instead, since `npm run` always executes through a real shell regardless of how the caller invokes it.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## What's real vs. stubbed
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Real, verified against Postgres:** dashboard, project overview, scope worksheet, Bid Tab (including gap/plug and sub-added disposition), Budget (including revisions), ITB invite flow, Planroom (magic-link, real quote submission), Settings CRUD for Flags/Trades/Tags.
+- **Stubbed, by owner decision:** AI document parsing (would need an LLM API key), email sending (would need Microsoft Graph/Azure AD credentials).
+- **Not built:** Package templates, Appearance/Profile/Connected-accounts settings, any auth gate on the internal side (matches D-09 — 3 users, no RBAC — but means no login exists yet).
