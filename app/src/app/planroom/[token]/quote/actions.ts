@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { dollarsToCents } from "@/lib/format";
 
@@ -64,6 +65,7 @@ export async function submitQuote(token: string, formData: FormData) {
 
   revalidatePath(`/planroom/${token}`);
   revalidatePath(`/planroom/${token}/quote`);
+  redirect(`/planroom/${token}/confirmation`);
 }
 
 export async function declineToBid(token: string) {

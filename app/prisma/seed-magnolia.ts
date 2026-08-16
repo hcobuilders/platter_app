@@ -62,7 +62,11 @@ async function main() {
   // ── Project ─────────────────────────────────────────────────────
   const project = await prisma.project.upsert({
     where: { number: "599-444" },
-    update: {},
+    update: {
+      gcContactName: "Jordan Lang",
+      gcContactEmail: "jlang@hcobuilders.com",
+      gcContactPhone: "(352) 555-0148",
+    },
     create: {
       number: "599-444",
       name: "Magnolia Building Renovation",
@@ -71,6 +75,9 @@ async function main() {
       architectOfRecord: "Bentley Group, Inc. (Fernanda Alves Silva, RA)",
       deliveryMethod: "Hard bid",
       bondPct: 100,
+      gcContactName: "Jordan Lang",
+      gcContactEmail: "jlang@hcobuilders.com",
+      gcContactPhone: "(352) 555-0148",
       status: "bidding",
       externalIds: {},
       projectFlags: { create: flags.map((f) => ({ flagId: f.id })) },

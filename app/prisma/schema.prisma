@@ -37,6 +37,9 @@ model Project {
   deliveryMethod    String?
   bondPct           Float?
   retainagePct      Float?
+  gcContactName     String?
+  gcContactEmail    String?
+  gcContactPhone    String?
   status            ProjectStatus @default(draft)
   externalIds       Json          @default("{}")
   createdAt         DateTime      @default(now())

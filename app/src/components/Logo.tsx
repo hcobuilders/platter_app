@@ -1,4 +1,4 @@
-export function Logo({ size = 19 }: { size?: number }) {
+export function Logo({ size = 19, stroke = "#FEF9EF" }: { size?: number; stroke?: string }) {
   return (
     <svg viewBox="0 0 64 64" width={size} height={size}>
       <defs>
@@ -7,7 +7,7 @@ export function Logo({ size = 19 }: { size?: number }) {
           <stop offset="1" stopColor="#FE6D73" />
         </linearGradient>
       </defs>
-      <g fill="none" stroke="#FEF9EF" strokeWidth={4} strokeLinejoin="round">
+      <g fill="none" stroke={stroke} strokeWidth={4} strokeLinejoin="round">
         <rect x={9} y={17} width={18} height={18} rx={4} />
         <rect x={9} y={37} width={18} height={18} rx={4} />
         <rect x={29} y={37} width={18} height={18} rx={4} />

@@ -57,7 +57,11 @@ async function main() {
   // ── Project ───────────────────────────────────────────────────
   const project = await prisma.project.upsert({
     where: { number: "26-085" },
-    update: {},
+    update: {
+      gcContactName: "Jordan Lang",
+      gcContactEmail: "jlang@hcobuilders.com",
+      gcContactPhone: "(352) 555-0148",
+    },
     create: {
       number: "26-085",
       name: "West Henry Logistics",
@@ -67,6 +71,9 @@ async function main() {
       deliveryMethod: "CM at-risk",
       bondPct: 100,
       retainagePct: 10,
+      gcContactName: "Jordan Lang",
+      gcContactEmail: "jlang@hcobuilders.com",
+      gcContactPhone: "(352) 555-0148",
       status: "leveling",
       externalIds: {},
       projectFlags: {

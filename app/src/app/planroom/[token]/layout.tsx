@@ -35,7 +35,7 @@ export default async function PlanroomLayout({
         }}
       >
         <div className="flex items-center gap-2">
-          <Logo size={22} />
+          <Logo size={22} stroke="var(--text)" />
           <span style={{ font: "600 15px var(--font-display)" }}>Platter Planroom</span>
         </div>
         <div style={{ fontSize: 12.5, color: "var(--text-dim)" }}>
