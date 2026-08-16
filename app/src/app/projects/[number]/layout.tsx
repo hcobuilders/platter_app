@@ -39,7 +39,9 @@ export default async function ProjectLayout({
             <span>Network</span>
             <span>Data</span>
             <span>Tools</span>
-            <span>Settings</span>
+            <Link href="/settings" style={{ color: "inherit" }}>
+              Settings
+            </Link>
           </nav>
           <div className="avatar">JL</div>
         </div>
