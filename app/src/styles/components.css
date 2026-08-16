@@ -1,0 +1,120 @@
+/* ============================================================
+   PLATTER — REAL APP COMPONENT STYLES
+   Ported from the approved wireframes (design/wireframes/*.html)
+   for pixel fidelity. References tokens.css semantic tokens only —
+   a raw hex here is a bug (D-24).
+   ============================================================ */
+
+/* ── internal app chrome ── */
+.topnav{background:var(--bg-shell);color:var(--text-invert);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:11px 18px;gap:16px}
+.topnav .left{display:flex;gap:10px;align-items:center}
+.topnav .center{display:flex;gap:12px;align-items:center;justify-self:center}
+.topnav .right{display:flex;gap:16px;align-items:center;justify-self:end}
+.topnav .logo{display:flex;align-items:center;gap:8px}
+.topnav .crumb{font:400 11px/1 var(--font-data);color:var(--text-invert-faint);text-decoration:none}
+.topnav .pname{font:600 15px/1 var(--font-display);letter-spacing:-.02em;color:var(--text-invert)}
+.topnav nav{display:flex;gap:17px;font:500 10.5px/1 var(--font-data);letter-spacing:.09em;text-transform:uppercase;color:var(--text-invert-dim)}
+.topnav nav span.on{color:var(--accent-fill)}
+.avatar{width:27px;height:27px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 10.5px var(--font-data);color:var(--c-white)}
+.wshell{display:grid;grid-template-columns:198px 1fr;min-height:calc(100vh - 88px)}
+.pnav{border-right:1px solid var(--border);padding:14px 0;background:var(--bg-surface)}
+.pnav a{display:flex;align-items:center;gap:9px;padding:9px 16px;font:500 12.5px/1 var(--font-body);color:var(--text-dim);text-decoration:none;border-left:2px solid transparent}
+.pnav a.on{color:var(--text);border-left-color:var(--accent-strong);background:var(--bg-inset);font-weight:600}
+.pnav a:hover{color:var(--text);background:var(--bg-inset)}
+.pnav a.is-disabled{color:var(--text-faint);pointer-events:none;cursor:not-allowed}
+.pnav a .dot2{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;flex:none}
+.pnav a.on .dot2{opacity:1;background:var(--accent-strong)}
+.wmain{padding:24px 28px;background:var(--bg-surface);min-height:100%}
+.cmd{background:var(--bg-shell);border-top:1px solid rgba(0,0,0,.5);padding:10px 18px;display:flex;align-items:center;gap:12px;font:400 12.5px/1 var(--font-data);color:var(--text-invert-dim)}
+
+/* ── chip / status (E-29) ── */
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x);border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);white-space:nowrap}
+.chip--acc{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
+.chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
+.chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
+.chip--dgr{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
+.chip--risk{border:1.5px dashed var(--danger-line);background:transparent;color:var(--danger-text)}
+.kb{display:inline-flex;align-items:center;font-family:var(--font-display);font-weight:600;font-size:10.5px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:.05em;text-transform:uppercase;
+  padding:4px 9px;border-radius:var(--r-xs);white-space:nowrap}
+.kb--inclusion{background:var(--success-wash);color:var(--success-text)}
+.kb--exclusion{background:var(--danger-wash);color:var(--danger-text)}
+.kb--alternate{background:var(--info-wash);color:var(--info-text)}
+.kb--allowance{background:var(--accent-wash);color:var(--accent-text)}
+.kb--unit_price{background:var(--bg-inset);color:var(--text-dim)}
+.kb--clarification{background:var(--bg-inset);color:var(--text-dim)}
+.kb--va_option{background:var(--bg-inset);color:var(--text-dim)}
+
+/* ── buttons / toggle ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 14px/1 var(--font-body);padding:10px 17px;min-height:36px;
+  border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text);cursor:pointer}
+.btn--pri{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
+.btn--acc{background:linear-gradient(135deg,var(--c-apricot-300),var(--accent-strong));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--gh{background:transparent;border-color:transparent;color:var(--text-dim)}
+.btn--sm{padding:6px 13px;min-height:29px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.tgl{width:34px;height:20px;border-radius:var(--r-pill);background:var(--border-strong);display:inline-block;position:relative;cursor:pointer;flex:none;border:none;padding:0}
+.tgl::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--c-white);box-shadow:var(--e-1);transition:left var(--dur-base) var(--ease-out)}
+.tgl.on{background:var(--accent-strong)}
+.tgl.on::after{left:16px}
+
+/* ── card / table / provenance ── */
+.card{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);padding:16px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised);border-radius:var(--r-md);overflow:hidden}
+.tbl th{font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;
+  padding:11px 12px;border-bottom:1px solid var(--border-strong);background:var(--bg-inset);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border-hairline);vertical-align:top}
+.tbl th.n,.tbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.tbl tbody tr:hover{background:var(--accent-wash)}
+.mono{font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.fld{border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;background:var(--bg-surface-raised);font-family:inherit;width:100%}
+.fld:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px}
+.cf{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lbl{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
+
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none}
+.dot--hi{background:var(--success-fill)}.dot--mid{background:var(--accent-fill)}.dot--lo{background:var(--danger-fill)}
+.prov{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:start;padding:11px 12px;
+  border-bottom:1px solid var(--border-hairline);border-left:2px solid transparent}
+.prov:hover{background:var(--bg-surface-raised)}
+.prov .val{font:500 14px/1.35 var(--font-body)}
+.prov .src{font:400 11px/1.4 var(--font-data);color:var(--text-dim);margin-top:4px}
+
+/* ── bid tab specific ── */
+.bwrap{overflow-x:auto;border-radius:var(--r-md);border:1px solid var(--border)}
+.bidtbl{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--bg-surface-raised)}
+.bidtbl th,.bidtbl td{padding:9px 11px;border-bottom:1px solid var(--border-hairline);white-space:nowrap;vertical-align:top}
+.bidtbl th{font:500 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);text-align:left;background:var(--bg-inset);border-bottom:1px solid var(--border-strong)}
+.bidtbl td.desc,.bidtbl th.desc{position:sticky;left:0;background:var(--bg-surface-raised);z-index:2;white-space:normal;min-width:210px;max-width:240px}
+.bidtbl th.desc{background:var(--bg-inset);z-index:3}
+.bidtbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.bidtbl tr.sec td{background:var(--bg-inset);font:600 10.5px var(--font-display);text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);padding:6px 11px}
+.bidtbl tr.newline td{box-shadow:inset 3px 0 0 var(--danger-fill)}
+.srcb{display:inline-flex;align-items:center;gap:5px;font:500 9.5px/1 var(--font-data);color:var(--text-dim);margin-top:3px}
+.srcb i{width:6px;height:6px;border-radius:50%;flex:none;display:inline-block}
+.srcb--sub i{background:var(--success-fill)}
+.srcb--parsed i{background:var(--info-fill)}
+.srcb--plug i{background:var(--danger-fill);border-radius:2px}
+.srcb--ours i{background:var(--border-strong)}
+.gapc{display:inline-block;border:1.5px dashed var(--danger-line);border-radius:var(--r-xs);color:var(--danger-text);font:500 10px var(--font-data);text-align:center;padding:5px 8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-dim);margin-bottom:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+
+/* ── budget specific ── */
+.delta{font-family:var(--font-data);font-variant-numeric:tabular-nums;font-weight:600}
+.delta.up{color:var(--danger-text)}
+.delta.down{color:var(--success-text)}
+.cclist{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;font-size:13px}
+.rule{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:8px;background:var(--bg-surface-raised)}
+
+/* ── tabs (screen-local view switches) ── */
+.tabs{display:flex;gap:3px;flex-wrap:wrap;margin:0 0 14px;padding:3px;background:var(--bg-inset);border-radius:var(--r-pill);width:fit-content}
+.tabs button{all:unset;cursor:pointer;padding:7px 15px;font:500 10.5px/1 var(--font-data);letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim)}
+.tabs a{padding:7px 15px;font:500 10.5px/1 var(--font-data);letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;border-radius:var(--r-pill)}
+.tabs a:hover{color:var(--text)}
+.tabs a.on{background:var(--accent-fill);color:var(--accent-on);font-weight:700}
+
+@media(max-width:900px){.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.cf{grid-template-columns:1fr}}
