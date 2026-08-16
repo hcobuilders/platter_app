@@ -4,6 +4,7 @@
 // table) so the interactive build starts from continuity with Step 1/2
 // rather than inventing new example data.
 
+import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
