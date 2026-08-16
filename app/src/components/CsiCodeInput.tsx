@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { CSI_CODES, findCsiMatches, lookupExactCsi, type CsiCode } from "@/lib/csi-codes";
 
 export function CsiCodeInput({
@@ -20,12 +21,31 @@ export function CsiCodeInput({
 }) {
   const [value, setValue] = useState(defaultValue ?? "");
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   const matches: CsiCode[] = value.trim().length >= 2 ? findCsiMatches(value, 8) : [];
   const exact = lookupExactCsi(value);
 
+  useLayoutEffect(() => {
+    if (!open) return;
+    function updatePos() {
+      const el = wrapRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setPos({ top: r.bottom + 2, left: r.left, width: Math.max(r.width, 240) });
+    }
+    updatePos();
+    window.addEventListener("scroll", updatePos, true);
+    window.addEventListener("resize", updatePos);
+    return () => {
+      window.removeEventListener("scroll", updatePos, true);
+      window.removeEventListener("resize", updatePos);
+    };
+  }, [open]);
+
   return (
-    <div style={{ position: "relative" }}>
+    <div ref={wrapRef} style={{ position: "relative" }}>
       <input
         form={form}
         name={name}
@@ -47,23 +67,27 @@ export function CsiCodeInput({
       {exact && !open && (
         <div style={{ fontSize: 10, color: "var(--text-faint)", marginTop: 2, whiteSpace: "nowrap" }}>{exact.title}</div>
       )}
-      {open && matches.length > 0 && (
-        <div className="csi-suggest">
-          {matches.map((m) => (
-            <div
-              key={m.code}
-              className="csi-suggest__row"
-              onMouseDown={() => {
-                setValue(m.code);
-                setOpen(false);
-              }}
-            >
-              <span className="mono">{m.code}</span>
-              <span>{m.title}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      {open &&
+        matches.length > 0 &&
+        pos &&
+        createPortal(
+          <div className="csi-suggest" style={{ position: "fixed", top: pos.top, left: pos.left, width: pos.width }}>
+            {matches.map((m) => (
+              <div
+                key={m.code}
+                className="csi-suggest__row"
+                onMouseDown={() => {
+                  setValue(m.code);
+                  setOpen(false);
+                }}
+              >
+                <span className="mono">{m.code}</span>
+                <span>{m.title}</span>
+              </div>
+            ))}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

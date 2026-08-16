@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { createScopeLine, updateScopeLine, deleteScopeLine } from "./actions";
 import { KindPicker } from "@/components/KindPicker";
 import { CsiCodeInput } from "@/components/CsiCodeInput";
 import { ResizableColumns } from "@/components/ResizableColumns";
+import { formatCents } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +14,10 @@ async function getPackages(number: string) {
     where: { number },
     include: {
       bidPackages: {
-        include: { scopeLineItems: { orderBy: { seq: "asc" } } },
+        include: {
+          scopeLineItems: { orderBy: { seq: "asc" } },
+          invitations: { select: { id: true } },
+        },
       },
     },
   });
@@ -31,29 +36,67 @@ export default async function ScopePage({
   const project = await getPackages(number);
   if (!project) notFound();
 
-  const pkg = packageCode
-    ? project.bidPackages.find((p) => p.code === packageCode)
-    : project.bidPackages[0];
-
-  if (!pkg) {
+  if (project.bidPackages.length === 0) {
     return <p style={{ color: "var(--text-dim)" }}>No bid packages yet.</p>;
   }
 
+  // Default landing view: a table of every package with stats. Drilling
+  // into one (via ?package=) opens the tabs-on-top, full-screen editor below.
+  if (!packageCode) {
+    return (
+      <div>
+        <div className="lbl">Bid packages</div>
+        <div className="bwrap mt-2">
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th className="n">Scope lines</th>
+                <th className="n">Invited subs</th>
+                <th className="n">Budget</th>
+              </tr>
+            </thead>
+            <tbody>
+              {project.bidPackages.map((p) => (
+                <tr key={p.id}>
+                  <td className="mono">
+                    <Link href={`?package=${p.code}`} style={{ color: "inherit", fontWeight: 700, textDecoration: "none" }}>
+                      {p.code}
+                    </Link>
+                  </td>
+                  <td>
+                    <Link href={`?package=${p.code}`} style={{ color: "inherit", textDecoration: "none" }}>
+                      {p.name}
+                    </Link>
+                  </td>
+                  <td className="n">{p.scopeLineItems.length}</td>
+                  <td className="n">{p.invitations.length}</td>
+                  <td className="n">{formatCents(p.budgetAmount)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
+  const pkg = project.bidPackages.find((p) => p.code === packageCode);
+  if (!pkg) notFound();
+
   return (
     <div className="flex flex-col gap-6">
-      {project.bidPackages.length > 1 && (
-        <div className="tabs">
-          {project.bidPackages.map((p) => (
-            <a
-              key={p.id}
-              href={`?package=${p.code}`}
-              className={p.id === pkg.id ? "on" : undefined}
-            >
-              {p.code} {p.name}
-            </a>
-          ))}
-        </div>
-      )}
+      <div className="tabs">
+        <Link href={`/projects/${number}/scope`} style={{ padding: "7px 15px", font: "500 10.5px/1 var(--font-data)", letterSpacing: ".07em", textTransform: "uppercase", color: "var(--text-dim)", textDecoration: "none", borderRadius: "var(--r-pill)" }}>
+          ← All packages
+        </Link>
+        {project.bidPackages.map((p) => (
+          <a key={p.id} href={`?package=${p.code}`} className={p.id === pkg.id ? "on" : undefined}>
+            {p.code} {p.name}
+          </a>
+        ))}
+      </div>
 
       <div>
         <div className="lbl">
@@ -103,7 +146,7 @@ export default async function ScopePage({
                     />
                   </td>
                   <td>
-                    <KindPicker form={formId} name="kind" defaultValue={line.kind} />
+                    <KindPicker form={formId} name="kind" defaultValue={line.kind} compact />
                   </td>
                   <td>
                     <input form={formId} type="checkbox" name="isRequired" defaultChecked={line.isRequired} />
