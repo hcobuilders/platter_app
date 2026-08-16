@@ -49,13 +49,13 @@ export default async function Home() {
                 alignItems: "center",
               }}
             >
-              <div>
+              <div style={{ minWidth: 0, flex: "1 1 auto" }}>
                 <div style={{ font: "var(--t-h3)" }}>{project.name}</div>
                 <div style={{ font: "var(--t-data)", color: "var(--text-invert-dim)", marginTop: 4 }}>
                   {project.number} · {project.status}
                 </div>
               </div>
-              <div className="mono" style={{ fontSize: 18, color: "var(--text-invert)" }}>
+              <div className="mono" style={{ fontSize: 18, color: "var(--text-invert)", flex: "0 0 auto", marginLeft: 16, whiteSpace: "nowrap" }}>
                 {formatCents(total)}
               </div>
             </Link>
