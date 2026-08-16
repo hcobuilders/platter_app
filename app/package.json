@@ -12,7 +12,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "release": "prisma migrate deploy && tsx prisma/debug-count.ts"
+    "release": "prisma migrate deploy && tsx prisma/repair-3a-scope.ts && tsx prisma/debug-count.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
