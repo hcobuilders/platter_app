@@ -152,6 +152,7 @@ Every screen and state I'll draw, in build order. Batches 1–5 are phase 1 (the
 | 5.2 | Budget table | Main view prefilled from packages · CSI 2026 / 16-div toggle · column show/hide/reorder · right-click menu · totals · change log with tags |
 | 5.3 | Budget revisions | Save revision · compare two · generated summary |
 | 5.4 | Lifecycle cost analysis | Setup · data entry · AI research pass · tuning interface |
+| 5.5 | Automation & customization *(added S11, D-41 — not in the original index)* | No-code rule builder (condition → action) for plug recommendations and gap-flagging thresholds · reusable custom-column library · notification preferences |
 
 ### Batch 6 — Settings (minimal, phase 1)
 Theme + accent, contact info & signature, OAuth connections, trades/tags/package templates.

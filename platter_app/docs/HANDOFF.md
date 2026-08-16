@@ -6,15 +6,15 @@ Paste this as the first message in the new chat, with `DECISION_LOG.md` attached
 
 ## Prompt to paste
 
-> Continuing the Platter build. Read `DECISION_LOG.md` for full context — 37 locked decisions (D-01 → D-37), 30 applied staged edits (E-01 → E-12, E-20 → E-33 with gaps), and one dropped group (E-13 → E-19, see below).
+> Continuing the Platter build. Read `DECISION_LOG.md` for full context — 41 locked decisions (D-01 → D-41), 33 applied staged edits (E-01 → E-12, E-20 → E-33 with gaps), and one dropped group (E-13 → E-19, see below).
 >
 > Do this:
 >
-> 1. **Draw Batch 5 — Bid tab & budget** per the index in `STEP1_PLAN.md` (screens 5.1 → 5.4). Two things are load-bearing here, not deferrable: the open field-level privacy question (E-13 → E-19) — a sub's real price sits next to a plug in the leveling grid — and E-33's sub-added scope lines, which have no matching `scope_line_item_id` and need their own rendering path in the leveling grid.
-> 2. Keep updating `DECISION_LOG.md` as we go, same convention as the last six sessions.
+> 1. **Draw Batch 6 — Settings** per the index in `STEP1_PLAN.md` (minimal, phase 1: theme + accent, contact info & signature, OAuth connections, trades/tags/package templates). It also now owes: the Flags panel (E-06, controlled vocabulary CRUD), and per D-41's closing note, Settings should reuse 5.5's rule/custom-field pattern rather than invent a second customization UI.
+> 2. Keep updating `DECISION_LOG.md` as we go, same convention as the last seven sessions.
 > 3. **GitHub issue tracking is live** on `hcobuilders/platter_app` — new E-## edits get opened as issues using the template established in S9 (title `E-## — <change>`, body: Change / Rationale / Applies to / Status; labels `enhancement` + `batch-N`), and closed immediately if implemented same-session. Check current issues before creating new ones so the template stays consistent.
 >
-> One thing carried forward, not blocking: Q-13, which historical project seeds the Postgres database (blocks Step 3, not wireframes).
+> Things carried forward, not blocking: Q-13 (which historical project seeds the Postgres database), Q-16 (lifecycle-cost table shape, new schema surface raised in Batch 5, not yet reviewed).
 
 ---
 
@@ -33,8 +33,9 @@ Paste this as the first message in the new chat, with `DECISION_LOG.md` attached
 | `design/wireframes/batch-2-dashboard-shell.html` | Dashboard & shell — 5 screens, 21 states |
 | `design/wireframes/batch-3-project-workspace.html` | Project workspace & scope — 7 screens, 23 states |
 | `design/wireframes/batch-4-itb-planroom.html` | ITB & sub-facing planroom — 10 screens, 32 states |
+| `design/wireframes/batch-5-bidtab-budget.html` | Bid tab & budget — 5 screens, 21 states (includes 5.5, added beyond the original plan) |
 
-**Schedule position:** Step 1 of 8 (wireframes). Batches 1–4 drawn, 5–6 remaining. Steps 2–8 (approval → interactive build → Railway → integrations) not started.
+**Schedule position:** Step 1 of 8 (wireframes). Batches 1–5 drawn, 6 remaining. Steps 2–8 (approval → interactive build → Railway → integrations) not started.
 
 **GitHub:** `hcobuilders/platter_app` (branch `Step_1_DESIGN`) now tracks E-## edits as issues — established S9, no prior issues existed to inherit a template from, so one was designed from the existing decision-log convention.
 

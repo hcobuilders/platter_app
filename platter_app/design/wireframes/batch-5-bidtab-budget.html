@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platter — Batch 5 Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(1100px 620px at 86% -10%,rgba(34,124,157,.24),transparent 62%),radial-gradient(820px 520px at 2% 104%,rgba(23,195,178,.1),transparent 60%);background-attachment:fixed}
+.doc{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.rail{border-right:1px solid var(--border-invert);padding:24px 0 80px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.rail .brand{display:flex;align-items:center;gap:10px;padding:0 20px 22px}
+.rail .brand b{font:700 20px/1 var(--font-display);letter-spacing:-.04em}
+.rail h4{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:16px 20px 8px;margin:0}
+.rail a{display:block;padding:8px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:14px;border-left:2px solid transparent}
+.rail a:hover{color:var(--text-invert);background:var(--bg-shell-raised)}
+.rail a.on{color:var(--text-invert);border-left-color:var(--accent-fill);background:var(--bg-shell-raised)}
+.rail a i{font-style:normal;font:400 11px var(--font-data);color:var(--accent-fill);margin-right:8px}
+main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1280px}
+.hdr{border-bottom:1px solid var(--border-invert);padding-bottom:22px}
+.eyebrow{font:500 10.5px/1 var(--font-data);letter-spacing:.15em;text-transform:uppercase;color:var(--accent-fill);margin:0 0 9px}
+.hdr h1{font:700 clamp(32px,5.2vw,49px)/1 var(--font-display);letter-spacing:-.035em;margin:0}
+.hdr p{color:var(--text-invert-dim);max-width:70ch;margin:14px 0 0}
+.hdr .flag{margin-top:16px;display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border-invert);border-left:2px solid var(--danger-fill);border-radius:var(--r-sm);background:var(--bg-shell-raised);max-width:70ch;font-size:12.5px;color:var(--text-invert-dim)}
+.hdr .flag b{color:var(--text-invert)}
+.hdr .flag.acc{border-left-color:var(--accent-fill)}
+.screen{margin-top:62px;scroll-margin-top:20px}
+.screen>header{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--border-invert);padding-bottom:12px;margin-bottom:16px}
+.screen>header .no{font:400 12px var(--font-data);color:var(--accent-fill)}
+.screen>header h2{font:600 22px/1.1 var(--font-display);letter-spacing:-.02em;margin:0}
+.screen>header .job{color:var(--text-invert-dim);font-size:13px;flex-basis:100%;max-width:76ch}
+.screen>header .tag{font:500 9.5px/1 var(--font-data);letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:var(--r-xs);flex:none;background:var(--accent-wash);color:var(--accent-fill)}
+.tabs{display:flex;gap:3px;flex-wrap:wrap;margin:0 0 14px;padding:3px;background:var(--bg-shell-raised);border-radius:var(--r-pill);width:fit-content}
+.tabs button{all:unset;cursor:pointer;padding:7px 15px;font:500 10.5px/1 var(--font-data);letter-spacing:.07em;text-transform:uppercase;color:var(--text-invert-dim);border-radius:var(--r-pill)}
+.tabs button:hover{color:var(--text-invert)}
+.tabs button[aria-selected=true]{background:var(--accent-fill);color:var(--accent-on);font-weight:700}
+.tabs button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.frame{background:var(--bg-surface);color:var(--text);border-radius:var(--r-xl);overflow:hidden;position:relative;box-shadow:var(--e-3)}
+.state{display:none}.state.on{display:block}
+.body{padding:22px}
+.ann{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 26px}
+.ann ol{margin:0;padding:0}
+.ann li{list-style:none;display:grid;grid-template-columns:22px 1fr;gap:9px;padding:8px 0;font-size:13px;color:var(--text-invert-dim);border-top:1px solid var(--border-invert)}
+.ann b{color:var(--text-invert);font-weight:600}
+.pin{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--accent-fill);color:var(--accent-on);font:700 10px var(--font-data);margin-top:1px}
+.pin.onf{position:absolute;z-index:6;box-shadow:0 0 0 2.5px var(--bg-surface),0 2px 6px rgba(14,31,39,.3)}
+.callout{border-left:2px solid var(--accent-line);padding:2px 0 2px 16px;margin:26px 0 0;color:var(--text-invert-dim);font-size:14px;max-width:76ch}
+.callout b{color:var(--text-invert)}
+.lbl{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
+
+/* ── internal app chrome (reused from Batch 3/4) ── */
+.topnav{background:var(--bg-shell);color:var(--text-invert);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:11px 18px;gap:16px}
+.topnav .left{display:flex;gap:10px;align-items:center}
+.topnav .center{display:flex;gap:12px;align-items:center;justify-self:center}
+.topnav .right{display:flex;gap:16px;align-items:center;justify-self:end}
+.topnav .logo{display:flex;align-items:center;gap:8px}
+.topnav .crumb{font:400 11px/1 var(--font-data);color:var(--text-invert-faint)}
+.topnav .pname{font:600 15px/1 var(--font-display);letter-spacing:-.02em}
+.topnav nav{display:flex;gap:17px;font:500 10.5px/1 var(--font-data);letter-spacing:.09em;text-transform:uppercase;color:var(--text-invert-dim)}
+.avatar{width:27px;height:27px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 10.5px var(--font-data);color:#fff}
+.wshell{display:grid;grid-template-columns:198px 1fr;min-height:460px}
+.pnav{border-right:1px solid var(--border);padding:14px 0}
+.pnav a{display:flex;align-items:center;gap:9px;padding:9px 16px;font:500 12.5px/1 var(--font-body);color:var(--text-dim);text-decoration:none;border-left:2px solid transparent}
+.pnav a.on{color:var(--text);border-left-color:var(--accent-strong);background:var(--bg-inset);font-weight:600}
+.pnav a:hover{color:var(--text);background:var(--bg-inset)}
+.pnav a .dot2{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;flex:none}
+.pnav a.on .dot2{opacity:1;background:var(--accent-strong)}
+.wmain{padding:20px 22px}
+.cmd{background:var(--bg-shell);border-top:1px solid rgba(0,0,0,.5);padding:10px 18px;display:flex;align-items:center;gap:12px;font:400 12.5px/1 var(--font-data);color:var(--text-invert-dim)}
+
+/* ── chip / status (E-29) ── */
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x);border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);white-space:nowrap}
+.chip--acc{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
+.chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
+.chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
+.chip--dgr{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
+.kb{display:inline-flex;align-items:center;font-family:var(--font-display);font-weight:600;font-size:10.5px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:.05em;text-transform:uppercase;
+  padding:4px 9px;border-radius:var(--r-xs);white-space:nowrap}
+.kb--inc{background:var(--success-wash);color:var(--success-text)}
+.kb--exc{background:var(--danger-wash);color:var(--danger-text)}
+.kb--alt{background:var(--info-wash);color:var(--info-text)}
+.kb--allow{background:var(--accent-wash);color:var(--accent-text)}
+.kb--unit{background:var(--bg-inset);color:var(--text-dim)}
+
+/* ── buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 14px/1 var(--font-body);padding:10px 17px;min-height:36px;
+  border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text);cursor:pointer}
+.btn--pri{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
+.btn--acc{background:linear-gradient(135deg,var(--c-apricot-300),var(--accent-strong));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--gh{background:transparent;border-color:transparent;color:var(--text-dim)}
+.btn--sm{padding:6px 13px;min-height:29px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── table ── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised);border-radius:var(--r-md);overflow:hidden}
+.tbl th{font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;
+  padding:11px 12px;border-bottom:1px solid var(--border-strong);background:var(--bg-inset);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border-hairline);vertical-align:top}
+.tbl th.n,.tbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.tbl tbody tr:hover{background:var(--accent-wash)}
+.tbl tr.is-sel{background:var(--accent-wash);box-shadow:inset 3px 0 0 var(--accent-line)}
+
+/* ── provenance row ── */
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none}
+.dot--hi{background:var(--success-fill)}.dot--mid{background:var(--accent-fill)}.dot--lo{background:var(--danger-fill)}
+.prov{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:start;padding:11px 12px;
+  border-bottom:1px solid var(--border-hairline);border-left:2px solid transparent}
+.prov:hover{background:var(--bg-surface-raised)}
+.prov .val{font:500 14px/1.35 var(--font-body)}
+.prov .src{font:400 11px/1.4 var(--font-data);color:var(--text-dim);margin-top:4px}
+.prov .src u{text-decoration:none;border-bottom:1px dotted var(--border-strong);cursor:pointer}
+
+/* ── cards / toggle / pop ── */
+.card{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);padding:16px}
+.tgl{width:34px;height:20px;border-radius:var(--r-pill);background:var(--border-strong);display:inline-block;position:relative;cursor:pointer;flex:none}
+.tgl::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:var(--e-1)}
+.tgl.on{background:var(--accent-strong)}
+.tgl.on::after{left:16px}
+.pop{position:absolute;z-index:8;background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--e-3);padding:6px;min-width:200px}
+.pop button{all:unset;display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;cursor:pointer;padding:9px 11px;border-radius:var(--r-sm);font-size:13px;color:var(--text)}
+.pop button:hover{background:var(--accent-wash);color:var(--accent-text)}
+.pop hr{border:none;border-top:1px solid var(--border-hairline);margin:5px 4px}
+.pop .sec{font:500 9px/1 var(--font-data);letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);padding:8px 11px 4px}
+
+/* ══════════════════════════════════════════════════════════════
+   BATCH 5 — bid tab / budget specific
+   ══════════════════════════════════════════════════════════════ */
+.bwrap{overflow-x:auto;border-radius:var(--r-md);border:1px solid var(--border)}
+.bidtbl{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--bg-surface-raised)}
+.bidtbl th,.bidtbl td{padding:9px 11px;border-bottom:1px solid var(--border-hairline);white-space:nowrap;vertical-align:top}
+.bidtbl th{font:500 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);text-align:left;background:var(--bg-inset);border-bottom:1px solid var(--border-strong)}
+.bidtbl td.desc,.bidtbl th.desc{position:sticky;left:0;background:var(--bg-surface-raised);z-index:2;white-space:normal;min-width:210px;max-width:240px}
+.bidtbl th.desc{background:var(--bg-inset);z-index:3}
+.bidtbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.bidtbl tr.sec td{background:var(--bg-inset);font:600 10.5px var(--font-display);text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);padding:6px 11px}
+.bidtbl tr.newline td{box-shadow:inset 3px 0 0 var(--danger-fill)}
+.srcb{display:inline-flex;align-items:center;gap:5px;font:500 9.5px/1 var(--font-data);color:var(--text-dim);margin-top:3px}
+.srcb i{width:6px;height:6px;border-radius:50%;flex:none}
+.srcb--sub i{background:var(--success-fill)}
+.srcb--parsed i{background:var(--info-fill)}
+.srcb--plug i{background:var(--danger-fill);border-radius:2px}
+.srcb--ours i{background:var(--border-strong)}
+.gapc{display:inline-block;border:1.5px dashed var(--danger-line);border-radius:var(--r-xs);color:var(--danger-text);font:500 10px var(--font-data);text-align:center;padding:5px 8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-dim);margin-bottom:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:8px;height:8px;border-radius:50%;flex:none}
+
+.rule{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:8px;background:var(--bg-surface-raised)}
+.rule .rtxt{flex:1;font-size:13px;line-height:1.7}
+.rule .rtxt b{font-family:var(--font-data);font-weight:600;background:var(--bg-inset);padding:1px 7px;border-radius:var(--r-xs);font-size:12px;white-space:nowrap}
+
+.tune{display:grid;grid-template-columns:150px 1fr 74px;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--border-hairline)}
+.tune input[type=range]{width:100%;accent-color:var(--accent-strong)}
+.tune .v{font-family:var(--font-data);font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+
+.delta{font-family:var(--font-data);font-variant-numeric:tabular-nums;font-weight:600}
+.delta.up{color:var(--danger-text)}
+.delta.down{color:var(--success-text)}
+
+.cclist{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;font-size:13px}
+.cf{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld{border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;background:var(--bg-surface-raised)}
+
+@media(max-width:900px){.doc{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border-invert)}.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.cf{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<aside class="rail">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
+    <b>Platter</b>
+  </div>
+  <h4>Batch 5 — bid tab &amp; budget</h4>
+  <a href="#s51"><i>5.1</i>Bid tab</a>
+  <a href="#s52"><i>5.2</i>Budget table</a>
+  <a href="#s53"><i>5.3</i>Budget revisions</a>
+  <a href="#s54"><i>5.4</i>Lifecycle cost</a>
+  <a href="#s55"><i>5.5</i>Automation &amp; customization</a>
+  <h4>Done</h4>
+  <a href="#" style="opacity:.4"><i>1.x</i>Intake &amp; parse</a>
+  <a href="#" style="opacity:.4"><i>2.x</i>Dashboard &amp; shell</a>
+  <a href="#" style="opacity:.4"><i>3.x</i>Workspace &amp; scope</a>
+  <a href="#" style="opacity:.4"><i>4.x</i>ITB &amp; planroom</a>
+  <h4>Next</h4>
+  <a href="#" style="opacity:.4"><i>6.x</i>Settings</a>
+</aside>
+
+<main>
+  <div class="hdr">
+    <p class="eyebrow">Step 1 · Wireframes · Batch 5 of 6</p>
+    <h1>Bid tab &amp; budget</h1>
+    <p>Priority #3 (D-07): where invited bids become a leveled comparison and a working budget. This batch also carries the two obligations flagged at the end of Batch 4, plus a fifth screen added beyond the original index — see below.</p>
+    <div class="flag"><span>⚠</span><span><b>E-13→E-19 stays unresolved, but it's load-bearing here.</b> A sub's real price now sits on screen next to a GC plug. Rather than inventing the abandoned field-level redaction model, this batch adds one narrow, explicit decision (D-38): a coarse <i>presentation mode</i> that masks all bid amounts at once when screen-sharing. It is not per-field, not permission-based, and not a substitute for the real spec if one ever gets written.</span></div>
+    <div class="flag"><span>🧩</span><span><b>E-33 lands here.</b> 5.1 now has a dedicated review queue for bid lines a sub added that don't match any <span class="mono">scope_line_item</span> — the obligation flagged at the close of Batch 4.</span></div>
+    <div class="flag acc"><span>⚙</span><span><b>5.5 is new — not in the original <span class="mono">STEP1_PLAN.md</span> index.</b> Per owner direction to make the bid tab and budget genuinely user-configurable — plug rules, flag thresholds, custom columns — without needing new code for every tweak. It's a rule builder and a custom-column library, both plain dropdowns and formulas, no code. Logged as D-41.</span></div>
+  </div>
+
+<!-- ═══════ 5.1 ═══════ -->
+<section class="screen" id="s51">
+  <header><span class="no">5.1</span><h2>Bid tab</h2>
+    <span class="job">One job: turn every invited sub's number into one leveled comparison, with the gaps, the plugs, and anything a sub added on their own all impossible to miss.</span></header>
+
+  <div class="tabs" role="tablist" data-g="a">
+    <button role="tab" aria-selected="true" data-t="a1">Comparison grid</button>
+    <button role="tab" aria-selected="false" data-t="a2">Gap + recommended plug</button>
+    <button role="tab" aria-selected="false" data-t="a3">Sub-added lines · review</button>
+    <button role="tab" aria-selected="false" data-t="a4">Comments, flags &amp; presentation mode</button>
+    <button role="tab" aria-selected="false" data-t="a5">Consight import</button>
+  </div>
+
+  <div class="frame">
+    <div class="topnav">
+      <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n1" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n1)"/></g></svg></div><span class="crumb">/ Bid tab /</span></div>
+      <div class="center"><span class="pname">West Henry Logistics</span><span class="chip chip--info">26-085</span></div>
+      <div class="right"><nav><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav><div class="avatar">JL</div></div>
+    </div>
+    <div class="wshell">
+      <nav class="pnav">
+        <a href="#"><span class="dot2"></span>Overview</a>
+        <a href="#"><span class="dot2"></span>Scope</a>
+        <a href="#"><span class="dot2"></span>ITB</a>
+        <a href="#"><span class="dot2"></span>Planroom</a>
+        <a class="on" href="#"><span class="dot2"></span>Bid tab</a>
+        <a href="#"><span class="dot2"></span>Budget</a>
+        <a href="#"><span class="dot2"></span>Documents</a>
+      </nav>
+      <div class="wmain">
+
+        <!-- a1 comparison grid -->
+        <div class="state on" id="a1" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">1</span>
+          <div class="legend">
+            <span><i style="background:var(--success-fill)"></i>Sub-stated</span>
+            <span><i style="background:var(--info-fill)"></i>Parsed from upload</span>
+            <span><i style="background:var(--danger-fill);border-radius:2px"></i>Plug</span>
+            <span><i style="background:var(--border-strong)"></i>GC estimate</span>
+          </div>
+          <div class="bwrap">
+            <table class="bidtbl">
+              <thead><tr>
+                <th class="desc">3A — Concrete</th>
+                <th>GC estimate</th>
+                <th>Bayline Concrete</th>
+                <th>Marion Ready Mix</th>
+                <th>Coastal Concrete Grp</th>
+                <th>Suncoast Structural</th>
+              </tr></thead>
+              <tbody>
+                <tr><td class="desc">Cast-in-place foundation walls <span class="kb kb--inc" style="margin-left:4px">Inc</span></td>
+                  <td class="n">$195,000<div class="srcb srcb--ours"><i></i>GC est.</div></td>
+                  <td class="n">$187,400<div class="srcb srcb--sub"><i></i>Sub</div></td>
+                  <td class="n">$191,000<div class="srcb srcb--parsed"><i></i>Parsed · 0.93</div></td>
+                  <td style="color:var(--text-faint);text-align:center">No bid</td>
+                  <td style="color:var(--text-faint);text-align:center">Pending</td>
+                </tr>
+                <tr><td class="desc">Slab on grade, 6" reinforced <span class="kb kb--inc" style="margin-left:4px">Inc</span></td>
+                  <td class="n">$310,000<div class="srcb srcb--ours"><i></i>GC est.</div></td>
+                  <td class="n">$294,000<div class="srcb srcb--sub"><i></i>Sub</div></td>
+                  <td class="n"><span class="gapc">Gap</span></td>
+                  <td style="color:var(--text-faint);text-align:center">No bid</td>
+                  <td style="color:var(--text-faint);text-align:center">Pending</td>
+                </tr>
+                <tr><td class="desc">Alternate — polished slab finish <span class="kb kb--alt" style="margin-left:4px">Alt</span></td>
+                  <td class="n">$28,000<div class="srcb srcb--ours"><i></i>GC est.</div></td>
+                  <td class="n">$31,500<div class="srcb srcb--sub"><i></i>Sub</div></td>
+                  <td class="n" style="color:var(--text-faint)">—</td>
+                  <td style="color:var(--text-faint);text-align:center">No bid</td>
+                  <td style="color:var(--text-faint);text-align:center">Pending</td>
+                </tr>
+                <tr class="newline"><td class="desc">Rebar supply upgraded to Grade 75 <span class="chip chip--dgr" style="margin-left:4px">Sub-added</span></td>
+                  <td class="n" style="color:var(--text-faint)">—</td>
+                  <td class="n">$12,400<div class="srcb srcb--sub"><i></i>Sub</div></td>
+                  <td class="n" style="color:var(--text-faint)">—</td>
+                  <td style="color:var(--text-faint);text-align:center">—</td>
+                  <td style="color:var(--text-faint);text-align:center">—</td>
+                </tr>
+                <tr><td class="desc" style="font-weight:700">Package total (included)</td>
+                  <td class="n" style="font-weight:700">$533,000</td>
+                  <td class="n" style="font-weight:700">$493,800</td>
+                  <td class="n" style="font-weight:700;color:var(--danger-text)">Incomplete</td>
+                  <td style="text-align:center">—</td>
+                  <td style="text-align:center">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- a2 gap + recommended plug -->
+        <div class="state" id="a2" style="position:relative;max-width:520px">
+          <span class="pin onf" style="left:-9px;top:8px">2</span>
+          <div class="card" style="border-left:2px solid var(--danger-fill)">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+              <div><div class="lbl">Gap — Marion Ready Mix &amp; Forming</div><div style="font:600 15px var(--font-display);margin-top:4px">Slab on grade, 6" reinforced</div></div>
+              <span class="chip chip--dgr">No matching row</span>
+            </div>
+            <p style="font-size:12.5px;color:var(--text-dim);margin:10px 0 14px">Their uploaded xlsx didn't contain a row Platter could match to this scope line (same unmatched-row state shown in the planroom's parse-back, 4.7).</p>
+            <div class="prov" style="border:1px solid var(--border);border-radius:var(--r-sm);border-left:2px solid var(--accent-line)">
+              <span class="dot dot--mid" style="margin-top:5px"></span>
+              <div><div class="val">Recommended plug — $270,480</div><div class="src">Rule: <u>avg(other priced bids) × 0.92</u> → avg($294,000) × 0.92 · <a href="#s55" style="color:var(--info-text)">edit rule ↗</a></div></div>
+              <span class="btn btn--sm btn--acc">Accept plug</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- a3 sub-added lines review -->
+        <div class="state" id="a3" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">3</span>
+          <div class="lbl" style="margin-bottom:8px">2 lines awaiting disposition — Bayline Concrete</div>
+          <div class="card" style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+              <div><div style="font:600 14px var(--font-display)">Rebar supply upgraded to Grade 75</div><div style="font-size:12px;color:var(--text-dim);margin-top:3px">$12,400 · LS · submitted as an inclusion</div></div>
+              <span class="chip chip--dgr">Sub-added</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <span class="btn btn--sm btn--acc">Accept as new scope line</span>
+              <span class="btn btn--sm">Merge into existing line</span>
+              <span class="btn btn--sm btn--gh">Track only, exclude from total</span>
+            </div>
+          </div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+              <div><div style="font:600 14px var(--font-display)">Excludes saw-cutting of control joints</div><div style="font-size:12px;color:var(--text-dim);margin-top:3px">Submitted as an exclusion — LEMA's scope didn't list this either way</div></div>
+              <span class="chip chip--dgr">Sub-added</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <span class="btn btn--sm btn--acc">Accept as new scope line</span>
+              <span class="btn btn--sm">Merge into existing line</span>
+              <span class="btn btn--sm btn--gh">Track only, exclude from total</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- a4 comments, flags & presentation mode -->
+        <div class="state" id="a4" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">4</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div class="lbl" style="margin:0">Row-level notes &amp; flags</div>
+            <div style="display:flex;align-items:center;gap:10px"><span class="tgl on"></span><span style="font-size:12.5px">Presentation mode — masks all bid amounts</span></div>
+          </div>
+          <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">Cast-in-place foundation walls <span class="chip" style="margin-left:6px;background:var(--bg-inset)">💬 2</span></div><div class="src">"Bayline's number tracks close to our estimate — comfortable" — R. Harper</div></div><span class="chip chip--ok">Buyout ready</span></div>
+          <div class="prov"><span class="dot dot--mid" style="margin-top:5px"></span><div><div class="val">Slab on grade, 6" reinforced</div><div class="src">Flagged for review — plug pending acceptance</div></div><span class="chip chip--dgr">Needs decision</span></div>
+          <p style="font-size:12px;color:var(--text-dim);margin-top:14px;max-width:70ch">Manual row highlighting deliberately stays neutral (inset shading, not a brand hue) — D-19's four intents stay reserved for system-assigned meaning, not personal bookkeeping.</p>
+        </div>
+
+        <!-- a5 consight import -->
+        <div class="state" id="a5" style="position:relative;max-width:460px">
+          <span class="pin onf" style="left:-9px;top:8px">5</span>
+          <div class="card" style="opacity:.7">
+            <div class="lbl" style="margin-bottom:8px">Open in</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-hairline)"><span>Import from Consight</span><span class="btn btn--sm" disabled>Not available ↗</span></div>
+            <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Waiting on Consight's export format (Q-06, still open). Shown disabled with the reason rather than hidden — D-37.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="cmd"><span style="color:var(--accent-fill);font-weight:700">/</span> Type a command or a project number</div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Every cell carries its source, not just its value</b> — the small dot-and-label under each price is the same trust signal as a provenance row, compressed to grid scale. First column sticks on scroll so the description never scrolls out of view against ten sub columns.</span></li>
+    <li><span class="pin">2</span><span><b>A gap is never silently zero</b> — it's a distinct dashed state, and the recommended plug cites the rule that produced it, with one click to the rule editor (5.5) if the number looks wrong.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Sub-added lines get their own queue, not a silent merge into the total</b> — this is E-33's Batch 5 obligation. Every disposition (accept as new scope, merge, track-only) is a real choice, never automatic.</span></li>
+    <li><span class="pin">4</span><span><b>Presentation mode is coarse on purpose (D-38).</b> One toggle masks every amount at once for screen-sharing with an owner or architect — it is explicitly not the granular field-level model E-13→E-19 never specced, and the annotation says so rather than implying more than what's built.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 5.2 ═══════ -->
+<section class="screen" id="s52">
+  <header><span class="no">5.2</span><h2>Budget table</h2>
+    <span class="job">One job: the running number the whole project is managed against — prefilled from packages, editable by anyone, and auditable down to who changed what.</span></header>
+
+  <div class="tabs" role="tablist" data-g="b">
+    <button role="tab" aria-selected="true" data-t="b1">Main view</button>
+    <button role="tab" aria-selected="false" data-t="b2">Columns · custom column</button>
+    <button role="tab" aria-selected="false" data-t="b3">Right-click menu</button>
+    <button role="tab" aria-selected="false" data-t="b4">Change log · tags</button>
+  </div>
+
+  <div class="frame">
+    <div class="topnav">
+      <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n2" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n2)"/></g></svg></div><span class="crumb">/ Budget /</span></div>
+      <div class="center"><span class="pname">West Henry Logistics</span><span class="chip chip--info">26-085</span></div>
+      <div class="right"><nav><span>Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav><div class="avatar">JL</div></div>
+    </div>
+    <div class="wshell">
+      <nav class="pnav">
+        <a href="#"><span class="dot2"></span>Overview</a>
+        <a href="#"><span class="dot2"></span>Scope</a>
+        <a href="#"><span class="dot2"></span>ITB</a>
+        <a href="#"><span class="dot2"></span>Planroom</a>
+        <a href="#"><span class="dot2"></span>Bid tab</a>
+        <a class="on" href="#"><span class="dot2"></span>Budget</a>
+        <a href="#"><span class="dot2"></span>Documents</a>
+      </nav>
+      <div class="wmain">
+
+        <!-- b1 main view -->
+        <div class="state on" id="b1" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">1</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div class="tabs" role="tablist" style="background:var(--bg-inset);margin:0"><button role="tab" aria-selected="true" style="color:var(--text)">CSI 2026</button><button role="tab" aria-selected="false" style="color:var(--text-dim)">16-division</button></div>
+            <span class="btn btn--sm">⚙ Columns</span>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>CSI</th><th>Package</th><th class="n">Budget</th><th class="n">Current</th><th class="n">Buyout exp.</th><th>Awarded to</th><th>Tags</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">03</td><td>3A — Concrete</td><td class="n mono">$1,350,000</td><td class="n mono" style="color:var(--info-text)">$1,308,600</td><td class="n mono">$1,290,000</td><td>Bayline Concrete</td><td><span class="chip">Buyout ready</span></td></tr>
+              <tr><td class="mono">05</td><td>5A — Structural Steel</td><td class="n mono">$1,980,000</td><td class="n mono" style="color:var(--success-text)">$1,940,000</td><td class="n mono">—</td><td style="color:var(--text-faint)">—</td><td><span class="chip chip--dgr">Long lead</span></td></tr>
+              <tr><td class="mono">09</td><td>9A — Drywall &amp; Framing</td><td class="n mono">$640,000</td><td class="n mono">$640,000</td><td class="n mono">—</td><td style="color:var(--text-faint)">—</td><td></td></tr>
+              <tr><td class="mono">26</td><td>26A — Electrical</td><td class="n mono">$3,500,000</td><td class="n mono" style="color:var(--info-text)">$3,500,000</td><td class="n mono">—</td><td style="color:var(--text-faint)">—</td><td><span class="chip chip--dgr">Schedule required</span></td></tr>
+            </tbody>
+            <tfoot><tr><td colspan="2" style="text-align:right;font:600 12.5px var(--font-body);padding:11px 12px">Total</td><td class="n mono" style="font-weight:700">$7,470,000</td><td class="n mono" style="font-weight:700">$7,388,600</td><td class="n mono" style="font-weight:700">$1,290,000</td><td></td><td></td></tr></tfoot>
+          </table>
+          <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Current-value color follows E-02's two-state ladder — cerulean = AI/estimate-derived, sea green = verified against a real bid — the same rule the dashboard card footer already uses.</p>
+        </div>
+
+        <!-- b2 columns / custom column -->
+        <div class="state" id="b2" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">2</span>
+          <div style="display:grid;grid-template-columns:260px 1fr;gap:20px">
+            <div class="pop" style="position:static;box-shadow:var(--e-1)">
+              <div class="sec">Visible columns · drag to reorder</div>
+              <button>⋮⋮ ✓ CSI code</button>
+              <button>⋮⋮ ✓ Package</button>
+              <button>⋮⋮ ✓ Budget</button>
+              <button>⋮⋮ ✓ Current</button>
+              <button>⋮⋮ ☐ Buyout expected</button>
+              <button>⋮⋮ ✓ Cost / SF</button>
+              <hr>
+              <button>＋ Add custom column</button>
+            </div>
+            <div class="card">
+              <div class="lbl" style="margin-bottom:10px">New custom column — no code required</div>
+              <div class="cf" style="margin-bottom:12px"><div><div class="lbl">Name</div><div class="fld" style="margin-top:5px">Cost / SF</div></div><div><div class="lbl">Format</div><div class="fld" style="margin-top:5px">Currency · 2 decimals</div></div></div>
+              <div class="lbl" style="margin-bottom:6px">Formula</div>
+              <div class="fld" style="margin-bottom:12px;font-family:var(--font-data);font-size:12.5px"><span class="chip chip--info" style="padding:2px 7px">budget_line.current</span> ÷ <span class="chip chip--info" style="padding:2px 7px">project.gsf</span></div>
+              <p style="font-size:11.5px;color:var(--text-dim);margin:0 0 12px">Pick fields and an operator from dropdowns — same building blocks as the automation rules in 5.5. No formula language to learn.</p>
+              <span class="btn btn--sm btn--acc">Save column</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- b3 right-click menu -->
+        <div class="state" id="b3" style="position:relative;max-width:280px">
+          <span class="pin onf" style="right:-9px;top:6px">3</span>
+          <div class="pop" style="position:static;box-shadow:var(--e-2)">
+            <div class="sec">3A — Concrete</div>
+            <button>Insert line above</button>
+            <button>Duplicate line</button>
+            <button>Apply tag…</button>
+            <button>Lock value</button>
+            <hr>
+            <button>View change history</button>
+            <button style="color:var(--danger-text)">Delete line</button>
+          </div>
+        </div>
+
+        <!-- b4 change log / tags -->
+        <div class="state" id="b4" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">4</span>
+          <div style="display:flex;gap:6px;margin-bottom:12px"><span class="chip chip--acc">All</span><span class="chip">Buyout</span><span class="chip">Scope change</span><span class="chip">Unit cost update</span></div>
+          <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">3A current updated $1,350,000 → $1,308,600</div><div class="src">bid tab leveling · <u>Bid tab 5.1</u></div></div><span style="display:flex;gap:6px"><span class="chip">Buyout</span><span style="font:400 11px var(--font-data);color:var(--text-dim)">R. Harper · 2h ago</span></span></div>
+          <div class="prov"><span class="dot dot--mid" style="margin-top:5px"></span><div><div class="val">Rebar supply upgrade accepted as new scope line, 3A</div><div class="src">from sub-added review · <u>5.1</u></div></div><span style="display:flex;gap:6px"><span class="chip">Scope change</span><span style="font:400 11px var(--font-data);color:var(--text-dim)">R. Harper · 2h ago</span></span></div>
+          <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">5A current updated $1,980,000 → $1,940,000</div><div class="src">manual entry</div></div><span style="display:flex;gap:6px"><span class="chip">Unit cost update</span><span style="font:400 11px var(--font-data);color:var(--text-dim)">R. Harper · 1d ago</span></span></div>
+        </div>
+
+      </div>
+    </div>
+    <div class="cmd"><span style="color:var(--accent-fill);font-weight:700">/</span> Type a command or a project number</div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Budget rows are prefilled straight from accepted packages</b> (3.4/3.5/3.6) — the table isn't a second place to re-enter numbers already established in scope.</span></li>
+    <li><span class="pin">2</span><span><b>Custom columns are the clearest instance of the "no new code" requirement.</b> A formula is assembled from field chips and an operator, not typed as an expression — reused as the exact same building block the automation rule builder uses in 5.5, so an estimator only learns one interaction pattern.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Right-click surfaces the same actions the roadmap asked for</b> without a second toolbar competing for space above the table.</span></li>
+    <li><span class="pin">4</span><span><b>Change log tags reuse the Flags controlled vocabulary</b> (E-05/E-06) rather than inventing a second tagging system — "Buyout," "Scope change" and "Unit cost update" live in the same Settings library as bid-requirement flags.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 5.3 ═══════ -->
+<section class="screen" id="s53">
+  <header><span class="no">5.3</span><h2>Budget revisions</h2>
+    <span class="job">One job: let the budget change constantly without losing the ability to answer "what did we think three weeks ago, and why did it move."</span></header>
+
+  <div class="tabs" role="tablist" data-g="c">
+    <button role="tab" aria-selected="true" data-t="c1">Save revision</button>
+    <button role="tab" aria-selected="false" data-t="c2">Compare two</button>
+    <button role="tab" aria-selected="false" data-t="c3">Generated summary</button>
+  </div>
+
+  <div class="frame"><div class="body">
+
+    <div class="state on" id="c1" style="position:relative;max-width:460px">
+      <span class="pin onf" style="left:-9px;top:8px">1</span>
+      <div class="card" style="margin-bottom:16px">
+        <div class="lbl" style="margin-bottom:8px">Save current state as a revision</div>
+        <div class="fld" style="margin-bottom:10px">Rev 3 — post-3A leveling</div>
+        <div class="fld" style="color:var(--text-faint);margin-bottom:12px">Optional note…</div>
+        <span class="btn btn--acc">Save Rev 3</span>
+      </div>
+      <div class="lbl" style="margin-bottom:8px">History</div>
+      <div style="font-size:13px;color:var(--text-dim);line-height:2.1">Rev 2 — post-ITB baseline · Aug 9<br>Rev 1 — award-target budget · Aug 4<br>Rev 0 — initial from packages · Jul 28</div>
+    </div>
+
+    <div class="state" id="c2" style="position:relative">
+      <span class="pin onf" style="left:-9px;top:8px">2</span>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px"><span class="chip chip--acc">Rev 2</span><span style="color:var(--text-faint)">→</span><span class="chip chip--acc">Rev 3</span><span class="btn btn--sm btn--gh" style="margin-left:auto">Swap</span></div>
+      <table class="tbl">
+        <thead><tr><th>Package</th><th class="n">Rev 2</th><th class="n">Rev 3</th><th class="n">Δ</th></tr></thead>
+        <tbody>
+          <tr><td>3A — Concrete</td><td class="n mono">$1,350,000</td><td class="n mono">$1,308,600</td><td class="n"><span class="delta down">−$41,400</span></td></tr>
+          <tr><td>5A — Structural Steel</td><td class="n mono">$1,980,000</td><td class="n mono">$1,940,000</td><td class="n"><span class="delta down">−$40,000</span></td></tr>
+          <tr><td>9A — Drywall &amp; Framing</td><td class="n mono">$640,000</td><td class="n mono">$640,000</td><td class="n"><span style="color:var(--text-faint)">—</span></td></tr>
+          <tr><td>26A — Electrical</td><td class="n mono">$3,420,000</td><td class="n mono">$3,500,000</td><td class="n"><span class="delta up">+$80,000</span></td></tr>
+        </tbody>
+        <tfoot><tr><td style="font-weight:700">Total</td><td class="n mono" style="font-weight:700">$7,390,000</td><td class="n mono" style="font-weight:700">$7,388,600</td><td class="n"><span class="delta down" style="font-weight:700">−$1,400</span></td></tr></tfoot>
+      </table>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Revisions store full JSONB snapshots (D-08/STEP1_PLAN Part A) — this delta is computed at read time, so comparing any two revisions costs nothing extra to support.</p>
+    </div>
+
+    <div class="state" id="c3" style="position:relative;max-width:560px">
+      <span class="pin onf" style="left:-9px;top:8px">3</span>
+      <div class="card" style="border-left:2px solid var(--info-line)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="dot dot--mid"></span><span class="lbl" style="margin:0">AI-generated summary — Rev 2 → Rev 3</span></div>
+        <p style="font-size:13.5px;line-height:1.7;margin:0">Concrete and structural steel both came in under Rev 2's carry after leveling real bids — concrete by 3.1%, steel by 2.0%. Electrical moved up 2.3% after Schedule Required drove a preliminary-CPM line into 26A's scope. Net movement: −$1,400, effectively flat.</p>
+        <div style="display:flex;gap:8px;margin-top:14px"><span class="btn btn--sm">Regenerate</span><span class="btn btn--sm btn--gh">Copy</span></div>
+      </div>
+    </div>
+
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Saving is deliberate, not automatic</b> — a revision is a named checkpoint an estimator chooses to create, distinct from every routine edit already captured in 5.2's change log.</span></li>
+    <li><span class="pin">2</span><span><b>Delta color follows a financial convention, not D-19's status intents</b> — grapefruit for cost growth, sea green for savings (D-40) — deliberately separate from the semantic system so a color increase in cost never gets confused with a confidence or urgency signal elsewhere in the app.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>The summary is written, not just computed,</b> and it's marked as AI-generated (cerulean border, confidence dot) rather than presented as fact — the same trust posture as every other AI surface in the app.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 5.4 ═══════ -->
+<section class="screen" id="s54">
+  <header><span class="no">5.4</span><h2>Lifecycle cost analysis</h2>
+    <span class="job">One job: put a real number on "cheaper now vs. cheaper over 20 years" for the systems where that tradeoff actually matters, without pretending the assumptions behind it are fixed.</span></header>
+
+  <div class="tabs" role="tablist" data-g="d">
+    <button role="tab" aria-selected="true" data-t="d1">Setup</button>
+    <button role="tab" aria-selected="false" data-t="d2">Data entry</button>
+    <button role="tab" aria-selected="false" data-t="d3">AI research pass</button>
+    <button role="tab" aria-selected="false" data-t="d4">Tuning interface</button>
+  </div>
+
+  <div class="frame"><div class="body">
+
+    <div class="state on" id="d1" style="position:relative;max-width:480px">
+      <span class="pin onf" style="left:-9px;top:8px">1</span>
+      <div class="lbl" style="margin-bottom:8px">Include in lifecycle analysis</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm)"><span><input type="checkbox" checked> RTU package — HVAC</span><span class="mono" style="font-size:12px;color:var(--text-dim)">23A</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm)"><span><input type="checkbox" checked> TPO roof membrane</span><span class="mono" style="font-size:12px;color:var(--text-dim)">07A</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm)"><span><input type="checkbox"> Elevators</span><span class="mono" style="font-size:12px;color:var(--text-dim)">14A</span></div>
+      </div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:12px">High replacement-cost, long-service-life systems are worth the analysis effort; a door hardware package usually isn't.</p>
+    </div>
+
+    <div class="state" id="d2" style="position:relative">
+      <span class="pin onf" style="left:-9px;top:8px">2</span>
+      <table class="tbl">
+        <thead><tr><th>System</th><th class="n">Initial cost</th><th class="n">Service life</th><th class="n">Annual maint.</th></tr></thead>
+        <tbody>
+          <tr><td>RTU package — HVAC</td><td class="n mono">$840,000</td><td class="n mono">15 yr</td><td class="n mono">$18,000</td></tr>
+          <tr><td>TPO roof membrane</td><td class="n mono">$410,000</td><td class="n mono">20 yr</td><td class="n mono">$6,500</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="state" id="d3" style="position:relative">
+      <span class="pin onf" style="left:-9px;top:8px">3</span>
+      <div class="prov"><span class="dot dot--hi" style="margin-top:5px"></span><div><div class="val">RTU service life — 15 yr is typical for this tonnage class</div><div class="src">industry benchmark, packaged rooftop units · 0.88</div></div><span class="btn btn--sm">Accept</span></div>
+      <div class="prov"><span class="dot dot--mid" style="margin-top:5px"></span><div><div class="val">TPO replacement cost — trending +4%/yr regionally</div><div class="src">researched, FL Gulf Coast region · 0.74</div></div><span class="btn btn--sm">Accept</span></div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:14px;max-width:70ch">Same provenance row, same confidence dot as every other AI-derived value in the app (D-26) — a researched benchmark gets exactly as much scrutiny as a parsed spec field.</p>
+    </div>
+
+    <div class="state" id="d4" style="position:relative;max-width:520px">
+      <span class="pin onf" style="left:-9px;top:8px">4</span>
+      <div class="tune"><span style="font-size:13px">Discount rate</span><input type="range" min="0" max="10" value="4" step="0.5"><span class="v">4.0%</span></div>
+      <div class="tune"><span style="font-size:13px">Escalation rate</span><input type="range" min="0" max="10" value="3" step="0.5"><span class="v">3.0%</span></div>
+      <div class="tune"><span style="font-size:13px">Analysis period</span><input type="range" min="5" max="30" value="20" step="5"><span class="v">20 yr</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:14px;background:var(--bg-inset);border-radius:var(--r-md)"><span style="font-size:13px;font-weight:600">Net present lifecycle cost</span><span class="mono" style="font-size:16px;font-weight:700">$1,612,400</span></div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:12px">Every slider recalculates live. Saving a set of assumptions as a reusable default — so the next project doesn't start from 0% — happens in Automation &amp; customization (5.5).</p>
+    </div>
+
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Opting systems in is explicit</b> — lifecycle cost is expensive analytical effort, worth spending only where the tradeoff is real.</span></li>
+    <li><span class="pin">2</span><span><b>Data entry is the minimum three numbers</b> per system — initial cost, service life, annual maintenance — everything else in the model derives from these plus the tuned assumptions in 4.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Research citations name their source,</b> not just a number — "industry benchmark" vs. "regional trend" are different kinds of claim and read differently on confidence.</span></li>
+    <li><span class="pin">4</span><span><b>Tuning is the literal answer to "configure without code"</b> for this screen — discount rate, escalation, and analysis period are the three variables that actually move the answer, exposed as sliders with a live-recalculating result, not a hidden constant an estimator would need an engineer to change.</span></li>
+  </ol></div>
+
+  <p class="callout"><b>Open question — Q-16.</b> <span class="mono">STEP1_PLAN.md</span>'s data model (Part A) has no lifecycle-cost table. This batch doesn't invent one silently — a <span class="mono">lifecycle_line</span> table (system, initial_cost, service_life_yrs, annual_maintenance, source_confidence) is the obvious shape, but it's new schema surface not yet reviewed. Flagging rather than deciding.</p>
+</section>
+
+<!-- ═══════ 5.5 ═══════ -->
+<section class="screen" id="s55">
+  <header><span class="no">5.5</span><h2>Automation &amp; customization</h2><span class="tag">Added this batch</span>
+    <span class="job">One job: let the estimator tune how the bid tab and budget behave — what counts as a gap worth flagging, how a plug gets suggested, what a custom column computes — entirely through UI. No new code for a new rule.</span></header>
+
+  <div class="tabs" role="tablist" data-g="e">
+    <button role="tab" aria-selected="true" data-t="e1">Rules</button>
+    <button role="tab" aria-selected="false" data-t="e2">Custom columns library</button>
+    <button role="tab" aria-selected="false" data-t="e3">Notification preferences</button>
+  </div>
+
+  <div class="frame"><div class="body">
+
+    <div class="state on" id="e1" style="position:relative">
+      <span class="pin onf" style="left:-9px;top:8px">1</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">3 active rules</span><span class="btn btn--sm btn--acc">＋ New rule</span></div>
+      <div class="rule"><span class="tgl on" style="margin-top:2px"></span><div class="rtxt">When a bid line has <b>no submitted price</b> from an invited sub, recommend a plug at <b>avg(other priced bids) × 0.92</b></div><span class="btn btn--sm btn--gh">Edit</span></div>
+      <div class="rule"><span class="tgl on" style="margin-top:2px"></span><div class="rtxt">When the <b>gap between GC estimate and leveled total</b> exceeds <b>$50,000</b>, flag the package red and notify the assigned estimator</div><span class="btn btn--sm btn--gh">Edit</span></div>
+      <div class="rule"><span class="tgl" style="margin-top:2px"></span><div class="rtxt">When a budget revision moves any package by more than <b>5%</b>, require a note before saving</div><span class="btn btn--sm btn--gh">Edit</span></div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:14px;max-width:70ch">Every condition and action is a dropdown, not a text field — "field," "comparison," "threshold," "action" are the only four building blocks, reused across every rule.</p>
+    </div>
+
+    <div class="state" id="e2" style="position:relative;max-width:520px">
+      <span class="pin onf" style="left:-9px;top:8px">2</span>
+      <div class="cclist"><span>Cost / SF <span style="color:var(--text-faint);margin-left:8px">budget_line.current ÷ project.gsf</span></span><span style="display:flex;gap:6px"><span class="btn btn--sm">Edit</span><span class="btn btn--sm btn--gh">Duplicate</span></span></div>
+      <div class="cclist"><span>Variance % <span style="color:var(--text-faint);margin-left:8px">(current − budget) ÷ budget</span></span><span style="display:flex;gap:6px"><span class="btn btn--sm">Edit</span><span class="btn btn--sm btn--gh">Duplicate</span></span></div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:12px">Defined once in 5.2, reusable on any project's budget table — the library is what makes a custom column worth building instead of a one-off.</p>
+    </div>
+
+    <div class="state" id="e3" style="position:relative;max-width:420px">
+      <span class="pin onf" style="left:-9px;top:8px">3</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border-hairline)"><span style="font-size:13px">Rule triggers — in-app</span><span class="tgl on"></span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border-hairline)"><span style="font-size:13px">Rule triggers — email</span><span class="tgl"></span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0"><span style="font-size:13px">Weekly budget digest</span><span class="tgl on"></span></div>
+    </div>
+
+  </div></div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>This is the direct answer to "configure without writing code."</b> The plug rule an estimator saw cited in 5.1 and the gap-flagging threshold are both editable here, by anyone, with the same four dropdowns every time.</span></li>
+    <li><span class="pin">2</span><span><b>Custom columns are project-portable,</b> not buried in one project's table — build "Cost / SF" once, use it everywhere.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Notification channels are opt-in per trigger type,</b> not a single blanket switch — a gap flag and a weekly digest are different urgency levels and shouldn't share one toggle.</span></li>
+  </ol></div>
+</section>
+
+<p class="callout"><b>What Batch 5 commits us to.</b> The bid tab's source-badge vocabulary (sub / parsed / plug / GC estimate) is now the fixed language for <span class="mono">bid_line.source</span> everywhere it's rendered. Sub-added lines resolve into real <span class="mono">scope_line_item</span> rows or stay explicitly tracked-only — never silently blended, closing the E-33 obligation. D-38's presentation mode is deliberately narrow; if field-level privacy ever gets specced for real, it sits alongside this toggle, not instead of it. And 5.5 sets a pattern the rest of the app should probably follow: anywhere a number is computed by a rule (a plug, a flag threshold, a custom column), the rule itself should be visible and editable in the same place, not hidden in code — Batch 6's Settings should inherit this shape for flags, trades, and package templates rather than inventing a new one.</p>
+
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.tabs[role=tablist]').forEach(function(g){
+  g.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-t]'); if(!b) return;
+    g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected','false')});
+    b.setAttribute('aria-selected','true');
+    var frame=g.nextElementSibling;
+    frame.querySelectorAll('.state').forEach(function(s){s.classList.remove('on')});
+    var t=frame.querySelector('#'+b.dataset.t); if(t) t.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>
