@@ -62,7 +62,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 .topnav .pname{font:600 15px/1 var(--font-display);letter-spacing:-.02em}
 .topnav nav{display:flex;gap:17px;font:500 10.5px/1 var(--font-data);letter-spacing:.09em;text-transform:uppercase;color:var(--text-invert-dim)}
 .topnav nav span.on{color:var(--accent-fill)}
-.avatar{width:27px;height:27px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 10.5px var(--font-data);color:#fff}
+.avatar{width:27px;height:27px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 10.5px var(--font-data);color:var(--c-white)}
 .wshell{display:grid;grid-template-columns:198px 1fr;min-height:460px}
 .pnav{border-right:1px solid var(--border);padding:14px 0}
 .pnav a{display:flex;align-items:center;gap:9px;padding:9px 16px;font:500 12.5px/1 var(--font-body);color:var(--text-dim);text-decoration:none;border-left:2px solid transparent}
@@ -81,6 +81,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 .chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
 .chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
 .chip--dgr{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
+.chip--risk{border:1.5px dashed var(--danger-line);background:transparent;color:var(--danger-text)}
 
 /* ── buttons / toggle ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 14px/1 var(--font-body);padding:10px 17px;min-height:36px;
@@ -91,7 +92,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 .btn--sm{padding:6px 13px;min-height:29px;font-size:12px}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .tgl{width:34px;height:20px;border-radius:var(--r-pill);background:var(--border-strong);display:inline-block;position:relative;cursor:pointer;flex:none}
-.tgl::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:var(--e-1)}
+.tgl::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--c-white);box-shadow:var(--e-1)}
 .tgl.on{background:var(--accent-strong)}
 .tgl.on::after{left:16px}
 
@@ -115,7 +116,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 .ftype i{width:8px;height:8px;border-radius:50%;flex:none}
 .ftype--req i{background:var(--danger-fill)}
 .ftype--info i{background:var(--info-fill)}
-.ftype--risk i{background:var(--accent-strong)}
+.ftype--risk i{background:transparent;border:1.5px solid var(--danger-fill)}
 
 @media(max-width:900px){.doc{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border-invert)}.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.cf{grid-template-columns:1fr}}
 </style>
@@ -136,11 +137,11 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
   <a href="#s65"><i>6.5</i>Trades &amp; tags</a>
   <a href="#s66"><i>6.6</i>Package templates</a>
   <h4>Done</h4>
-  <a href="#" style="opacity:.4"><i>1.x</i>Intake &amp; parse</a>
-  <a href="#" style="opacity:.4"><i>2.x</i>Dashboard &amp; shell</a>
-  <a href="#" style="opacity:.4"><i>3.x</i>Workspace &amp; scope</a>
-  <a href="#" style="opacity:.4"><i>4.x</i>ITB &amp; planroom</a>
-  <a href="#" style="opacity:.4"><i>5.x</i>Bid tab &amp; budget</a>
+  <a href="batch-1-intake-parse.html"><i>1.x</i>Intake &amp; parse</a>
+  <a href="batch-2-dashboard-shell.html"><i>2.x</i>Dashboard &amp; shell</a>
+  <a href="batch-3-project-workspace.html"><i>3.x</i>Workspace &amp; scope</a>
+  <a href="batch-4-itb-planroom.html"><i>4.x</i>ITB &amp; planroom</a>
+  <a href="batch-5-bidtab-budget.html"><i>5.x</i>Bid tab &amp; budget</a>
   <h4>Next</h4>
   <a href="#" style="opacity:.4">Step 2 · owner approval</a>
 </aside>
@@ -332,7 +333,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 
     <div class="state on" id="d1" style="position:relative">
       <span class="pin onf" style="left:-9px;top:8px">1</span>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">7 flags</span><span class="btn btn--sm btn--acc">＋ New flag</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">7 flags · showing 5</span><span class="btn btn--sm btn--acc">＋ New flag</span></div>
       <div class="rule"><div class="rtxt"><b>Bond required</b> — 100% payment &amp; performance bond required with bid <span class="ftype ftype--req" style="margin-left:8px"><i></i>Requirement</span></div><span style="font-size:11.5px;color:var(--text-dim);margin-top:4px">Used on 12 projects</span><span class="btn btn--sm">Edit</span></div>
       <div class="rule"><div class="rtxt"><b>Mandatory walk</b> — site visit attendance required to bid <span class="ftype ftype--req" style="margin-left:8px"><i></i>Requirement</span></div><span style="font-size:11.5px;color:var(--text-dim);margin-top:4px">Used on 9 projects</span><span class="btn btn--sm">Edit</span></div>
       <div class="rule"><div class="rtxt"><b>Schedule required</b> — preliminary/CPM schedule due with bid <span class="ftype ftype--req" style="margin-left:8px"><i></i>Requirement</span></div><span style="font-size:11.5px;color:var(--text-dim);margin-top:4px">Used on 6 projects · added E-04</span><span class="btn btn--sm">Edit</span></div>
@@ -393,7 +394,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 
     <div class="state on" id="e1" style="position:relative;max-width:520px">
       <span class="pin onf" style="left:-9px;top:8px">1</span>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">14 trades</span><span class="btn btn--sm btn--acc">＋ New trade</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">14 trades · showing 3</span><span class="btn btn--sm btn--acc">＋ New trade</span></div>
       <div class="cclist"><span>Concrete <span style="color:var(--text-faint);margin-left:8px">CSI 03 · 22 subs</span></span><span class="btn btn--sm">Edit</span></div>
       <div class="cclist"><span>Structural Steel <span style="color:var(--text-faint);margin-left:8px">CSI 05 · 11 subs</span></span><span class="btn btn--sm">Edit</span></div>
       <div class="cclist"><span>Drywall &amp; Framing <span style="color:var(--text-faint);margin-left:8px">CSI 09 · 18 subs</span></span><span class="btn btn--sm">Edit</span></div>
@@ -402,7 +403,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 
     <div class="state" id="e2" style="position:relative;max-width:520px">
       <span class="pin onf" style="left:-9px;top:8px">2</span>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">9 project tags</span><span class="btn btn--sm btn--acc">＋ New tag</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">9 project tags · showing 6</span><span class="btn btn--sm btn--acc">＋ New tag</span></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <span class="chip chip--acc">Design-build</span><span class="chip">Hard bid</span><span class="chip">CM at-risk</span><span class="chip">Public</span><span class="chip">Negotiated</span><span class="chip">Fast-track</span>
       </div>
@@ -432,7 +433,7 @@ main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
 
     <div class="state on" id="f1" style="position:relative">
       <span class="pin onf" style="left:-9px;top:8px">1</span>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">5 templates</span><span class="btn btn--sm btn--acc">＋ New template</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">5 templates · showing 3</span><span class="btn btn--sm btn--acc">＋ New template</span></div>
       <table class="tbl">
         <thead><tr><th>Code</th><th>Name</th><th>CSI</th><th class="n">Default lines</th><th>Used on</th></tr></thead>
         <tbody>
