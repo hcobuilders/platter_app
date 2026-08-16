@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
-import { acceptPlug, acceptSubAddedAsScopeLine, trackOnlySubAdded } from "./actions";
+import { acceptPlug, acceptSubAddedAsScopeLine, trackOnlySubAdded, setLineIncluded } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -90,8 +90,9 @@ export default async function BidTabPage({
     return (avg * 92n) / 100n;
   }
 
-  // Package total (included): sum of inclusion-kind lines' matched+included amounts.
+  // Base bid total: sum of inclusion-kind lines' matched+included amounts.
   const inclusionLines = pkg.scopeLineItems.filter((l) => l.kind === "inclusion");
+  const altVaLines = pkg.scopeLineItems.filter((l) => l.kind === "alternate" || l.kind === "va_option");
   function packageTotal(invId: string): { total: bigint; complete: boolean } {
     let total = 0n;
     let complete = true;
@@ -101,6 +102,22 @@ export default async function BidTabPage({
       else complete = false;
     }
     return { total, complete };
+  }
+  // Base bid plus whichever alternates/VA options the GC has accepted (per
+  // the toggle above) — the number that actually reflects a decision, not
+  // just the fixed-scope base.
+  function totalWithAccepted(invId: string): { total: bigint; complete: boolean; acceptedCount: number } {
+    const base = packageTotal(invId);
+    let total = base.total;
+    let acceptedCount = 0;
+    for (const line of altVaLines) {
+      const matched = matchedByInvitation.get(invId)?.get(line.id);
+      if (matched && matched.included) {
+        total += matched.amount;
+        acceptedCount++;
+      }
+    }
+    return { total, complete: base.complete, acceptedCount };
   }
 
   const pendingSubAdded = invitations.flatMap((inv) =>
@@ -185,6 +202,7 @@ export default async function BidTabPage({
                       </td>
                     );
                   }
+                  const isAltOrVA = line.kind === "alternate" || line.kind === "va_option";
                   return (
                     <td key={inv.id} className="n">
                       <span style={matched.included ? undefined : { color: "var(--text-faint)", textDecoration: "line-through" }}>
@@ -195,6 +213,24 @@ export default async function BidTabPage({
                         {SOURCE_LABEL[matched.source]}
                         {matched.confidence ? ` · ${matched.confidence.toFixed(2)}` : ""}
                       </div>
+                      {isAltOrVA && (
+                        <form
+                          action={async () => {
+                            "use server";
+                            await setLineIncluded(number, matched.id, !matched.included);
+                          }}
+                          className="mt-1"
+                        >
+                          <button
+                            type="submit"
+                            className={matched.included ? "chip chip--ok" : "chip chip--dgr"}
+                            style={{ cursor: "pointer", border: "none" }}
+                            title="GC decision — click to toggle whether this alternate/VA price counts toward the budget"
+                          >
+                            {matched.included ? "Included in budget" : "Not included"}
+                          </button>
+                        </form>
+                      )}
                     </td>
                   );
                 })}
@@ -220,6 +256,37 @@ export default async function BidTabPage({
                 );
               })}
             </tr>
+            {altVaLines.length > 0 && (
+              <tr>
+                <td className="desc" style={{ fontWeight: 700, color: "var(--text-dim)" }}>
+                  + accepted alternates/VA
+                </td>
+                {invitations.map((inv) => {
+                  if (inv.intent === "no_bid" || !inv.bids[0]) {
+                    return (
+                      <td key={inv.id} style={{ textAlign: "center" }}>
+                        —
+                      </td>
+                    );
+                  }
+                  const { total, complete, acceptedCount } = totalWithAccepted(inv.id);
+                  return (
+                    <td key={inv.id} className="n" style={{ fontWeight: 700, color: complete ? "var(--text-dim)" : "var(--danger-text)" }}>
+                      {complete ? (
+                        <>
+                          {formatCents(total)}
+                          <div style={{ fontSize: 10.5, fontWeight: 400 }}>
+                            {acceptedCount} accepted
+                          </div>
+                        </>
+                      ) : (
+                        "Incomplete"
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

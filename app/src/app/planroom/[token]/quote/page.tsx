@@ -33,6 +33,40 @@ export default async function QuotePage({ params }: { params: Promise<{ token: s
   const bid = invitation.bids[0];
   const lineById = new Map(bid?.bidLines.filter((l) => l.scopeLineItemId).map((l) => [l.scopeLineItemId as string, l]));
 
+  const baseBidLines = invitation.bidPackage.scopeLineItems.filter(
+    (l) => l.kind !== "alternate" && l.kind !== "va_option"
+  );
+  const alternateLines = invitation.bidPackage.scopeLineItems.filter(
+    (l) => l.kind === "alternate" || l.kind === "va_option"
+  );
+
+  function renderRow(line: (typeof baseBidLines)[number]) {
+    const existing = lineById.get(line.id);
+    return (
+      <tr key={line.id}>
+        <td>{line.description}</td>
+        <td>
+          <span className={`kb kb--${line.kind}`}>{KIND_LABEL[line.kind]}</span>
+        </td>
+        <td>
+          <input
+            type="checkbox"
+            name={`included-${line.id}`}
+            defaultChecked={existing ? existing.included : line.kind !== "alternate"}
+          />
+        </td>
+        <td className="n">
+          <CurrencyInput
+            className="tfld n"
+            name={`amount-${line.id}`}
+            defaultValue={existing ? Number(existing.amount) / 100 : ""}
+            style={{ width: 130 }}
+          />
+        </td>
+      </tr>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -49,44 +83,50 @@ export default async function QuotePage({ params }: { params: Promise<{ token: s
         }}
         className="flex flex-col gap-4"
       >
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Description</th>
-              <th>Kind</th>
-              <th>Include</th>
-              <th className="n">Your price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invitation.bidPackage.scopeLineItems.map((line) => {
-              const existing = lineById.get(line.id);
-              return (
-                <tr key={line.id}>
-                  <td>{line.description}</td>
-                  <td>
-                    <span className={`kb kb--${line.kind}`}>{KIND_LABEL[line.kind]}</span>
-                  </td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      name={`included-${line.id}`}
-                      defaultChecked={existing ? existing.included : line.kind !== "alternate"}
-                    />
-                  </td>
-                  <td className="n">
-                    <CurrencyInput
-                      className="tfld n"
-                      name={`amount-${line.id}`}
-                      defaultValue={existing ? Number(existing.amount) / 100 : ""}
-                      style={{ width: 130 }}
-                    />
+        <div>
+          <div className="lbl" style={{ marginBottom: 8 }}>
+            Base bid
+          </div>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Kind</th>
+                <th>Include</th>
+                <th className="n">Your price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {baseBidLines.map(renderRow)}
+              {baseBidLines.length === 0 && (
+                <tr>
+                  <td colSpan={4} style={{ color: "var(--text-faint)" }}>
+                    No base bid lines.
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {alternateLines.length > 0 && (
+          <div>
+            <div className="lbl" style={{ marginBottom: 8 }}>
+              Alternates &amp; VE options
+            </div>
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Kind</th>
+                  <th>Include</th>
+                  <th className="n">Your price</th>
+                </tr>
+              </thead>
+              <tbody>{alternateLines.map(renderRow)}</tbody>
+            </table>
+          </div>
+        )}
 
         <div className="card" style={{ maxWidth: 520 }}>
           <div className="lbl" style={{ marginBottom: 8 }}>

@@ -53,3 +53,14 @@ export async function trackOnlySubAdded(projectNumber: string, bidLineId: string
   });
   revalidatePath(`/projects/${projectNumber}/bid-tab`);
 }
+
+// GC-side decision on an alternate/VA-option line — separate from the sub's
+// own included/excluded checkbox at submission time, since accepting or
+// declining an alternate is the owner/GC's call once pricing is in hand.
+export async function setLineIncluded(projectNumber: string, bidLineId: string, included: boolean) {
+  await prisma.bidLine.update({
+    where: { id: bidLineId },
+    data: { included },
+  });
+  revalidatePath(`/projects/${projectNumber}/bid-tab`);
+}

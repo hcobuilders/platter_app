@@ -1,28 +1,9 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { createScopeLine, updateScopeLine, deleteScopeLine } from "./actions";
+import { KindPicker } from "@/components/KindPicker";
 
 export const dynamic = "force-dynamic";
-
-const KIND_OPTIONS = [
-  "inclusion",
-  "exclusion",
-  "alternate",
-  "allowance",
-  "unit_price",
-  "clarification",
-  "va_option",
-] as const;
-
-const KIND_LABEL: Record<string, string> = {
-  inclusion: "Inc",
-  exclusion: "Exc",
-  alternate: "Alt",
-  allowance: "Allow",
-  unit_price: "Unit $",
-  clarification: "Clar",
-  va_option: "VA",
-};
 
 async function getPackages(number: string) {
   const project = await prisma.project.findUnique({
@@ -118,16 +99,7 @@ export default async function ScopePage({
                     />
                   </td>
                   <td>
-                    <select form={formId} className="tfld" name="kind" defaultValue={line.kind} style={{ minWidth: 90 }}>
-                      {KIND_OPTIONS.map((k) => (
-                        <option key={k} value={k}>
-                          {KIND_LABEL[k]}
-                        </option>
-                      ))}
-                    </select>
-                    <span className={`kb kb--${line.kind}`} style={{ marginLeft: 6 }}>
-                      {KIND_LABEL[line.kind]}
-                    </span>
+                    <KindPicker form={formId} name="kind" defaultValue={line.kind} />
                   </td>
                   <td>
                     <input form={formId} type="checkbox" name="isRequired" defaultChecked={line.isRequired} />
@@ -211,14 +183,8 @@ export default async function ScopePage({
               <input className="fld mt-1" name="qty" type="number" step="any" />
             </div>
             <div>
-              <div className="lbl">Kind</div>
-              <select className="fld mt-1" name="kind" defaultValue="inclusion">
-                {KIND_OPTIONS.map((k) => (
-                  <option key={k} value={k}>
-                    {KIND_LABEL[k]} — {k.replace(/_/g, " ")}
-                  </option>
-                ))}
-              </select>
+              <div className="lbl mb-1">Kind</div>
+              <KindPicker name="kind" defaultValue="inclusion" />
             </div>
           </div>
           <div className="flex gap-4" style={{ fontSize: 13 }}>
