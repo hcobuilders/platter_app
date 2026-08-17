@@ -259,6 +259,9 @@ model BidPackage {
   requiresBond Boolean          @default(false)
   pAndPMode    PAndPMode?
   longLead     Boolean          @default(false)
+  // GC self-performs this scope instead of bidding it out — a distinct
+  // package state, not a point on the bid-status spectrum (S-batch #69).
+  selfPerform  Boolean          @default(false)
   templateId   String?
   template     PackageTemplate? @relation(fields: [templateId], references: [id])
   // Which sub's P&P bond alternate got accepted into the award, tracked

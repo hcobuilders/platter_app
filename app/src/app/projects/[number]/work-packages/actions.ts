@@ -80,3 +80,8 @@ export async function deleteScopeLine(projectNumber: string, id: string) {
   await prisma.scopeLineItem.delete({ where: { id } });
   revalidatePath(`/projects/${projectNumber}/work-packages`);
 }
+
+export async function setPackageSelfPerform(projectNumber: string, bidPackageId: string, selfPerform: boolean) {
+  await prisma.bidPackage.update({ where: { id: bidPackageId }, data: { selfPerform } });
+  revalidatePath(`/projects/${projectNumber}/work-packages`);
+}

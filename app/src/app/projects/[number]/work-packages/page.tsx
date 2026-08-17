@@ -6,6 +6,8 @@ import { formatCents } from "@/lib/format";
 import { ItbHero } from "./ItbHero";
 import { AddBiddersModal } from "./AddBiddersModal";
 import { ScopeWorksheetTable } from "./ScopeWorksheetTable";
+import { PackageStatusRow } from "./PackageStatusRow";
+import { computePackageStatus, STATUS_META, type PackageStatusKind } from "./packageStatus";
 
 export const dynamic = "force-dynamic";
 
@@ -20,11 +22,48 @@ async function getPackages(number: string) {
             include: { subcontractor: true, bids: { select: { id: true }, take: 1 } },
             orderBy: { sentAt: "asc" },
           },
+          budgetLines: { select: { awardedTo: true } },
         },
       },
     },
   });
   return project;
+}
+
+type SortKey = "code" | "name" | "lines" | "subs" | "budget";
+
+function sortPackages<T extends { code: string; name: string; scopeLineItems: unknown[]; invitations: unknown[]; budgetAmount: bigint | null }>(
+  pkgs: T[],
+  sort: SortKey,
+  dir: "asc" | "desc"
+): T[] {
+  const sorted = [...pkgs].sort((a, b) => {
+    switch (sort) {
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "lines":
+        return a.scopeLineItems.length - b.scopeLineItems.length;
+      case "subs":
+        return a.invitations.length - b.invitations.length;
+      case "budget":
+        return Number((a.budgetAmount ?? 0n) - (b.budgetAmount ?? 0n));
+      case "code":
+      default:
+        return a.code.localeCompare(b.code);
+    }
+  });
+  return dir === "desc" ? sorted.reverse() : sorted;
+}
+
+function sortHeader(label: string, key: SortKey, activeSort: SortKey, dir: "asc" | "desc") {
+  const isActive = activeSort === key;
+  const nextDir = isActive && dir === "asc" ? "desc" : "asc";
+  return (
+    <Link href={`?sort=${key}&dir=${nextDir}`} style={{ color: "inherit", textDecoration: "none" }}>
+      {label}
+      {isActive && <span style={{ marginLeft: 4, opacity: 0.6 }}>{dir === "asc" ? "↑" : "↓"}</span>}
+    </Link>
+  );
 }
 
 // Division-prefix overlap ("07 21 00" -> "07") — forgiving on purpose since
@@ -38,10 +77,10 @@ export default async function WorkPackagesPage({
   searchParams,
 }: {
   params: Promise<{ number: string }>;
-  searchParams: Promise<{ package?: string; addBidders?: string }>;
+  searchParams: Promise<{ package?: string; addBidders?: string; sort?: string; dir?: string }>;
 }) {
   const { number } = await params;
-  const { package: packageCode } = await searchParams;
+  const { package: packageCode, sort, dir } = await searchParams;
   const project = await getPackages(number);
   if (!project) notFound();
 
@@ -49,39 +88,101 @@ export default async function WorkPackagesPage({
     return <p style={{ color: "var(--text-dim)" }}>No bid packages yet.</p>;
   }
 
-  // Default landing view: a table of every package with stats. Drilling
-  // into one (via ?package=) opens the tabs-on-top, full-screen editor below.
+  // Default landing view: the app's anchor screen (S-batch #69) — global
+  // stats, a sortable/expandable package status list. Drilling into one
+  // (via ?package=) opens the tabs-on-top, full-screen editor below.
   if (!packageCode) {
+    const sortKey: SortKey = (["code", "name", "lines", "subs", "budget"] as const).includes(sort as SortKey)
+      ? (sort as SortKey)
+      : "code";
+    const sortDir: "asc" | "desc" = dir === "desc" ? "desc" : "asc";
+
+    const rows = project.bidPackages.map((p) => ({
+      ...p,
+      statusKind: computePackageStatus({
+        status: p.status,
+        selfPerform: p.selfPerform,
+        dueAt: p.dueAt,
+        scopeLineCount: p.scopeLineItems.length,
+        invitations: p.invitations.map((i) => ({ sentAt: i.sentAt, hasBid: i.bids.length > 0 })),
+        hasAward: p.budgetLines.some((b) => b.awardedTo),
+      }),
+    }));
+    const sorted = sortPackages(rows, sortKey, sortDir);
+
+    const totalBudget = project.bidPackages.reduce((s, p) => s + (p.budgetAmount ?? 0n), 0n);
+    const statusCounts = rows.reduce(
+      (acc, r) => {
+        acc[r.statusKind] = (acc[r.statusKind] ?? 0) + 1;
+        return acc;
+      },
+      {} as Partial<Record<PackageStatusKind, number>>
+    );
+
     const packageColumns: DataTableColumn[] = [
-      { id: "code", label: "Code", width: 110 },
-      { id: "name", label: "Name", width: 260 },
-      { id: "lines", label: "Scope lines", width: 110, align: "right" },
-      { id: "subs", label: "Invited subs", width: 110, align: "right" },
-      { id: "budget", label: "Budget", width: 130, align: "right" },
+      { id: "expand", label: "", width: 34, minWidth: 34, resizable: false, icon: true },
+      { id: "code", label: sortHeader("Code", "code", sortKey, sortDir), width: 100 },
+      { id: "name", label: sortHeader("Name", "name", sortKey, sortDir), width: 240 },
+      { id: "status", label: "Status", width: 140 },
+      { id: "lines", label: sortHeader("Scope lines", "lines", sortKey, sortDir), width: 110, align: "right" },
+      { id: "subs", label: sortHeader("Invited subs", "subs", sortKey, sortDir), width: 110, align: "right" },
+      {
+        id: "budget",
+        label: (
+          <Link href={`/projects/${number}/budget`} style={{ color: "inherit", textDecoration: "none" }}>
+            Budget
+          </Link>
+        ),
+        width: 130,
+        align: "right",
+      },
+      { id: "actions", label: "", width: 44, minWidth: 44, resizable: false, icon: true },
     ];
+
     return (
-      <div>
-        <div className="lbl">Work packages</div>
-        <div className="mt-2">
-          <DataTable id="wp-packages-tbl" columns={packageColumns}>
-            {project.bidPackages.map((p) => (
-              <tr key={p.id}>
-                <td className="mono">
-                  <Link href={`?package=${p.code}`} style={{ color: "inherit", fontWeight: 700, textDecoration: "none" }}>
-                    {p.code}
-                  </Link>
-                </td>
-                <td>
-                  <Link href={`?package=${p.code}`} style={{ color: "inherit", textDecoration: "none" }}>
-                    {p.name}
-                  </Link>
-                </td>
-                <td className="n">{p.scopeLineItems.length}</td>
-                <td className="n">{p.invitations.length}</td>
-                <td className="n">{formatCents(p.budgetAmount)}</td>
-              </tr>
-            ))}
-          </DataTable>
+      <div className="flex flex-col gap-5">
+        <div className="card">
+          <div className="lbl" style={{ marginBottom: 10 }}>
+            Project stats
+          </div>
+          <div className="flex flex-wrap gap-6">
+            <Stat label="Packages" value={String(project.bidPackages.length)} />
+            <Stat label="Total budget" value={formatCents(totalBudget)} />
+            <Stat label="Out for bid" value={String(statusCounts.out_for_bid ?? 0)} color={STATUS_META.out_for_bid.color} />
+            <Stat label="Complete" value={String(statusCounts.complete ?? 0)} color={STATUS_META.complete.color} />
+            <Stat label="No response" value={String(statusCounts.no_response ?? 0)} color={STATUS_META.no_response.color} />
+            <Stat label="Self-perform" value={String(statusCounts.self_perform ?? 0)} />
+            <Stat label="Scope gaps" value={String(statusCounts.error ?? 0)} color={STATUS_META.error.color} />
+          </div>
+        </div>
+
+        <div>
+          <div className="lbl">Work packages</div>
+          <div className="mt-2">
+            <DataTable id="wp-packages-tbl" columns={packageColumns}>
+              {sorted.map((p) => (
+                <PackageStatusRow
+                  key={p.id}
+                  projectNumber={number}
+                  pkg={{
+                    id: p.id,
+                    code: p.code,
+                    name: p.name,
+                    selfPerform: p.selfPerform,
+                    scopeLineCount: p.scopeLineItems.length,
+                    budgetAmount: p.budgetAmount,
+                    statusKind: p.statusKind,
+                    invitations: p.invitations.map((i) => ({
+                      id: i.id,
+                      name: i.subcontractor.name,
+                      sentAt: i.sentAt,
+                      hasBid: i.bids.length > 0,
+                    })),
+                  }}
+                />
+              ))}
+            </DataTable>
+          </div>
         </div>
       </div>
     );
@@ -141,6 +242,20 @@ export default async function WorkPackagesPage({
       </div>
 
       <AddBiddersModal projectNumber={number} bidPackageId={pkg.id} packageCode={pkg.code} availableSubs={availableSubs} />
+    </div>
+  );
+}
+
+function Stat({ label, value, color }: { label: string; value: string; color?: string }) {
+  return (
+    <div>
+      <div className="lbl" style={{ marginBottom: 4 }}>
+        {label}
+      </div>
+      <div className="mono flex items-center gap-2" style={{ fontSize: 18, fontWeight: 700 }}>
+        {color && <span className="dot" style={{ background: color }} />}
+        {value}
+      </div>
     </div>
   );
 }
