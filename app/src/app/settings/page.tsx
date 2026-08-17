@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { auth } from "@/auth";
 import { Logo } from "@/components/Logo";
 import { createFlag, deleteFlag, createTrade, deleteTrade, createTag, deleteTag, uploadBidBondTemplate } from "./actions";
 import { CsiCodeInput } from "@/components/CsiCodeInput";
+import { AccountMenu } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
 
 export const dynamic = "force-dynamic";
@@ -20,11 +22,12 @@ export default async function SettingsPage({
 }) {
   const { view = "flags" } = await searchParams;
 
-  const [flags, trades, tags, bidBondTemplate] = await Promise.all([
+  const [flags, trades, tags, bidBondTemplate, session] = await Promise.all([
     prisma.flag.findMany({ orderBy: { label: "asc" }, include: { _count: { select: { projectFlags: true } } } }),
     prisma.trade.findMany({ orderBy: { name: "asc" } }),
     prisma.tag.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { projectTags: true } } } }),
     prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
+    auth(),
   ]);
 
   return (
@@ -45,7 +48,9 @@ export default async function SettingsPage({
           <span className="mono" style={{ fontSize: 10, color: "var(--text-invert-faint)" }} title="Build version">
             v{getBuildVersion()}
           </span>
-          <div className="avatar">JL</div>
+          {session?.user && (
+            <AccountMenu name={session.user.name ?? session.user.email ?? "Unknown"} role={session.user.role} buildVersion={getBuildVersion()} />
+          )}
         </div>
       </div>
       <div style={{ background: "var(--bg-surface)", color: "var(--text)", minHeight: "calc(100vh - 55px)", padding: "24px 28px" }}>

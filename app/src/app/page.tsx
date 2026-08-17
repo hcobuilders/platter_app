@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { prisma } from "@/lib/db";
+import { auth } from "@/auth";
 import { Logo } from "@/components/Logo";
 import { CommandBar } from "@/components/CommandBar";
 import { NewProjectModal } from "@/components/NewProjectModal";
 import { DashboardBody, type CardProject } from "@/components/DashboardBody";
+import { AccountMenu } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
 
 export const dynamic = "force-dynamic";
@@ -55,6 +58,8 @@ async function getProjects(): Promise<CardProject[]> {
 }
 
 export default async function Home() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
   const projects = await getProjects();
 
   return (
@@ -86,7 +91,7 @@ export default async function Home() {
           <span className="mono" style={{ fontSize: 10, color: "var(--text-invert-faint)" }} title="Build version">
             v{getBuildVersion()}
           </span>
-          <div className="avatar">JL</div>
+          <AccountMenu name={session.user.name ?? session.user.email ?? "Unknown"} role={session.user.role} buildVersion={getBuildVersion()} />
         </div>
       </div>
 

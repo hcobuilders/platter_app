@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { auth } from "@/auth";
 import { Logo } from "@/components/Logo";
 import { ProjectNav } from "@/components/ProjectNav";
 import { CommandBar } from "@/components/CommandBar";
+import { AccountMenu } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
 
 async function getProject(number: string) {
@@ -18,7 +20,7 @@ export default async function ProjectLayout({
   params: Promise<{ number: string }>;
 }) {
   const { number } = await params;
-  const project = await getProject(number);
+  const [project, session] = await Promise.all([getProject(number), auth()]);
   if (!project) notFound();
 
   return (
@@ -48,7 +50,9 @@ export default async function ProjectLayout({
           <span className="mono" style={{ fontSize: 10, color: "var(--text-invert-faint)" }} title="Build version">
             v{getBuildVersion()}
           </span>
-          <div className="avatar">JL</div>
+          {session?.user && (
+            <AccountMenu name={session.user.name ?? session.user.email ?? "Unknown"} role={session.user.role} buildVersion={getBuildVersion()} />
+          )}
         </div>
       </div>
       <div className="wshell flex-1">
