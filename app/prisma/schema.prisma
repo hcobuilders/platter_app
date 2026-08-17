@@ -81,17 +81,28 @@ model ProjectDate {
   notes       String?
 }
 
+// Red/green/neutral state chosen at creation (S-batch #65) — "display in
+// red or green" plus a 3-way color picker on the owner's spec, read as two
+// meaningful accent states plus a neutral default for items that aren't
+// notably good or bad news.
+enum ProjectNoteState {
+  neutral
+  risk
+  resolved
+}
+
 model ProjectNote {
-  id           String    @id @default(cuid())
+  id           String           @id @default(cuid())
   projectId    String
-  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project      Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   body         String
   author       String
+  state        ProjectNoteState @default(neutral)
   pinnedAt     DateTime?
   // The date this hot item is actually about (a deadline, an addendum date,
   // etc.) — separate from createdAt, which is just when the note was added.
   associatedAt DateTime?
-  createdAt DateTime  @default(now())
+  createdAt    DateTime         @default(now())
 }
 
 // Generic audit trail — every mutation across every entity (D-09).

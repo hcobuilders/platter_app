@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import type { ProjectStatus } from "@/generated/prisma/enums";
+import { auth } from "@/auth";
+import type { ProjectStatus, ProjectNoteState } from "@/generated/prisma/enums";
 
 function str(fd: FormData, key: string): string {
   return String(fd.get(key) ?? "").trim();
@@ -112,18 +113,38 @@ export async function verifyProjectAddress(projectNumber: string) {
   revalidatePath(`/projects/${projectNumber}`);
 }
 
-export async function addHotItem(projectNumber: string, body: string, associatedAtStr: string, author: string) {
-  const project = await prisma.project.findUniqueOrThrow({ where: { number: projectNumber } });
+// Hot items now live inline in the Overview container (S-batch #65): a "+"
+// glyph opens this instead of a separate boxed form, with a 3-way color
+// pick at creation. Author comes from the signed-in session rather than a
+// free-text field now that real auth exists.
+export async function addHotItem(projectNumber: string, body: string, associatedAtStr: string, state: ProjectNoteState) {
   const trimmed = body.trim();
   if (!trimmed) return;
+  const [project, session] = await Promise.all([
+    prisma.project.findUniqueOrThrow({ where: { number: projectNumber } }),
+    auth(),
+  ]);
   await prisma.projectNote.create({
     data: {
       projectId: project.id,
       body: trimmed,
-      author: author.trim() || "Unknown",
+      author: session?.user?.name ?? session?.user?.email ?? "Unknown",
+      state,
       pinnedAt: new Date(),
       associatedAt: associatedAtStr ? new Date(associatedAtStr) : null,
     },
+  });
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
+// Existing hot items are click-to-edit, not just add/remove — body text and
+// color state both change from the same inline editor.
+export async function updateHotItem(projectNumber: string, noteId: string, body: string, state: ProjectNoteState) {
+  const trimmed = body.trim();
+  if (!trimmed) return;
+  await prisma.projectNote.update({
+    where: { id: noteId },
+    data: { body: trimmed, state },
   });
   revalidatePath(`/projects/${projectNumber}`);
 }

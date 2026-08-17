@@ -8,13 +8,12 @@ import {
   addProjectFlag,
   removeProjectFlag,
   verifyProjectAddress,
-  addHotItem,
-  removeHotItem,
 } from "./actions";
 import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 import { FlagChip } from "@/components/FlagChip";
 import { KeyDatesTimeline, MiniMap } from "./OverviewWidgets";
 import { EditableOverviewFields } from "./EditableOverviewFields";
+import { HotItemsList } from "./HotItemsList";
 
 export const dynamic = "force-dynamic";
 
@@ -213,6 +212,20 @@ export default async function ProjectOverviewPage({
             </div>
           </div>
         </div>
+
+        <div style={{ marginTop: 24, borderTop: "1px solid var(--border-hairline)", paddingTop: 20 }}>
+          <HotItemsList
+            projectNumber={number}
+            initial={project.notes.map((n) => ({
+              id: n.id,
+              body: n.body,
+              author: n.author,
+              state: n.state,
+              associatedAt: n.associatedAt,
+              createdAt: n.createdAt,
+            }))}
+          />
+        </div>
       </section>
 
       <section className="card">
@@ -235,57 +248,6 @@ export default async function ProjectOverviewPage({
             ))}
           </div>
         )}
-      </section>
-
-      <section className="card">
-        <div className="lbl" style={{ marginBottom: 8 }}>
-          Hot items
-        </div>
-        <div className="flex flex-col gap-2">
-          {project.notes.length === 0 && <p style={{ color: "var(--text-dim)", fontSize: 13 }}>None yet — flag anything important below.</p>}
-          {project.notes.map((n) => (
-            <div key={n.id} className="rule">
-              <div className="rtxt">
-                {n.body}
-                <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>
-                  Added by {n.author}
-                  {n.associatedAt && ` · re: ${n.associatedAt.toLocaleDateString()}`} · {n.createdAt.toLocaleDateString()}
-                </div>
-              </div>
-              <form
-                action={async () => {
-                  "use server";
-                  await removeHotItem(number, n.id);
-                }}
-              >
-                <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
-                  Remove
-                </button>
-              </form>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 12, maxWidth: 520, borderTop: "1px solid var(--border-hairline)", paddingTop: 14 }}>
-          <div className="lbl" style={{ marginBottom: 10 }}>
-            Add hot item
-          </div>
-          <form
-            action={async (fd) => {
-              "use server";
-              await addHotItem(number, String(fd.get("body") ?? ""), String(fd.get("associatedAt") ?? ""), String(fd.get("author") ?? ""));
-            }}
-            className="flex flex-col gap-3"
-          >
-            <input className="fld" name="body" placeholder="What's important here?" required />
-            <div className="cf">
-              <input className="fld" name="associatedAt" type="date" title="Associated date (optional)" />
-              <input className="fld" name="author" placeholder="Your name" defaultValue="Jordan Lee" />
-            </div>
-            <button className="btn btn--acc" type="submit" style={{ width: "fit-content" }}>
-              Add
-            </button>
-          </form>
-        </div>
       </section>
 
       <section className="card" style={{ padding: 0, overflow: "hidden" }}>
