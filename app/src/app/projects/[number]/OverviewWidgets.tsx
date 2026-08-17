@@ -5,6 +5,7 @@ const KIND_LABEL: Record<string, string> = {
   addenda_cutoff: "Addenda Cutoff",
   submission_due: "Bids Due",
   award_target: "Award Target",
+  notice_to_proceed: "Notice to Proceed",
 };
 
 type KeyDate = { id: string; kind: string; at: Date; isMandatory: boolean };
@@ -76,9 +77,11 @@ export function KeyDatesTimeline({ dates }: { dates: KeyDate[] }) {
   );
 }
 
-// Embeds OpenStreetMap's export view — no API key, no new dependency.
-// Good enough for "does this pin look right" until a real maps vendor
-// (with static imagery, street view, etc.) is wired up (S-batch #44).
+// Embeds OpenStreetMap's export view — no API key, no billing account
+// (Google Maps Platform needs the owner's own Google Cloud billing setup,
+// raised on #61 and settled on staying with OSM). Tinted toward the brand
+// palette via --map-filter (tokens.css) — a re-theme later is a one-line
+// token edit, not a component change.
 export function MiniMap({ lat, lng }: { lat: number; lng: number }) {
   const d = 0.008;
   const bbox = `${lng - d}%2C${lat - d}%2C${lng + d}%2C${lat + d}`;
@@ -86,9 +89,20 @@ export function MiniMap({ lat, lng }: { lat: number; lng: number }) {
   return (
     <iframe
       src={src}
-      style={{ width: "100%", height: 200, border: 0, borderRadius: "var(--r-md)", display: "block" }}
+      style={{ width: "100%", height: 200, border: 0, borderRadius: "var(--r-md)", display: "block", filter: "var(--map-filter)" }}
       loading="lazy"
       title="Project location map"
     />
+  );
+}
+
+// "open in google maps" link under the address (#61) — a plain query-string
+// URL, no API key or billing needed for this, unlike embedding Maps tiles.
+export function GoogleMapsLink({ lat, lng, address }: { lat: number; lng: number; address: string }) {
+  const href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}&query_place_id=${encodeURIComponent(address)}`;
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11.5, color: "var(--info-text)" }}>
+      Open in Google Maps ↗
+    </a>
   );
 }

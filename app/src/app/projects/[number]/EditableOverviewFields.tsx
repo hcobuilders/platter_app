@@ -23,6 +23,7 @@ type Values = {
   status: ProjectStatus;
   bondPct: number | null;
   retainagePct: number | null;
+  contractDays: number | null;
 };
 
 // Overview "Project" container edit toggle (S-batch #60): containers default
@@ -101,6 +102,13 @@ export function EditableOverviewFields({ projectNumber, initial }: { projectNumb
           suffix="%"
           editMode={editMode}
           onCommit={(v) => commit("retainagePct", v)}
+        />
+        <EditableNumber
+          label="Contract days"
+          value={values.contractDays}
+          suffix=" days"
+          editMode={editMode}
+          onCommit={(v) => commit("contractDays", v)}
         />
       </div>
     </div>

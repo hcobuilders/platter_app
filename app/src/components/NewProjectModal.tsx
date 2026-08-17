@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createProject } from "@/app/shell-actions";
 
-export function NewProjectModal() {
+export type NewProjectTemplate = { id: string; name: string };
+
+export function NewProjectModal({ templates = [] }: { templates?: NewProjectTemplate[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const open = searchParams.get("new") === "1";
+  const [mode, setMode] = useState<"manual" | "parsed">("manual");
 
   if (!open) return null;
 
@@ -23,7 +27,30 @@ export function NewProjectModal() {
             New project
           </div>
         </div>
+        <div style={{ padding: "10px 18px 0" }}>
+          <div className="seg">
+            <button type="button" aria-pressed={mode === "manual"} onClick={() => setMode("manual")}>
+              Manual
+            </button>
+            <button type="button" aria-pressed={false} disabled title="Coming soon" style={{ opacity: 0.45, cursor: "not-allowed" }}>
+              From documents
+            </button>
+          </div>
+        </div>
         <form action={createProject} className="flex flex-col gap-3" style={{ padding: 18 }}>
+          {mode === "manual" && templates.length > 0 && (
+            <div>
+              <div className="lbl">Start from template (optional)</div>
+              <select className="fld mt-1" name="templateId" defaultValue="">
+                <option value="">— blank project —</option>
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="cf">
             <div>
               <div className="lbl">Project number</div>

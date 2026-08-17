@@ -165,6 +165,14 @@
   --rail-w: 236px;
   --rail-collapsed: 60px;
   --cmd-h: 38px;
+
+  /* ---------- EMBEDS ---------- */
+  /* CSS-filter tint for the free OpenStreetMap embed (S-batch #61) — no
+     paid tile vendor, so this is the re-skin knob instead: swap this one
+     value to match a new theme pass without touching MiniMap.tsx. Pulls
+     the default OSM mapnik tiles toward the cerulean brand hue instead of
+     stock OSM blue/tan. */
+  --map-filter: grayscale(0.3) sepia(0.2) hue-rotate(155deg) saturate(1.4) brightness(1.02) contrast(0.96);
 }
 
 /* Motion is a preference, not a given. */

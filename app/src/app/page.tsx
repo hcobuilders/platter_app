@@ -25,6 +25,8 @@ async function getProjects(): Promise<CardProject[]> {
           invitations: { select: { bids: { select: { id: true }, take: 1 } } },
         },
       },
+      changeOrders: { select: { days: true, value: true } },
+      commitments: { select: { id: true } },
     },
   });
 
@@ -32,9 +34,12 @@ async function getProjects(): Promise<CardProject[]> {
     const itbOut = project.dates.find((d) => d.kind === "itb_out");
     const siteWalk = project.dates.find((d) => d.kind === "site_walk");
     const bidsDue = project.dates.find((d) => d.kind === "submission_due");
+    const noticeToProceed = project.dates.find((d) => d.kind === "notice_to_proceed");
     const budgetTotal = project.budgetLines.reduce((sum, b) => sum + b.current, 0n);
     const quotedCount = project.bidPackages.filter((p) => p.invitations.some((i) => i.bids.length > 0)).length;
     const unresolvedCount = project.bidPackages.filter((p) => p._count.scopeLineItems === 0).length;
+    const changeOrderDays = project.changeOrders.reduce((sum, co) => sum + co.days, 0);
+    const changeOrderValue = project.changeOrders.reduce((sum, co) => sum + co.value, 0n);
 
     return {
       number: project.number,
@@ -52,6 +57,11 @@ async function getProjects(): Promise<CardProject[]> {
       bidsDue: bidsDue?.at.toISOString() ?? null,
       awardTarget: null,
       archivedAt: project.archivedAt?.toISOString() ?? null,
+      contractDays: project.contractDays,
+      noticeToProceedAt: noticeToProceed?.at.toISOString() ?? null,
+      changeOrderDays,
+      changeOrderValue: Number(changeOrderValue),
+      commitmentCount: project.commitments.length,
     };
   });
 }
@@ -59,9 +69,10 @@ async function getProjects(): Promise<CardProject[]> {
 export default async function Home() {
   const session = await auth();
   if (!session?.user) redirect("/login");
-  const [projects, currentUser] = await Promise.all([
+  const [projects, currentUser, projectTemplates] = await Promise.all([
     getProjects(),
     prisma.user.findUnique({ where: { id: session.user.id }, select: { dashboardStatusFilters: true } }),
+    prisma.projectTemplate.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, name: true } }),
   ]);
 
   return (
@@ -103,7 +114,7 @@ export default async function Home() {
 
       <CommandBar />
       <Suspense fallback={null}>
-        <NewProjectModal />
+        <NewProjectModal templates={projectTemplates} />
       </Suspense>
     </div>
   );

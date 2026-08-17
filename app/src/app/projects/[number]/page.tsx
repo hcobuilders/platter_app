@@ -10,10 +10,13 @@ import {
   addProjectFlag,
   removeProjectFlag,
   verifyProjectAddress,
+  setNoticeToProceed,
+  addChangeOrder,
+  removeChangeOrder,
 } from "./actions";
 import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 import { FlagChip } from "@/components/FlagChip";
-import { KeyDatesTimeline, MiniMap } from "./OverviewWidgets";
+import { KeyDatesTimeline, MiniMap, GoogleMapsLink } from "./OverviewWidgets";
 import { EditableOverviewFields } from "./EditableOverviewFields";
 import { HotItemsList } from "./HotItemsList";
 
@@ -36,6 +39,7 @@ async function getProjectDetail(number: string) {
       },
       budgetLines: true,
       projectFlags: { include: { flag: true } },
+      changeOrders: { orderBy: { createdAt: "desc" } },
     },
   });
 }
@@ -85,6 +89,7 @@ export default async function ProjectOverviewPage({
               status: project.status,
               bondPct: project.bondPct,
               retainagePct: project.retainagePct,
+              contractDays: project.contractDays,
             }}
           />
 
@@ -103,6 +108,9 @@ export default async function ProjectOverviewPage({
                         <span style={{ fontSize: 11.5, color: "var(--text-faint)" }}>as of {project.addressVerifiedAt.toLocaleDateString()}</span>
                       </div>
                       <MiniMap lat={project.lat} lng={project.lng} />
+                      <div className="mt-2">
+                        <GoogleMapsLink lat={project.lat} lng={project.lng} address={project.address} />
+                      </div>
                     </>
                   ) : (
                     <form
@@ -259,6 +267,84 @@ export default async function ProjectOverviewPage({
             ))}
           </div>
         )}
+        <form
+          action={async (fd) => {
+            "use server";
+            await setNoticeToProceed(number, String(fd.get("noticeToProceedAt") ?? ""));
+          }}
+          className="flex items-center gap-2"
+          style={{ marginTop: 12, borderTop: "1px solid var(--border-hairline)", paddingTop: 12 }}
+        >
+          <span className="lbl" style={{ margin: 0 }}>
+            Notice to proceed
+          </span>
+          <input
+            className="fld"
+            type="date"
+            name="noticeToProceedAt"
+            defaultValue={project.dates.find((d) => d.kind === "notice_to_proceed")?.at.toISOString().slice(0, 10) ?? ""}
+            style={{ width: "auto" }}
+          />
+          <button className="btn btn--sm" type="submit">
+            Save
+          </button>
+        </form>
+        <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 6 }}>
+          Starts the awarded-status schedule clock (elapsed / completion date / days remaining).
+        </p>
+      </section>
+
+      <section className="card">
+        <div className="lbl" style={{ marginBottom: 8 }}>
+          Change orders
+        </div>
+        {project.changeOrders.length === 0 ? (
+          <p style={{ color: "var(--text-dim)", fontSize: 13 }}>None yet.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {project.changeOrders.map((co) => (
+              <div key={co.id} className="rule">
+                <div className="rtxt">
+                  {co.description}
+                  <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>
+                    {co.days !== 0 && `${co.days > 0 ? "+" : ""}${co.days} days · `}
+                    {formatCents(co.value)} · {co.createdAt.toLocaleDateString()}
+                  </div>
+                </div>
+                <form
+                  action={async () => {
+                    "use server";
+                    await removeChangeOrder(number, co.id);
+                  }}
+                >
+                  <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                    Remove
+                  </button>
+                </form>
+              </div>
+            ))}
+          </div>
+        )}
+        <form
+          action={async (fd) => {
+            "use server";
+            await addChangeOrder(
+              number,
+              String(fd.get("description") ?? ""),
+              Number(fd.get("days") ?? 0),
+              Number(fd.get("value") ?? 0)
+            );
+          }}
+          className="flex items-center gap-2 mt-3"
+          style={{ borderTop: "1px solid var(--border-hairline)", paddingTop: 12 }}
+        >
+          <input className="fld" name="description" placeholder="Description" required style={{ flex: 1 }} />
+          <input className="fld" name="days" type="number" placeholder="Days ±" style={{ width: 90 }} />
+          <input className="fld" name="value" type="number" step="0.01" placeholder="Value $ ±" style={{ width: 120 }} />
+          <button className="btn btn--sm btn--acc" type="submit">
+            Add
+          </button>
+        </form>
       </section>
 
       <section className="card" style={{ padding: 0, overflow: "hidden" }}>

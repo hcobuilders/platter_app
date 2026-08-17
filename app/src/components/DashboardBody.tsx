@@ -23,6 +23,11 @@ export type CardProject = {
   bidsDue: string | null;
   awardTarget: string | null;
   archivedAt: string | null;
+  contractDays: number | null;
+  noticeToProceedAt: string | null;
+  changeOrderDays: number;
+  changeOrderValue: number;
+  commitmentCount: number;
 };
 
 
@@ -34,6 +39,14 @@ function fmtDate(iso: string | null): string {
 function daysUntil(iso: string | null): number | null {
   if (!iso) return null;
   return Math.round((new Date(iso).getTime() - Date.now()) / 86400000);
+}
+function addDays(iso: string, days: number): Date {
+  const d = new Date(iso);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+function daysBetween(a: Date, b: Date): number {
+  return Math.round((b.getTime() - a.getTime()) / 86400000);
 }
 
 function shortLocation(address: string | null): string {
@@ -87,6 +100,16 @@ function Card({ p }: { p: CardProject }) {
   const isClosed = p.status === "awarded" || p.status === "lost";
   const isDraft = p.status === "draft";
   const isArchived = p.archivedAt !== null;
+  const isAwarded = p.status === "awarded";
+
+  // Awarded-status card content (S-batch #71): schedule days, elapsed,
+  // change-order days/value, completion date, days remaining, commitment
+  // count — replaces the pre-award ITB/site-walk/bids-due/packages stats,
+  // which stop being the relevant questions once a project is awarded.
+  const completionDate =
+    p.noticeToProceedAt && p.contractDays != null ? addDays(p.noticeToProceedAt, p.contractDays + p.changeOrderDays) : null;
+  const elapsedDays = p.noticeToProceedAt ? daysBetween(new Date(p.noticeToProceedAt), new Date()) : null;
+  const daysRemaining = completionDate ? daysBetween(new Date(), completionDate) : null;
 
   const cls = ["pc", urgent || overdue ? "is-urgent" : "", isDraft ? "is-draft" : "", isClosed ? "is-closed" : ""].filter(Boolean).join(" ");
 
@@ -151,35 +174,73 @@ function Card({ p }: { p: CardProject }) {
       </div>
 
       <dl className="pc__dates">
-        <div>
-          <dt>ITB out</dt>
-          <dd style={!p.itbOut ? { color: "var(--text-faint)" } : undefined}>{fmtDate(p.itbOut)}</dd>
-        </div>
-        <div>
-          <dt>Site walk</dt>
-          <dd style={!p.siteWalk ? { color: "var(--text-faint)" } : undefined}>
-            {fmtDate(p.siteWalk)}
-            {p.siteWalkMandatory && <small style={{ color: "var(--danger-text)" }}>Mandatory</small>}
-          </dd>
-        </div>
-        <div>
-          <dt>Bids due</dt>
-          <dd className={urgent || overdue ? "due" : undefined} style={!p.bidsDue ? { color: "var(--text-faint)" } : undefined}>
-            {fmtDate(p.bidsDue)}
-            {dueDays !== null && isOpenStage && (
-              <small style={urgent || overdue ? { color: "var(--danger-text)" } : undefined}>
-                {overdue ? `closed ${Math.abs(dueDays)}d ago` : dueDays === 0 ? "today" : `in ${dueDays} days`}
-              </small>
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt>Packages</dt>
-          <dd>
-            {p.packageCount}
-            <small>{p.quotedCount} quoted</small>
-          </dd>
-        </div>
+        {isAwarded ? (
+          <>
+            <div>
+              <dt>Schedule</dt>
+              <dd style={p.contractDays == null ? { color: "var(--text-faint)" } : undefined}>
+                {p.contractDays != null ? `${p.contractDays}d` : "—"}
+              </dd>
+            </div>
+            <div>
+              <dt>Elapsed</dt>
+              <dd style={elapsedDays == null ? { color: "var(--text-faint)" } : undefined}>{elapsedDays != null ? `${elapsedDays}d` : "—"}</dd>
+            </div>
+            <div>
+              <dt>Change orders</dt>
+              <dd>
+                {p.changeOrderDays !== 0 ? `${p.changeOrderDays > 0 ? "+" : ""}${p.changeOrderDays}d` : "0d"}
+                <small>{formatCents(p.changeOrderValue)}</small>
+              </dd>
+            </div>
+            <div>
+              <dt>Completion</dt>
+              <dd style={!completionDate ? { color: "var(--text-faint)" } : undefined}>{completionDate ? fmtDate(completionDate.toISOString()) : "—"}</dd>
+            </div>
+            <div>
+              <dt>Days remaining</dt>
+              <dd style={daysRemaining == null ? { color: "var(--text-faint)" } : daysRemaining < 0 ? { color: "var(--danger-text)" } : undefined}>
+                {daysRemaining != null ? `${daysRemaining}d` : "—"}
+              </dd>
+            </div>
+            <div>
+              <dt>Commitments</dt>
+              <dd>{p.commitmentCount}</dd>
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <dt>ITB out</dt>
+              <dd style={!p.itbOut ? { color: "var(--text-faint)" } : undefined}>{fmtDate(p.itbOut)}</dd>
+            </div>
+            <div>
+              <dt>Site walk</dt>
+              <dd style={!p.siteWalk ? { color: "var(--text-faint)" } : undefined}>
+                {fmtDate(p.siteWalk)}
+                {p.siteWalkMandatory && <small style={{ color: "var(--danger-text)" }}>Mandatory</small>}
+              </dd>
+            </div>
+            <div>
+              <dt>Bids due</dt>
+              <dd className={urgent || overdue ? "due" : undefined} style={!p.bidsDue ? { color: "var(--text-faint)" } : undefined}>
+                {fmtDate(p.bidsDue)}
+                {dueDays !== null && isOpenStage && (
+                  <small style={urgent || overdue ? { color: "var(--danger-text)" } : undefined}>
+                    {overdue ? `closed ${Math.abs(dueDays)}d ago` : dueDays === 0 ? "today" : `in ${dueDays} days`}
+                  </small>
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>Packages</dt>
+              <dd>
+                {p.packageCount}
+                <small>{p.quotedCount} quoted</small>
+              </dd>
+            </div>
+          </>
+        )}
       </dl>
 
       <div className="pc__band">

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
-import { updateBudgetLine, saveBudgetRevision, rollbackToRevision } from "./actions";
+import { updateBudgetLine, saveBudgetRevision, rollbackToRevision, executeCommitment, revokeCommitment } from "./actions";
 import { CurrencyInput } from "@/components/CurrencyInput";
 import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 import { UndoListener } from "@/components/UndoListener";
@@ -29,6 +29,7 @@ async function getProject(number: string) {
               },
             },
           },
+          commitment: true,
         },
       },
       budgetRevisions: { orderBy: { revNo: "desc" } },
@@ -130,6 +131,7 @@ export default async function BudgetPage({
               { id: "current", label: "Current", width: 130, align: "right" },
               { id: "buyout", label: "Buyout exp.", width: 130, align: "right" },
               { id: "awarded", label: "Awarded to", width: 180 },
+              { id: "commitment", label: "Commitment", width: 150 },
               { id: "tags", label: "Tags", width: 160 },
             ];
             return (
@@ -150,6 +152,7 @@ export default async function BudgetPage({
                 <td className="n mono" style={{ fontWeight: 700 }}>
                   {formatCents(buyoutTotal)}
                 </td>
+                <td></td>
                 <td></td>
                 <td></td>
               </tr>
@@ -175,7 +178,7 @@ export default async function BudgetPage({
                       <td className="n mono" style={{ fontWeight: 700 }}>
                         {formatCents(groupBuyout)}
                       </td>
-                      <td colSpan={2}></td>
+                      <td colSpan={3}></td>
                     </tr>
                     {group.lines.map((line) => {
               const formId = `bl-${line.id}`;
@@ -243,6 +246,38 @@ export default async function BudgetPage({
                     </td>
                     <td>
                       <AutoSubmitSelect form={formId} className="tfld" name="awardedTo" defaultValue={line.awardedTo ?? ""} options={awardedToOptions} />
+                    </td>
+                    <td>
+                      {!line.awardedTo ? (
+                        <span style={{ color: "var(--text-faint)", fontSize: 11.5 }}>—</span>
+                      ) : line.commitment ? (
+                        <form
+                          action={async () => {
+                            "use server";
+                            await revokeCommitment(number, line.id);
+                          }}
+                        >
+                          <button
+                            className="chip chip--ok"
+                            type="submit"
+                            style={{ border: "none", cursor: "pointer" }}
+                            title={`Executed ${line.commitment.executedAt.toLocaleDateString()} — click to revoke`}
+                          >
+                            Executed ✓
+                          </button>
+                        </form>
+                      ) : (
+                        <form
+                          action={async () => {
+                            "use server";
+                            await executeCommitment(number, line.id);
+                          }}
+                        >
+                          <button className="btn btn--sm btn--gh" type="submit">
+                            Execute commitment
+                          </button>
+                        </form>
+                      )}
                     </td>
                     <td className="wrap">
                       {line.tags.map((t) => (

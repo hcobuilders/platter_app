@@ -19,6 +19,7 @@ type ProjectFieldValues = {
   status: ProjectStatus;
   bondPct: number | null;
   retainagePct: number | null;
+  contractDays: number | null;
 };
 
 export async function updateProjectField<K extends keyof ProjectFieldValues>(
@@ -165,4 +166,45 @@ export async function markItemsSeen(entityType: string, entityIds: string[]) {
     data: entityIds.map((entityId) => ({ userId: session.user.id, entityType, entityId })),
     skipDuplicates: true,
   });
+}
+
+// Schedule clock start for the awarded-status dashboard card (S-batch #71)
+// — a real ProjectDate (notice_to_proceed) rather than a bare field, so it
+// shows on the Key Dates timeline like every other project date.
+export async function setNoticeToProceed(projectNumber: string, dateStr: string) {
+  const project = await prisma.project.findUniqueOrThrow({ where: { number: projectNumber } });
+  if (!dateStr) {
+    await prisma.projectDate.deleteMany({ where: { projectId: project.id, kind: "notice_to_proceed" } });
+    revalidatePath(`/projects/${projectNumber}`);
+    return;
+  }
+  const existing = await prisma.projectDate.findFirst({ where: { projectId: project.id, kind: "notice_to_proceed" } });
+  if (existing) {
+    await prisma.projectDate.update({ where: { id: existing.id }, data: { at: new Date(dateStr) } });
+  } else {
+    await prisma.projectDate.create({ data: { projectId: project.id, kind: "notice_to_proceed", at: new Date(dateStr) } });
+  }
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
+// Project-level change orders (S-batch #71) — description + schedule-day
+// delta + dollar-value delta, summed for the awarded-status dashboard card.
+export async function addChangeOrder(projectNumber: string, description: string, days: number, valueDollars: number) {
+  const trimmed = description.trim();
+  if (!trimmed) return;
+  const project = await prisma.project.findUniqueOrThrow({ where: { number: projectNumber } });
+  await prisma.changeOrder.create({
+    data: {
+      projectId: project.id,
+      description: trimmed,
+      days: Number.isFinite(days) ? Math.round(days) : 0,
+      value: BigInt(Math.round((Number.isFinite(valueDollars) ? valueDollars : 0) * 100)),
+    },
+  });
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
+export async function removeChangeOrder(projectNumber: string, id: string) {
+  await prisma.changeOrder.delete({ where: { id } });
+  revalidatePath(`/projects/${projectNumber}`);
 }

@@ -8,6 +8,29 @@ function str(fd: FormData, key: string): string {
   return String(fd.get(key) ?? "").trim();
 }
 
+// "it is a new entity part of the subcontracts / commitments tool. Once
+// it is awarded and commitment is executed it would show here." (S-batch
+// #71) — this Budget-page action is the minimal slice of that future tool:
+// marking an awarded line's subcontract as executed, one Commitment per
+// BudgetLine.
+export async function executeCommitment(projectNumber: string, budgetLineId: string) {
+  const line = await prisma.budgetLine.findUniqueOrThrow({ where: { id: budgetLineId } });
+  if (!line.awardedTo) return;
+  await prisma.commitment.upsert({
+    where: { budgetLineId },
+    create: { projectId: line.projectId, budgetLineId, subcontractorName: line.awardedTo, amount: line.current },
+    update: { subcontractorName: line.awardedTo, amount: line.current, executedAt: new Date() },
+  });
+  revalidatePath(`/projects/${projectNumber}/budget`);
+  revalidatePath("/");
+}
+
+export async function revokeCommitment(projectNumber: string, budgetLineId: string) {
+  await prisma.commitment.deleteMany({ where: { budgetLineId } });
+  revalidatePath(`/projects/${projectNumber}/budget`);
+  revalidatePath("/");
+}
+
 export async function updateBudgetLine(projectNumber: string, id: string, formData: FormData) {
   const budget = str(formData, "budget");
   const current = str(formData, "current");

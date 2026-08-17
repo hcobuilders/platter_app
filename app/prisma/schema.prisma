@@ -46,6 +46,13 @@ model Project {
   externalIds       Json          @default("{}")
   addressVerifiedAt DateTime?
   archivedAt        DateTime?
+  // Awarded-status dashboard card (S-batch #71) — "schedule days meant
+  // contract days. This gets pulled from the proposed duration set in the
+  // proposal and verified by the prime contract." No proposal-parsing or
+  // prime-contract workflow exists yet, so this is a plain editable field
+  // for now, set once verified. The clock itself starts at the
+  // notice_to_proceed ProjectDate (below), not stored here.
+  contractDays      Int?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
@@ -61,6 +68,8 @@ model Project {
   budgetRevisions BudgetRevision[]
   projectFlags    ProjectFlag[]
   projectTags     ProjectTag[]
+  changeOrders    ChangeOrder[]
+  commitments     Commitment[]
 }
 
 enum ProjectDateKind {
@@ -70,6 +79,37 @@ enum ProjectDateKind {
   addenda_cutoff
   submission_due
   award_target
+  notice_to_proceed
+}
+
+// Project-level change orders (S-batch #71: "Change orders are project
+// level"). Feeds the awarded-status dashboard card's change-order days/
+// value stats — summed across every change order on the project.
+model ChangeOrder {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  description String
+  days        Int      @default(0)
+  value       BigInt   @default(0)
+  createdAt   DateTime @default(now())
+}
+
+// "it is a new entity part of the subcontracts / commitments tool. Once
+// it is awarded and commitment is executed it would show here." (S-batch
+// #71) — minimal slice of that future tool: one Commitment per awarded
+// BudgetLine, created when the award is marked executed from the Budget
+// page. Feeds the awarded-status dashboard card's commitment count.
+model Commitment {
+  id                String     @id @default(cuid())
+  projectId         String
+  project           Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  budgetLineId      String     @unique
+  budgetLine        BudgetLine @relation(fields: [budgetLineId], references: [id], onDelete: Cascade)
+  subcontractorName String
+  amount            BigInt
+  executedAt        DateTime   @default(now())
+  createdAt         DateTime   @default(now())
 }
 
 model ProjectDate {
@@ -515,6 +555,7 @@ model BudgetLine {
   tags           String[]
 
   lifecycleScenarios LifecycleScenario[]
+  commitment         Commitment?
 }
 
 // Revisions store full JSONB snapshots, not diffs — comparison is computed
