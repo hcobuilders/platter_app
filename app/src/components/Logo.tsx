@@ -1,10 +1,12 @@
-export function Logo({ size = 19, stroke = "#FEF9EF" }: { size?: number; stroke?: string }) {
+import { BRAND } from "@/lib/brand";
+
+export function Logo({ size = 19, stroke = BRAND.stroke }: { size?: number; stroke?: string }) {
   return (
     <svg viewBox="0 0 64 64" width={size} height={size}>
       <defs>
         <linearGradient id="platter-logo-grad" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#FF9F1C" />
-          <stop offset="1" stopColor="#FE6D73" />
+          <stop offset="0" stopColor={BRAND.gradStart} />
+          <stop offset="1" stopColor={BRAND.gradEnd} />
         </linearGradient>
       </defs>
       <g fill="none" stroke={stroke} strokeWidth={4} strokeLinejoin="round">
