@@ -1,11 +1,24 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
-import { acceptPlug, acceptSubAddedAsScopeLine, trackOnlySubAdded, setLineIncluded } from "./actions";
+import { acceptPlug, acceptSubAddedAsScopeLine, trackOnlySubAdded, setLineIncluded, setBidBondIncluded, acceptBondAlternate, clearBondAlternate } from "./actions";
+import { updatePackageBonding } from "../actions";
 import { ResizableColumns } from "@/components/ResizableColumns";
 import { BidCellInput } from "./BidCellInput";
+import { AutoSubmitCheckbox } from "@/components/AutoSubmitCheckbox";
+import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 
 export const dynamic = "force-dynamic";
+
+// Payment & performance bonding auto-required once a package crosses $1M,
+// regardless of the manual toggle — mirrors the project overview's old
+// rule, now homed here since sub bonds are Bid-Tab-only (S-batch #41).
+const PANDP_AUTO_THRESHOLD_CENTS = 100_000_000n;
+
+const PANDP_LABEL: Record<string, string> = {
+  in_base: "In base bid",
+  alternate: "Alternate",
+};
 
 async function getPackage(number: string, packageCode?: string) {
   const project = await prisma.project.findUnique({
@@ -28,7 +41,8 @@ async function getPackage(number: string, packageCode?: string) {
   const pkg = packageCode
     ? project.bidPackages.find((p) => p.code === packageCode)
     : project.bidPackages[0];
-  return pkg ?? null;
+  if (!pkg) return null;
+  return { pkg, projectPAndPMode: project.pAndPMode };
 }
 
 const KIND_LABEL: Record<string, string> = {
@@ -57,10 +71,15 @@ export default async function BidTabPage({
 }) {
   const { number } = await params;
   const { package: packageCode } = await searchParams;
-  const pkg = await getPackage(number, packageCode);
-  if (!pkg) notFound();
+  const result = await getPackage(number, packageCode);
+  if (!result) notFound();
+  const { pkg, projectPAndPMode } = result;
 
   const invitations = pkg.invitations;
+  const effectivePAndP = pkg.pAndPMode ?? projectPAndPMode;
+  const autoRequired = (pkg.budgetAmount ?? 0n) > PANDP_AUTO_THRESHOLD_CENTS;
+  const bondEffectivelyRequired = pkg.requiresBond || autoRequired;
+  const bidInvitations = invitations.filter((inv) => inv.bids[0]);
 
   // invitationId -> Map<scopeLineItemId, bidLine>
   const matchedByInvitation = new Map<string, Map<string, (typeof invitations)[number]["bids"][number]["bidLines"][number]>>();
@@ -141,6 +160,98 @@ export default async function BidTabPage({
           <i style={{ background: "var(--danger-fill)", borderRadius: 2 }} />
           Plug
         </span>
+      </div>
+
+      <div className="card">
+        <div className="lbl" style={{ marginBottom: 10 }}>
+          Sub bonds — {pkg.code}
+        </div>
+        <div className="flex items-center gap-6">
+          <AutoSubmitCheckbox form="pkg-bond-form" name="requiresBond" defaultChecked={pkg.requiresBond} label="P&amp;P bond required" />
+          <div className="flex items-center gap-2">
+            <span className="lbl" style={{ margin: 0 }}>
+              P&amp;P
+            </span>
+            <AutoSubmitSelect
+              form="pkg-bond-form"
+              name="pAndPMode"
+              className="fld"
+              defaultValue={pkg.pAndPMode ?? ""}
+              options={[
+                { value: "", label: effectivePAndP ? `— inherit (${PANDP_LABEL[effectivePAndP]}) —` : "— inherit —" },
+                { value: "in_base", label: "In base bid" },
+                { value: "alternate", label: "Alternate" },
+              ]}
+            />
+          </div>
+          {autoRequired && (
+            <span style={{ fontSize: 11, color: "var(--danger-text)" }} title="Package value exceeds $1M — P&P bonding auto-required">
+              Auto-required (&gt;$1M)
+            </span>
+          )}
+        </div>
+        <form
+          id="pkg-bond-form"
+          action={async (fd) => {
+            "use server";
+            await updatePackageBonding(number, pkg.id, fd);
+          }}
+          style={{ display: "none" }}
+        />
+
+        {bondEffectivelyRequired && (
+          <div className="flex flex-col gap-2" style={{ marginTop: 14 }}>
+            <p style={{ fontSize: 11.5, color: "var(--text-dim)" }}>
+              Required for this package. Track which sub&apos;s bid states it&apos;s included, then accept one as the explicit alternate carried into the award —
+              nothing here posts to the budget on its own.
+            </p>
+            {bidInvitations.length === 0 && <p style={{ color: "var(--text-faint)", fontSize: 12.5 }}>No submitted bids yet.</p>}
+            {bidInvitations.map((inv) => {
+              const bid = inv.bids[0];
+              const accepted = pkg.bondAcceptedInvitationId === inv.id;
+              const bondFormId = `bond-inc-${bid.id}`;
+              return (
+                <div key={inv.id} className="cclist">
+                  <span>{inv.subcontractor.name}</span>
+                  <div className="flex items-center gap-3">
+                    <AutoSubmitCheckbox form={bondFormId} name="bondIncluded" defaultChecked={bid.bondIncluded} label="Bond included in bid" />
+                    {accepted ? (
+                      <form
+                        action={async () => {
+                          "use server";
+                          await clearBondAlternate(number, pkg.id);
+                        }}
+                      >
+                        <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--success-text)" }}>
+                          ✓ Accepted — click to clear
+                        </button>
+                      </form>
+                    ) : (
+                      <form
+                        action={async () => {
+                          "use server";
+                          await acceptBondAlternate(number, pkg.id, inv.id);
+                        }}
+                      >
+                        <button className="btn btn--sm" type="submit">
+                          Accept as bond alternate
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                  <form
+                    id={bondFormId}
+                    action={async (fd) => {
+                      "use server";
+                      await setBidBondIncluded(number, bid.id, fd.get("bondIncluded") === "on");
+                    }}
+                    style={{ display: "none" }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="bwrap">

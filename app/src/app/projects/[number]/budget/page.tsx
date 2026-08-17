@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
@@ -180,9 +181,14 @@ export default async function BudgetPage({
                   <td style={{ paddingLeft: 28 }}>
                     {line.bidPackage ? (
                       <>
-                        <span className="chip" style={{ marginRight: 8 }}>
+                        <Link
+                          href={`/projects/${number}/bid-tab?package=${encodeURIComponent(line.bidPackage.code)}`}
+                          className="chip"
+                          style={{ marginRight: 8 }}
+                          title="Open this package's bid tab"
+                        >
                           {line.bidPackage.code}
-                        </span>
+                        </Link>
                         {line.bidPackage.name}
                       </>
                     ) : (

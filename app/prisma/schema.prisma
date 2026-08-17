@@ -44,6 +44,7 @@ model Project {
   gcContactPhone    String?
   status            ProjectStatus @default(draft)
   externalIds       Json          @default("{}")
+  addressVerifiedAt DateTime?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
@@ -81,12 +82,15 @@ model ProjectDate {
 }
 
 model ProjectNote {
-  id        String    @id @default(cuid())
-  projectId String
-  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  body      String
-  author    String
-  pinnedAt  DateTime?
+  id           String    @id @default(cuid())
+  projectId    String
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  body         String
+  author       String
+  pinnedAt     DateTime?
+  // The date this hot item is actually about (a deadline, an addendum date,
+  // etc.) — separate from createdAt, which is just when the note was added.
+  associatedAt DateTime?
   createdAt DateTime  @default(now())
 }
 
@@ -257,6 +261,11 @@ model BidPackage {
   longLead     Boolean          @default(false)
   templateId   String?
   template     PackageTemplate? @relation(fields: [templateId], references: [id])
+  // Which sub's P&P bond alternate got accepted into the award, tracked
+  // explicitly at tab reconciliation time — set via the Bid Tab, not editable
+  // elsewhere. Null while unresolved even if requiresBond is true.
+  bondAcceptedInvitationId String?
+  bondAcceptedInvitation   Invitation? @relation("BondAlternateAccepted", fields: [bondAcceptedInvitationId], references: [id])
 
   scopeLineItems ScopeLineItem[]
   invitations    Invitation[]
@@ -349,8 +358,9 @@ model Invitation {
   intent            InvitationIntent @default(none)
   feedbackRequested Boolean          @default(false)
 
-  bids Bid[]
-  rfis Rfi[]
+  bids                    Bid[]
+  rfis                    Rfi[]
+  bondAlternateOnPackages BidPackage[] @relation("BondAlternateAccepted")
 
   @@unique([bidPackageId, subcontractorId])
 }
@@ -370,6 +380,10 @@ model Bid {
   addendaAcked String[]
   source       BidSource  @default(portal)
   attachments  String[]
+  // Sub self-reported (or, eventually, parser-detected) that their bid
+  // carries their own bond — surfaced only in the Bid Tab, never GC-facing
+  // pages. Manual toggle today; a document parser is the real source later.
+  bondIncluded Boolean    @default(false)
 
   bidLines BidLine[]
 }

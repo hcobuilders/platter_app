@@ -76,3 +76,32 @@ export async function updateBidLineAmount(projectNumber: string, bidLineId: stri
   });
   revalidatePath(`/projects/${projectNumber}/bid-tab`);
 }
+
+// Sub self-reported their bid carries their own bond — a manual stand-in for
+// what a document parser will eventually detect from the bid itself.
+export async function setBidBondIncluded(projectNumber: string, bidId: string, included: boolean) {
+  await prisma.bid.update({
+    where: { id: bidId },
+    data: { bondIncluded: included },
+  });
+  revalidatePath(`/projects/${projectNumber}/bid-tab`);
+}
+
+// Reconciliation/award-time decision: which sub's P&P bond alternate is
+// actually carried into the award for this package. Explicit and singular —
+// setting a new one replaces whichever was accepted before.
+export async function acceptBondAlternate(projectNumber: string, bidPackageId: string, invitationId: string) {
+  await prisma.bidPackage.update({
+    where: { id: bidPackageId },
+    data: { bondAcceptedInvitationId: invitationId },
+  });
+  revalidatePath(`/projects/${projectNumber}/bid-tab`);
+}
+
+export async function clearBondAlternate(projectNumber: string, bidPackageId: string) {
+  await prisma.bidPackage.update({
+    where: { id: bidPackageId },
+    data: { bondAcceptedInvitationId: null },
+  });
+  revalidatePath(`/projects/${projectNumber}/bid-tab`);
+}

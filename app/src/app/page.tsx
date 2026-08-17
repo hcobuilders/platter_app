@@ -5,6 +5,7 @@ import { Logo } from "@/components/Logo";
 import { CommandBar } from "@/components/CommandBar";
 import { NewProjectModal } from "@/components/NewProjectModal";
 import { DashboardBody, type CardProject } from "@/components/DashboardBody";
+import { getBuildVersion } from "@/lib/version";
 
 export const dynamic = "force-dynamic";
 
@@ -82,6 +83,9 @@ export default async function Home() {
         </div>
         <div className="right">
           <span className="search">Search projects…</span>
+          <span className="mono" style={{ fontSize: 10, color: "var(--text-invert-faint)" }} title="Build version">
+            v{getBuildVersion()}
+          </span>
           <div className="avatar">JL</div>
         </div>
       </div>

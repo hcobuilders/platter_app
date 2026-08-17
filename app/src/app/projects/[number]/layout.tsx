@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { Logo } from "@/components/Logo";
 import { ProjectNav } from "@/components/ProjectNav";
 import { CommandBar } from "@/components/CommandBar";
+import { getBuildVersion } from "@/lib/version";
 
 async function getProject(number: string) {
   return prisma.project.findUnique({ where: { number } });
@@ -44,6 +45,9 @@ export default async function ProjectLayout({
               Settings
             </Link>
           </nav>
+          <span className="mono" style={{ fontSize: 10, color: "var(--text-invert-faint)" }} title="Build version">
+            v{getBuildVersion()}
+          </span>
           <div className="avatar">JL</div>
         </div>
       </div>
