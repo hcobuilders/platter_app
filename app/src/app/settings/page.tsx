@@ -9,6 +9,7 @@ import { AccountMenu, ROLE_LABEL } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
 import { FlagModal } from "./FlagModal";
+import { DeleteFlagModal } from "./DeleteFlagModal";
 import { TagAddRow } from "./TagAddRow";
 import { TemplateModal } from "./TemplateModal";
 import { PackageBuilder } from "./PackageBuilder";
@@ -128,16 +129,22 @@ export default async function SettingsPage({
                         <Link href={`?view=flags&flag=${f.id}`} className="btn btn--sm btn--gh">
                           Edit
                         </Link>
-                        <form
-                          action={async () => {
-                            "use server";
-                            await deleteFlag(f.id);
-                          }}
-                        >
-                          <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                        {f._count.projectFlags > 0 ? (
+                          <Link href={`?view=flags&deleteFlag=${f.id}`} className="btn btn--sm btn--gh" style={{ color: "var(--danger-text)" }}>
                             Delete
-                          </button>
-                        </form>
+                          </Link>
+                        ) : (
+                          <form
+                            action={async () => {
+                              "use server";
+                              await deleteFlag(f.id);
+                            }}
+                          >
+                            <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                              Delete
+                            </button>
+                          </form>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -145,7 +152,20 @@ export default async function SettingsPage({
               })}
             </DataTable>
             <Suspense fallback={null}>
-              <FlagModal flags={flags.map((f) => ({ id: f.id, label: f.label, type: f.type, description: f.description, color: f.color, glyph: f.glyph }))} />
+              <FlagModal
+                flags={flags.map((f) => ({
+                  id: f.id,
+                  label: f.label,
+                  type: f.type,
+                  description: f.description,
+                  color: f.color,
+                  glyph: f.glyph,
+                  parseKeywords: f.parseKeywords,
+                }))}
+              />
+            </Suspense>
+            <Suspense fallback={null}>
+              <DeleteFlagModal flags={flags.map((f) => ({ id: f.id, label: f.label, usedCount: f._count.projectFlags }))} />
             </Suspense>
           </div>
         )}

@@ -10,6 +10,7 @@ export type FlagOption = {
   description: string | null;
   color: string | null;
   glyph: string | null;
+  parseKeywords: string[];
 };
 
 const COLOR_OPTIONS: { value: string; label: string }[] = [
@@ -86,6 +87,20 @@ export function FlagModal({ flags }: { flags: FlagOption[] }) {
                 ))}
               </select>
             </div>
+          </div>
+          <div>
+            <div className="lbl" style={{ marginBottom: 6 }}>
+              Parse keywords (optional)
+            </div>
+            <input
+              className="fld"
+              name="parseKeywords"
+              placeholder="comma-separated, e.g. mandatory prebid, site visit"
+              defaultValue={editing?.parseKeywords.join(", ") ?? ""}
+            />
+            <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 6 }}>
+              Phrases the future AI parser matches to auto-apply this flag from bid documents.
+            </p>
           </div>
           <div className="flex gap-2 mt-2">
             <button className="btn btn--acc" type="submit">

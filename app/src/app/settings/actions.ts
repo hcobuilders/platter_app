@@ -31,6 +31,13 @@ export async function updateAccountProfile(formData: FormData) {
   revalidatePath("/settings");
 }
 
+function parseKeywordsList(fd: FormData): string[] {
+  return str(fd, "parseKeywords")
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
+}
+
 export async function createFlag(formData: FormData) {
   const label = str(formData, "label");
   const type = str(formData, "type") as FlagType;
@@ -42,6 +49,7 @@ export async function createFlag(formData: FormData) {
       description: str(formData, "description") || null,
       color: str(formData, "color") || null,
       glyph: str(formData, "glyph") || null,
+      parseKeywords: parseKeywordsList(formData),
     },
   });
   revalidatePath("/settings");
@@ -60,12 +68,28 @@ export async function updateFlag(id: string, formData: FormData) {
       description: str(formData, "description") || null,
       color: str(formData, "color") || null,
       glyph: str(formData, "glyph") || null,
+      parseKeywords: parseKeywordsList(formData),
     },
   });
   revalidatePath("/settings");
 }
 
-export async function deleteFlag(id: string) {
+// "deleting requires reassignment if in use" (E-06, GH #19). Renaming
+// already updates everywhere for free (every ProjectFlag points at the
+// same Flag row) — this is the other half: an optional reassignToId
+// moves each in-use project onto a replacement flag before the old one
+// is removed, instead of just silently dropping it off every project.
+export async function deleteFlag(id: string, reassignToId?: string) {
+  if (reassignToId) {
+    const inUse = await prisma.projectFlag.findMany({ where: { flagId: id } });
+    for (const pf of inUse) {
+      await prisma.projectFlag.upsert({
+        where: { projectId_flagId: { projectId: pf.projectId, flagId: reassignToId } },
+        update: {},
+        create: { projectId: pf.projectId, flagId: reassignToId },
+      });
+    }
+  }
   await prisma.projectFlag.deleteMany({ where: { flagId: id } });
   await prisma.flag.delete({ where: { id } });
   revalidatePath("/settings");
