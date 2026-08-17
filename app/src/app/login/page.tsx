@@ -20,7 +20,7 @@ export default async function LoginPage({
       <form
         action={loginAction}
         className="flex flex-col gap-3"
-        style={{ background: "var(--bg-surface-raised)", borderRadius: "var(--r-lg)", padding: 28, width: 340, boxShadow: "var(--e-2)" }}
+        style={{ background: "var(--bg-surface-raised)", color: "var(--text)", borderRadius: "var(--r-lg)", padding: 28, width: 340, boxShadow: "var(--e-2)" }}
       >
         <input type="hidden" name="from" value={from ?? "/"} />
         <div className="lbl">Sign in</div>
