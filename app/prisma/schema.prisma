@@ -56,20 +56,21 @@ model Project {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
-  dates           ProjectDate[]
-  notes           ProjectNote[]
-  documents       Document[]
-  specSections    SpecSection[]
-  bidPackages     BidPackage[]
-  addenda         Addendum[]
-  rfis            Rfi[]
-  communications  Communication[]
-  budgetLines     BudgetLine[]
-  budgetRevisions BudgetRevision[]
-  projectFlags    ProjectFlag[]
-  projectTags     ProjectTag[]
-  changeOrders    ChangeOrder[]
-  commitments     Commitment[]
+  dates              ProjectDate[]
+  notes              ProjectNote[]
+  documents          Document[]
+  specSections       SpecSection[]
+  bidPackages        BidPackage[]
+  addenda            Addendum[]
+  rfis               Rfi[]
+  communications     Communication[]
+  budgetLines        BudgetLine[]
+  budgetRevisions    BudgetRevision[]
+  projectFlags       ProjectFlag[]
+  projectTags        ProjectTag[]
+  changeOrders       ChangeOrder[]
+  commitments        Commitment[]
+  scheduleActivities ScheduleActivity[]
 }
 
 enum ProjectDateKind {
@@ -92,6 +93,39 @@ model ChangeOrder {
   description String
   days        Int      @default(0)
   value       BigInt   @default(0)
+  createdAt   DateTime @default(now())
+}
+
+// Schedule scaffolding (S-batch #63): "build out the databases a bit
+// further [start, finish, duration, calendar type, activity id tracking,
+// wbs categories, views, etc.] so it can import a p6 xer." Fields cover
+// the owner's explicit list; predecessor/successor logic and true WBS
+// summary-row grouping are #64, deliberately not modeled here yet —
+// wbsCategory is stored as a plain label per activity, not a hierarchy.
+model ScheduleActivity {
+  id           String    @id @default(cuid())
+  projectId    String
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  activityId   String
+  name         String
+  wbsCategory  String?
+  startAt      DateTime?
+  finishAt     DateTime?
+  durationDays Int?
+  calendarType String?
+  pinned       Boolean   @default(false)
+  seq          Int       @default(0)
+  createdAt    DateTime  @default(now())
+}
+
+// "add a spot for schedule styles in the settings" (S-batch #63) — the
+// owner didn't specify what a style configures beyond it existing;
+// kept minimal (name + description) as a placeholder to take into
+// design, same treatment as #62's Gantt token pass.
+model ScheduleStyle {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
   createdAt   DateTime @default(now())
 }
 
@@ -299,28 +333,28 @@ enum PAndPMode {
 }
 
 model BidPackage {
-  id           String           @id @default(cuid())
-  projectId    String
-  project      Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  code         String
-  name         String
-  csiCodes     String[]
-  status       String           @default("draft")
-  dueAt        DateTime?
-  budgetAmount BigInt?
-  requiresBond Boolean          @default(false)
-  pAndPMode    PAndPMode?
-  longLead     Boolean          @default(false)
+  id                       String           @id @default(cuid())
+  projectId                String
+  project                  Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  code                     String
+  name                     String
+  csiCodes                 String[]
+  status                   String           @default("draft")
+  dueAt                    DateTime?
+  budgetAmount             BigInt?
+  requiresBond             Boolean          @default(false)
+  pAndPMode                PAndPMode?
+  longLead                 Boolean          @default(false)
   // GC self-performs this scope instead of bidding it out — a distinct
   // package state, not a point on the bid-status spectrum (S-batch #69).
-  selfPerform  Boolean          @default(false)
-  templateId   String?
-  template     PackageTemplate? @relation(fields: [templateId], references: [id])
+  selfPerform              Boolean          @default(false)
+  templateId               String?
+  template                 PackageTemplate? @relation(fields: [templateId], references: [id])
   // Which sub's P&P bond alternate got accepted into the award, tracked
   // explicitly at tab reconciliation time — set via the Bid Tab, not editable
   // elsewhere. Null while unresolved even if requiresBond is true.
   bondAcceptedInvitationId String?
-  bondAcceptedInvitation   Invitation? @relation("BondAlternateAccepted", fields: [bondAcceptedInvitationId], references: [id])
+  bondAcceptedInvitation   Invitation?      @relation("BondAlternateAccepted", fields: [bondAcceptedInvitationId], references: [id])
 
   scopeLineItems ScopeLineItem[]
   invitations    Invitation[]
@@ -718,14 +752,14 @@ enum UserRole {
 }
 
 model User {
-  id             String    @id @default(cuid())
-  email          String    @unique
-  passwordHash   String?
-  name           String
-  image          String?
-  role           UserRole  @default(estimator)
-  phone          String?
-  emailSignature String?
+  id                     String    @id @default(cuid())
+  email                  String    @unique
+  passwordHash           String?
+  name                   String
+  image                  String?
+  role                   UserRole  @default(estimator)
+  phone                  String?
+  emailSignature         String?
   // Dashboard status-filter chip selection (S-batch #71) — "remember what
   // i last had selected" per user, not per browser session.
   dashboardStatusFilters String[]  @default([])

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import type { ProjectStatus, ProjectNoteState } from "@/generated/prisma/enums";
+import { parseXer, type ParsedActivity } from "@/lib/xer";
 
 function str(fd: FormData, key: string): string {
   return String(fd.get(key) ?? "").trim();
@@ -206,5 +207,49 @@ export async function addChangeOrder(projectNumber: string, description: string,
 
 export async function removeChangeOrder(projectNumber: string, id: string) {
   await prisma.changeOrder.delete({ where: { id } });
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
+// P6 XER import, step 1 of 2 (S-batch #63): parse only, no writes yet —
+// the client holds the returned candidates in a checkbox selection list
+// before anything commits. Mirrors importTagsCsv's "read file.text()
+// straight in the action" pattern rather than round-tripping through
+// storage first, since nothing here needs the original file kept.
+export async function parseXerFile(formData: FormData): Promise<ParsedActivity[]> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return [];
+  const text = await file.text();
+  return parseXer(text);
+}
+
+// Step 2: commit only the activities the owner left checked. Each import
+// just appends rows — no de-dup against a prior import of the same
+// schedule, since re-import collision handling isn't specified yet.
+export async function commitScheduleActivities(projectNumber: string, activities: ParsedActivity[]) {
+  if (activities.length === 0) return;
+  const project = await prisma.project.findUniqueOrThrow({ where: { number: projectNumber } });
+  const lastSeq = await prisma.scheduleActivity.aggregate({
+    where: { projectId: project.id },
+    _max: { seq: true },
+  });
+  let seq = lastSeq._max.seq ?? 0;
+  await prisma.scheduleActivity.createMany({
+    data: activities.map((a) => ({
+      projectId: project.id,
+      activityId: a.activityId,
+      name: a.name,
+      wbsCategory: a.wbsCategory,
+      startAt: a.startAt ? new Date(a.startAt) : null,
+      finishAt: a.finishAt ? new Date(a.finishAt) : null,
+      durationDays: a.durationDays != null ? Math.round(a.durationDays) : null,
+      calendarType: a.calendarType,
+      seq: ++seq,
+    })),
+  });
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
+export async function removeScheduleActivity(projectNumber: string, id: string) {
+  await prisma.scheduleActivity.delete({ where: { id } });
   revalidatePath(`/projects/${projectNumber}`);
 }

@@ -3,7 +3,15 @@ import { Fragment, Suspense } from "react";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { Logo } from "@/components/Logo";
-import { deleteFlag, deleteTag, uploadBidBondTemplate, updateAccountProfile, importTagsCsv } from "./actions";
+import {
+  deleteFlag,
+  deleteTag,
+  uploadBidBondTemplate,
+  updateAccountProfile,
+  importTagsCsv,
+  createScheduleStyle,
+  deleteScheduleStyle,
+} from "./actions";
 import { deleteProjectTemplate } from "@/app/actions";
 import { AccountMenu, ROLE_LABEL } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
@@ -39,13 +47,14 @@ export default async function SettingsPage({
 }) {
   const { view = "flags" } = await searchParams;
 
-  const [flags, packageTemplates, tags, bidBondTemplate, projectTemplates, allProjects, session] = await Promise.all([
+  const [flags, packageTemplates, tags, bidBondTemplate, projectTemplates, allProjects, scheduleStyles, session] = await Promise.all([
     prisma.flag.findMany({ orderBy: { label: "asc" }, include: { _count: { select: { projectFlags: true } } } }),
     prisma.packageTemplate.findMany({ orderBy: { name: "asc" } }),
     prisma.tag.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { projectTags: true } } } }),
     prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
     prisma.projectTemplate.findMany({ orderBy: { createdAt: "desc" }, include: { packages: true } }),
     prisma.project.findMany({ orderBy: { number: "asc" }, select: { number: true, name: true } }),
+    prisma.scheduleStyle.findMany({ orderBy: { name: "asc" } }),
     auth(),
   ]);
 
@@ -87,6 +96,9 @@ export default async function SettingsPage({
           </a>
           <a href="?view=templates" className={view === "templates" ? "on" : undefined}>
             Templates
+          </a>
+          <a href="?view=schedule" className={view === "schedule" ? "on" : undefined}>
+            Schedule
           </a>
           <a href="?view=account" className={view === "account" ? "on" : undefined}>
             Account
@@ -357,6 +369,61 @@ export default async function SettingsPage({
                 projects={allProjects}
               />
             </Suspense>
+          </div>
+        )}
+
+        {view === "schedule" && (
+          <div className="flex flex-col gap-4" style={{ maxWidth: 640 }}>
+            <div className="lbl">{scheduleStyles.length} schedule styles</div>
+            <p style={{ fontSize: 12.5, color: "var(--text-dim)" }}>
+              Placeholder for now — named presets for the Timeline/Gantt views once that design is settled.
+            </p>
+            <DataTable
+              id="settings-schedule-styles-tbl"
+              columns={
+                [
+                  { id: "name", label: "Name", width: 220 },
+                  { id: "description", label: "Description", width: 320 },
+                  { id: "actions", label: "", width: 90, minWidth: 90, resizable: false },
+                ] as DataTableColumn[]
+              }
+              footer={
+                <tr>
+                  <td colSpan={3} style={{ padding: 0 }}>
+                    <form
+                      action={async (fd) => {
+                        "use server";
+                        await createScheduleStyle(fd);
+                      }}
+                      className="dt-addrow"
+                    >
+                      <input className="fld" name="name" placeholder="Style name" required style={{ maxWidth: 220 }} />
+                      <input className="fld" name="description" placeholder="Description (optional)" style={{ flex: 1 }} />
+                      <button type="submit">+ Add style</button>
+                    </form>
+                  </td>
+                </tr>
+              }
+            >
+              {scheduleStyles.map((s) => (
+                <tr key={s.id}>
+                  <td>{s.name}</td>
+                  <td style={{ color: "var(--text-dim)" }}>{s.description || "—"}</td>
+                  <td>
+                    <form
+                      action={async () => {
+                        "use server";
+                        await deleteScheduleStyle(s.id);
+                      }}
+                    >
+                      <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                        Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </DataTable>
           </div>
         )}
 

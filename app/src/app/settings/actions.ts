@@ -213,6 +213,21 @@ export async function importTagsCsv(formData: FormData) {
   revalidatePath("/settings");
 }
 
+// "add a spot for schedule styles in the settings" (S-batch #63) — kept
+// minimal (name + description) as a placeholder; the owner hasn't
+// specified what a style actually configures yet.
+export async function createScheduleStyle(formData: FormData) {
+  const name = str(formData, "name");
+  if (!name) return;
+  await prisma.scheduleStyle.create({ data: { name, description: str(formData, "description") || null } });
+  revalidatePath("/settings");
+}
+
+export async function deleteScheduleStyle(id: string) {
+  await prisma.scheduleStyle.delete({ where: { id } });
+  revalidatePath("/settings");
+}
+
 export async function uploadBidBondTemplate(formData: FormData) {
   const file = formData.get("template");
   if (!(file instanceof File) || file.size === 0) return;

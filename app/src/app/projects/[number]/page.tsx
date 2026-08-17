@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { notFound } from "next/navigation";
@@ -19,6 +20,8 @@ import { FlagChip } from "@/components/FlagChip";
 import { GanttTimeline, MiniMap, GoogleMapsLink } from "./OverviewWidgets";
 import { EditableOverviewFields } from "./EditableOverviewFields";
 import { HotItemsList } from "./HotItemsList";
+import { ScheduleGantt } from "./ScheduleGantt";
+import { ScheduleImportModal } from "./ScheduleImportModal";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +43,7 @@ async function getProjectDetail(number: string) {
       budgetLines: true,
       projectFlags: { include: { flag: true } },
       changeOrders: { orderBy: { createdAt: "desc" } },
+      scheduleActivities: { orderBy: { seq: "asc" } },
     },
   });
 }
@@ -281,6 +285,19 @@ export default async function ProjectOverviewPage({
         <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 6 }}>
           Starts the awarded-status schedule clock (elapsed / completion date / days remaining).
         </p>
+      </section>
+
+      <section className="card">
+        <div className="flex items-center justify-between" style={{ marginBottom: 8 }}>
+          <div className="lbl">Schedule</div>
+          <Link href={`/projects/${number}?importSchedule=1`} className="btn btn--sm btn--gh">
+            Import P6 schedule (.xer)
+          </Link>
+        </div>
+        <ScheduleGantt projectNumber={number} activities={project.scheduleActivities} />
+        <Suspense fallback={null}>
+          <ScheduleImportModal projectNumber={number} />
+        </Suspense>
       </section>
 
       <section className="card">
