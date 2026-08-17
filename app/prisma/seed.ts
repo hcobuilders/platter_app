@@ -164,10 +164,10 @@ async function main() {
   // ── Subs, invitations, bids (matches Batch 5's 5.1 comparison grid) ──
   const [bayline, marion, coastal, suncoast] = await Promise.all(
     [
-      { name: "Bayline Concrete", trades: ["Concrete"] },
-      { name: "Marion Ready Mix & Forming", trades: ["Concrete"] },
-      { name: "Coastal Concrete Group", trades: ["Concrete"] },
-      { name: "Suncoast Structural", trades: ["Concrete"] },
+      { name: "Bayline Concrete", trades: ["Concrete"], csiCodes: ["03 30 00"] },
+      { name: "Marion Ready Mix & Forming", trades: ["Concrete"], csiCodes: ["03 30 00"] },
+      { name: "Coastal Concrete Group", trades: ["Concrete"], csiCodes: ["03 30 00"] },
+      { name: "Suncoast Structural", trades: ["Concrete"], csiCodes: ["03 30 00"] },
     ].map((s) => prisma.subcontractor.create({ data: s }))
   );
 

@@ -11,6 +11,7 @@ export function CsiCodeInput({
   className,
   style,
   placeholder,
+  onCommit,
 }: {
   name: string;
   defaultValue?: string;
@@ -18,6 +19,9 @@ export function CsiCodeInput({
   className?: string;
   style?: CSSProperties;
   placeholder?: string;
+  /** Fired with the settled value on blur or suggestion pick — for callers
+   *  driving autosave directly instead of relying on native form submission. */
+  onCommit?: (value: string) => void;
 }) {
   const [value, setValue] = useState(defaultValue ?? "");
   const [open, setOpen] = useState(false);
@@ -62,6 +66,7 @@ export function CsiCodeInput({
         onBlur={() => {
           // Delay so a suggestion's onMouseDown fires before the list unmounts.
           setTimeout(() => setOpen(false), 120);
+          onCommit?.(value);
         }}
       />
       {exact && !open && (
@@ -79,6 +84,7 @@ export function CsiCodeInput({
                 onMouseDown={() => {
                   setValue(m.code);
                   setOpen(false);
+                  onCommit?.(m.code);
                 }}
               >
                 <span className="mono">{m.code}</span>

@@ -44,28 +44,39 @@ export async function createScopeLine(projectNumber: string, bidPackageId: strin
     },
   });
 
-  revalidatePath(`/projects/${projectNumber}/scope`);
+  revalidatePath(`/projects/${projectNumber}/work-packages`);
 }
 
-export async function updateScopeLine(projectNumber: string, id: string, formData: FormData) {
+// Single-field partial update, called directly from the client (not via a
+// form submit) so ScopeWorksheetTable can autosave on blur/change without a
+// visible per-row Save button, and so one field's edit can never
+// accidentally blank out a sibling field the way a full-FormData replace
+// would if that field wasn't part of the submission.
+type ScopeLineFieldValues = {
+  csiCode: string | null;
+  description: string;
+  unit: string | null;
+  qty: number | null;
+  kind: ScopeLineKind;
+  isRequired: boolean;
+  submittalRequired: boolean;
+  longLeadWeeks: number | null;
+};
+
+export async function updateScopeLineField<K extends keyof ScopeLineFieldValues>(
+  projectNumber: string,
+  id: string,
+  field: K,
+  value: ScopeLineFieldValues[K]
+) {
   await prisma.scopeLineItem.update({
     where: { id },
-    data: {
-      csiCode: optionalStr(formData, "csiCode"),
-      description: str(formData, "description"),
-      unit: optionalStr(formData, "unit"),
-      qty: optionalFloat(formData, "qty"),
-      kind: str(formData, "kind") as ScopeLineKind,
-      isRequired: formData.get("isRequired") === "on",
-      submittalRequired: formData.get("submittalRequired") === "on",
-      longLeadWeeks: optionalInt(formData, "longLeadWeeks"),
-    },
+    data: { [field]: value },
   });
-
-  revalidatePath(`/projects/${projectNumber}/scope`);
+  revalidatePath(`/projects/${projectNumber}/work-packages`);
 }
 
 export async function deleteScopeLine(projectNumber: string, id: string) {
   await prisma.scopeLineItem.delete({ where: { id } });
-  revalidatePath(`/projects/${projectNumber}/scope`);
+  revalidatePath(`/projects/${projectNumber}/work-packages`);
 }

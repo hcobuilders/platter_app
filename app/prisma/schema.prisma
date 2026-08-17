@@ -319,6 +319,11 @@ model Subcontractor {
   ein            String?
   flLicense      String?
   trades         String[]
+  // CSI division-level codes this sub bids (e.g. "07" Thermal & Moisture,
+  // "09" Finishes) — distinct from `trades` (free-text labels). Lets a
+  // work package's "Add bidders" search auto-filter to subs whose
+  // csiCodes overlap the package's own BidPackage.csiCodes.
+  csiCodes       String[]
   groups         String[]
   rating         Float?
   lastVerifiedAt DateTime?

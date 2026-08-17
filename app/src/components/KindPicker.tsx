@@ -28,6 +28,7 @@ export function KindPicker({
   defaultValue,
   form,
   compact = false,
+  onCommit,
 }: {
   name: string;
   defaultValue: string;
@@ -35,6 +36,9 @@ export function KindPicker({
   /** Table-row use: show only the selected tag as a button that opens a
    *  dropdown of the other options, instead of the full inline pill row. */
   compact?: boolean;
+  /** Fired with the newly selected kind — for callers driving autosave
+   *  directly instead of relying on native form submission. */
+  onCommit?: (value: string) => void;
 }) {
   const [selected, setSelected] = useState(defaultValue);
   const [open, setOpen] = useState(false);
@@ -88,6 +92,7 @@ export function KindPicker({
                     onClick={() => {
                       setSelected(k);
                       setOpen(false);
+                      onCommit?.(k);
                     }}
                     className={`kb kb--${k}`}
                     style={{

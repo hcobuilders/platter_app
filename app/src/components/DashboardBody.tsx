@@ -184,7 +184,7 @@ function Card({ p }: { p: CardProject }) {
         <Link href={`/projects/${p.number}/budget`} title="Budget">
           <GlyphBudget />
         </Link>
-        <Link href={`/projects/${p.number}/itb`} title="Invite bidders">
+        <Link href={`/projects/${p.number}/work-packages`} title="Invite bidders">
           <GlyphInvite />
         </Link>
         <Link href={`/projects/${p.number}/bid-tab`} title="Bid tab">

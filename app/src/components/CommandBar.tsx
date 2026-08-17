@@ -8,8 +8,7 @@ type RegistryProject = { number: string; name: string; bidPackages: { code: stri
 
 const TOOLS: Array<{ keywords: string[]; label: string; path: string }> = [
   { keywords: ["overview", "home"], label: "Overview", path: "" },
-  { keywords: ["scope"], label: "Scope", path: "/scope" },
-  { keywords: ["itb", "invite"], label: "ITB", path: "/itb" },
+  { keywords: ["work-packages", "workpackages", "scope", "itb", "invite"], label: "Work Packages", path: "/work-packages" },
   { keywords: ["bid-tab", "bidtab", "level", "leveling"], label: "Bid tab", path: "/bid-tab" },
   { keywords: ["budget"], label: "Budget", path: "/budget" },
 ];
@@ -134,7 +133,7 @@ export function CommandBar({ currentProjectNumber }: { currentProjectNumber?: st
               left: q,
               right: `${proj.name} → Package ${pkg.code} ${pkg.name}`,
               kind: "Open package",
-              run: () => router.push(`/projects/${proj.number}/scope?package=${pkg.code}`),
+              run: () => router.push(`/projects/${proj.number}/work-packages?package=${pkg.code}`),
             },
           ];
         }

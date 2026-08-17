@@ -7,7 +7,7 @@ import {
   updateInvitationIntent,
   removeInvitation,
   bulkRemoveInvitations,
-} from "./actions";
+} from "./itb-actions";
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
 import { Checkbox } from "@/components/Checkbox";
 import { RowMenu } from "@/components/RowMenu";
@@ -27,15 +27,7 @@ const INTENT_LABEL: Record<string, { label: string; chip: string }> = {
   no_bid: { label: "No bid", chip: "chip chip--dgr" },
 };
 
-export function ItbTable({
-  projectNumber,
-  invitations,
-  footer,
-}: {
-  projectNumber: string;
-  invitations: InvitationRow[];
-  footer?: React.ReactNode;
-}) {
+export function ItbTable({ projectNumber, invitations }: { projectNumber: string; invitations: InvitationRow[] }) {
   const [, startTransition] = useTransition();
   const { selected, toggle, toggleAll, clear, allSelected } = useTableSelection(invitations.map((i) => i.id));
   const ids = Array.from(selected);
@@ -89,7 +81,7 @@ export function ItbTable({
         </div>
       )}
 
-      <DataTable id="itb-tbl" columns={columns} footer={footer && <tr><td colSpan={columns.length}>{footer}</td></tr>}>
+      <DataTable id="itb-tbl" columns={columns}>
         {invitations.map((inv) => {
           const intent = INTENT_LABEL[inv.intent];
           return (

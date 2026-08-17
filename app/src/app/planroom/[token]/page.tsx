@@ -36,6 +36,10 @@ export default async function PlanroomLanding({ params }: { params: Promise<{ to
   const invitation = await getInvitation(token);
   if (!invitation) notFound();
 
+  if (!invitation.openedAt) {
+    await prisma.invitation.update({ where: { id: invitation.id }, data: { openedAt: new Date() } });
+  }
+
   const { bidPackage } = invitation;
   const submittedBid = invitation.bids[0];
 
