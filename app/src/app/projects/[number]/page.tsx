@@ -65,46 +65,153 @@ export default async function ProjectOverviewPage({
   return (
     <div className="flex flex-col gap-5 max-w-4xl">
       <section className="card">
-        <div className="lbl">Project</div>
-        <div className="cf mt-2">
-          <Field label="Owner" value={project.owner} />
-          <Field label="Architect of record" value={project.architectOfRecord} />
-          <Field label="Delivery method" value={project.deliveryMethod} />
-          <Field label="Status" value={project.status} />
-          <Field label="Bond %" value={project.bondPct ? `${project.bondPct}%` : null} />
-          <Field label="Retainage %" value={project.retainagePct ? `${project.retainagePct}%` : null} />
-        </div>
-      </section>
+        <div className="ov2col">
+          <div>
+            <div className="lbl">Project</div>
+            <div className="cf mt-2">
+              <Field label="Owner" value={project.owner} />
+              <Field label="Architect of record" value={project.architectOfRecord} />
+              <Field label="Delivery method" value={project.deliveryMethod} />
+              <Field label="Status" value={project.status} />
+              <Field label="Bond %" value={project.bondPct ? `${project.bondPct}%` : null} />
+              <Field label="Retainage %" value={project.retainagePct ? `${project.retainagePct}%` : null} />
+            </div>
+          </div>
 
-      <section className="card">
-        <div className="lbl" style={{ marginBottom: 8 }}>
-          Address
-        </div>
-        <div style={{ font: "var(--t-body)" }}>{project.address ?? "—"}</div>
-        {project.address && (
-          <div className="mt-3">
-            {project.addressVerifiedAt && project.lat != null && project.lng != null ? (
-              <>
-                <div className="flex items-center gap-2" style={{ marginBottom: 10 }}>
-                  <span className="chip chip--ok">Verified</span>
-                  <span style={{ fontSize: 11.5, color: "var(--text-faint)" }}>as of {project.addressVerifiedAt.toLocaleDateString()}</span>
+          <div className="flex flex-col gap-5">
+            <div>
+              <div className="lbl" style={{ marginBottom: 8 }}>
+                Address
+              </div>
+              <div style={{ font: "var(--t-body)" }}>{project.address ?? "—"}</div>
+              {project.address && (
+                <div className="mt-3">
+                  {project.addressVerifiedAt && project.lat != null && project.lng != null ? (
+                    <>
+                      <div className="flex items-center gap-2" style={{ marginBottom: 10 }}>
+                        <span className="chip chip--ok">Verified</span>
+                        <span style={{ fontSize: 11.5, color: "var(--text-faint)" }}>as of {project.addressVerifiedAt.toLocaleDateString()}</span>
+                      </div>
+                      <MiniMap lat={project.lat} lng={project.lng} />
+                    </>
+                  ) : (
+                    <form
+                      action={async () => {
+                        "use server";
+                        await verifyProjectAddress(number);
+                      }}
+                    >
+                      <button className="btn btn--sm" type="submit">
+                        Verify address
+                      </button>
+                    </form>
+                  )}
                 </div>
-                <MiniMap lat={project.lat} lng={project.lng} />
-              </>
-            ) : (
+              )}
+            </div>
+
+            <div style={{ borderTop: "1px solid var(--border-hairline)", paddingTop: 16 }}>
+              <div className="lbl" style={{ marginBottom: 8 }}>
+                Project controls
+              </div>
+
               <form
-                action={async () => {
+                id="bonding-form"
+                action={async (fd) => {
                   "use server";
-                  await verifyProjectAddress(number);
+                  await updateProjectBonding(number, fd);
                 }}
               >
-                <button className="btn btn--sm" type="submit">
-                  Verify address
-                </button>
+                <div className="flex items-center gap-2">
+                  <span className="lbl" style={{ margin: 0 }}>
+                    P&amp;P
+                  </span>
+                  <AutoSubmitSelect
+                    form="bonding-form"
+                    name="pAndPMode"
+                    className="fld"
+                    defaultValue={project.pAndPMode ?? ""}
+                    options={[
+                      { value: "", label: "— not set —" },
+                      { value: "in_base", label: "In base bid" },
+                      { value: "alternate", label: "Alternate" },
+                    ]}
+                  />
+                </div>
               </form>
-            )}
+              <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 8 }}>
+                Bid bond required lives as a flag below — add it there to require one (and get a one-click download).
+              </p>
+
+              <div className="mt-3 flex gap-2 flex-wrap items-center">
+                {project.bidBondRequired && (
+                  <FlagChip
+                    label="Bid bond required"
+                    className="chip chip--dgr"
+                    href="/api/bid-bond-template"
+                    title="Click to download the bid bond template · right-click to remove"
+                    removeFormId="rm-bidbond"
+                  />
+                )}
+                {project.projectFlags.map((pf) => (
+                  <FlagChip
+                    key={pf.id}
+                    label={pf.flag.label}
+                    className={FLAG_TYPE_CHIP[pf.flag.type] ?? "chip"}
+                    title="Right-click to remove"
+                    removeFormId={`rm-flag-${pf.id}`}
+                  />
+                ))}
+                {project.projectFlags.length === 0 && !project.bidBondRequired && <span style={{ color: "var(--text-faint)" }}>None</span>}
+              </div>
+
+              {(unattachedFlags.length > 0 || !project.bidBondRequired) && (
+                <form
+                  action={async (fd) => {
+                    "use server";
+                    await addFlagOrBidBond(number, String(fd.get("flag") ?? ""));
+                  }}
+                  className="flex items-center gap-2 mt-2"
+                >
+                  <select className="fld" name="flag" style={{ width: "auto", fontSize: 11.5, padding: "6px 9px" }} defaultValue="">
+                    <option value="" disabled>
+                      + Add flag…
+                    </option>
+                    {!project.bidBondRequired && <option value="BID_BOND">Bid bond required</option>}
+                    {unattachedFlags.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.label}
+                      </option>
+                    ))}
+                  </select>
+                  <button className="btn btn--sm btn--gh" type="submit">
+                    Add
+                  </button>
+                </form>
+              )}
+
+              <form
+                id="rm-bidbond"
+                action={async () => {
+                  "use server";
+                  await setBidBondRequired(number, false);
+                }}
+                style={{ display: "none" }}
+              />
+              {project.projectFlags.map((pf) => (
+                <form
+                  key={pf.id}
+                  id={`rm-flag-${pf.id}`}
+                  action={async () => {
+                    "use server";
+                    await removeProjectFlag(number, pf.id);
+                  }}
+                  style={{ display: "none" }}
+                />
+              ))}
+            </div>
           </div>
-        )}
+        </div>
       </section>
 
       <section className="card">
@@ -127,112 +234,6 @@ export default async function ProjectOverviewPage({
             ))}
           </div>
         )}
-      </section>
-
-      <section className="card">
-        <div className="lbl" style={{ marginBottom: 8 }}>
-          Bonding
-        </div>
-        <form
-          id="bonding-form"
-          action={async (fd) => {
-            "use server";
-            await updateProjectBonding(number, fd);
-          }}
-          className="flex items-center gap-6"
-        >
-          <div className="flex items-center gap-2">
-            <span className="lbl" style={{ margin: 0 }}>
-              P&amp;P
-            </span>
-            <AutoSubmitSelect
-              form="bonding-form"
-              name="pAndPMode"
-              className="fld"
-              defaultValue={project.pAndPMode ?? ""}
-              options={[
-                { value: "", label: "— not set —" },
-                { value: "in_base", label: "In base bid" },
-                { value: "alternate", label: "Alternate" },
-              ]}
-            />
-          </div>
-        </form>
-        <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 8 }}>
-          Bid bond required now lives as a flag below — add it there to require one (and get a one-click download).
-        </p>
-      </section>
-
-      <section className="card">
-        <div className="lbl" style={{ marginBottom: 8 }}>
-          Flags
-        </div>
-        <div className="flex gap-2 flex-wrap items-center">
-          {project.bidBondRequired && (
-            <FlagChip
-              label="Bid bond required"
-              className="chip chip--dgr"
-              href="/api/bid-bond-template"
-              title="Click to download the bid bond template · right-click to remove"
-              removeFormId="rm-bidbond"
-            />
-          )}
-          {project.projectFlags.map((pf) => (
-            <FlagChip
-              key={pf.id}
-              label={pf.flag.label}
-              className={FLAG_TYPE_CHIP[pf.flag.type] ?? "chip"}
-              title="Right-click to remove"
-              removeFormId={`rm-flag-${pf.id}`}
-            />
-          ))}
-          {project.projectFlags.length === 0 && !project.bidBondRequired && <span style={{ color: "var(--text-faint)" }}>None</span>}
-
-          {(unattachedFlags.length > 0 || !project.bidBondRequired) && (
-            <form
-              action={async (fd) => {
-                "use server";
-                await addFlagOrBidBond(number, String(fd.get("flag") ?? ""));
-              }}
-              className="flex items-center gap-2"
-            >
-              <select className="fld" name="flag" style={{ width: "auto", fontSize: 11.5, padding: "6px 9px" }} defaultValue="">
-                <option value="" disabled>
-                  + Add flag…
-                </option>
-                {!project.bidBondRequired && <option value="BID_BOND">Bid bond required</option>}
-                {unattachedFlags.map((f) => (
-                  <option key={f.id} value={f.id}>
-                    {f.label}
-                  </option>
-                ))}
-              </select>
-              <button className="btn btn--sm btn--gh" type="submit">
-                Add
-              </button>
-            </form>
-          )}
-        </div>
-
-        <form
-          id="rm-bidbond"
-          action={async () => {
-            "use server";
-            await setBidBondRequired(number, false);
-          }}
-          style={{ display: "none" }}
-        />
-        {project.projectFlags.map((pf) => (
-          <form
-            key={pf.id}
-            id={`rm-flag-${pf.id}`}
-            action={async () => {
-              "use server";
-              await removeProjectFlag(number, pf.id);
-            }}
-            style={{ display: "none" }}
-          />
-        ))}
       </section>
 
       <section className="card">

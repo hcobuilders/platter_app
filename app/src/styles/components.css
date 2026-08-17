@@ -302,4 +302,7 @@
 .tabs a:hover{color:var(--text)}
 .tabs a.on{background:var(--accent-fill);color:var(--accent-on);font-weight:700}
 
-@media(max-width:900px){.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.cf{grid-template-columns:1fr}}
+/* ── overview: single container, project detail left / map+controls right ── */
+.ov2col{display:grid;grid-template-columns:1fr 340px;gap:28px}
+
+@media(max-width:900px){.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.cf{grid-template-columns:1fr}.ov2col{grid-template-columns:1fr}}
