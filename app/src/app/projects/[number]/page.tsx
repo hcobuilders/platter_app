@@ -43,7 +43,13 @@ async function getProjectDetail(number: string) {
       budgetLines: true,
       projectFlags: { include: { flag: true } },
       changeOrders: { orderBy: { createdAt: "desc" } },
-      scheduleActivities: { orderBy: { seq: "asc" } },
+      scheduleActivities: {
+        orderBy: { seq: "asc" },
+        include: {
+          predecessorLinks: { include: { predecessor: { select: { id: true, name: true } } } },
+          successorLinks: { include: { successor: { select: { id: true, name: true } } } },
+        },
+      },
     },
   });
 }
@@ -63,8 +69,13 @@ export default async function ProjectOverviewPage({
   params: Promise<{ number: string }>;
 }) {
   const { number } = await params;
-  const [project, session] = await Promise.all([getProjectDetail(number), auth()]);
+  const [project, session, scheduleDisplaySetting] = await Promise.all([
+    getProjectDetail(number),
+    auth(),
+    prisma.scheduleDisplaySetting.findUnique({ where: { key: "global" } }),
+  ]);
   if (!project) notFound();
+  const scheduleRowHeight = scheduleDisplaySetting?.rowHeight ?? 30;
 
   const seenHotItemIds = session?.user?.id
     ? await getSeenIds(
@@ -294,7 +305,15 @@ export default async function ProjectOverviewPage({
             Import P6 schedule (.xer)
           </Link>
         </div>
-        <ScheduleGantt projectNumber={number} activities={project.scheduleActivities} />
+        <ScheduleGantt
+          projectNumber={number}
+          activities={project.scheduleActivities.map((a) => ({
+            ...a,
+            predecessorLinks: a.predecessorLinks.map((l) => ({ id: l.id, type: l.type, activity: l.predecessor })),
+            successorLinks: a.successorLinks.map((l) => ({ id: l.id, type: l.type, activity: l.successor })),
+          }))}
+          rowHeight={scheduleRowHeight}
+        />
         <Suspense fallback={null}>
           <ScheduleImportModal projectNumber={number} />
         </Suspense>

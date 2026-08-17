@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import type { ProjectStatus, ProjectNoteState } from "@/generated/prisma/enums";
-import { parseXer, type ParsedActivity } from "@/lib/xer";
+import { parseXer, type ParsedActivity, type ParsedRelationship, type ParsedSchedule } from "@/lib/xer";
+import type { ScheduleRelType } from "@/generated/prisma/enums";
 
 function str(fd: FormData, key: string): string {
   return String(fd.get(key) ?? "").trim();
@@ -215,17 +216,25 @@ export async function removeChangeOrder(projectNumber: string, id: string) {
 // before anything commits. Mirrors importTagsCsv's "read file.text()
 // straight in the action" pattern rather than round-tripping through
 // storage first, since nothing here needs the original file kept.
-export async function parseXerFile(formData: FormData): Promise<ParsedActivity[]> {
+export async function parseXerFile(formData: FormData): Promise<ParsedSchedule> {
   const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) return [];
+  if (!(file instanceof File) || file.size === 0) return { activities: [], relationships: [] };
   const text = await file.text();
   return parseXer(text);
 }
 
-// Step 2: commit only the activities the owner left checked. Each import
-// just appends rows — no de-dup against a prior import of the same
-// schedule, since re-import collision handling isn't specified yet.
-export async function commitScheduleActivities(projectNumber: string, activities: ParsedActivity[]) {
+// Step 2: commit only the activities the owner left checked, plus any
+// parsed FS/SS relationship whose predecessor AND successor were both
+// selected — one end getting dropped from the import silently drops the
+// relationship too, rather than referencing an activity that was never
+// created. createMany can't return generated ids, so activities are
+// inserted one at a time to build the activityId -> new-row-id map
+// relationships need.
+export async function commitScheduleActivities(
+  projectNumber: string,
+  activities: ParsedActivity[],
+  relationships: ParsedRelationship[] = []
+) {
   if (activities.length === 0) return;
   const project = await prisma.project.findUniqueOrThrow({ where: { number: projectNumber } });
   const lastSeq = await prisma.scheduleActivity.aggregate({
@@ -233,19 +242,38 @@ export async function commitScheduleActivities(projectNumber: string, activities
     _max: { seq: true },
   });
   let seq = lastSeq._max.seq ?? 0;
-  await prisma.scheduleActivity.createMany({
-    data: activities.map((a) => ({
-      projectId: project.id,
-      activityId: a.activityId,
-      name: a.name,
-      wbsCategory: a.wbsCategory,
-      startAt: a.startAt ? new Date(a.startAt) : null,
-      finishAt: a.finishAt ? new Date(a.finishAt) : null,
-      durationDays: a.durationDays != null ? Math.round(a.durationDays) : null,
-      calendarType: a.calendarType,
-      seq: ++seq,
-    })),
-  });
+
+  const idByActivityId = new Map<string, string>();
+  for (const a of activities) {
+    const created = await prisma.scheduleActivity.create({
+      data: {
+        projectId: project.id,
+        activityId: a.activityId,
+        name: a.name,
+        wbsCategory: a.wbsCategory,
+        startAt: a.startAt ? new Date(a.startAt) : null,
+        finishAt: a.finishAt ? new Date(a.finishAt) : null,
+        durationDays: a.durationDays != null ? Math.round(a.durationDays) : null,
+        calendarType: a.calendarType,
+        seq: ++seq,
+      },
+    });
+    idByActivityId.set(a.activityId, created.id);
+  }
+
+  const relRows = relationships
+    .map((r) => {
+      const predecessorId = idByActivityId.get(r.predecessorActivityId);
+      const successorId = idByActivityId.get(r.successorActivityId);
+      if (!predecessorId || !successorId) return null;
+      return { predecessorId, successorId, type: r.type as ScheduleRelType };
+    })
+    .filter((r): r is { predecessorId: string; successorId: string; type: ScheduleRelType } => r != null);
+
+  if (relRows.length > 0) {
+    await prisma.scheduleRelationship.createMany({ data: relRows, skipDuplicates: true });
+  }
+
   revalidatePath(`/projects/${projectNumber}`);
 }
 
@@ -259,5 +287,40 @@ export async function removeScheduleActivity(projectNumber: string, id: string) 
 // group regardless of the 10-row collapse limit.
 export async function toggleScheduleActivityPin(projectNumber: string, id: string, pinned: boolean) {
   await prisma.scheduleActivity.update({ where: { id }, data: { pinned } });
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
+// "right click list item to select predecessor successor/logic. allow
+// fs and ss" (S-batch #64) — the manual counterpart to XER-imported
+// relationships, for linking activities the owner adds or edits by hand.
+export async function addScheduleRelationship(
+  projectNumber: string,
+  predecessorId: string,
+  successorId: string,
+  type: ScheduleRelType
+) {
+  if (predecessorId === successorId) return;
+  await prisma.scheduleRelationship.upsert({
+    where: { predecessorId_successorId: { predecessorId, successorId } },
+    update: { type },
+    create: { predecessorId, successorId, type },
+  });
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
+export async function removeScheduleRelationship(projectNumber: string, id: string) {
+  await prisma.scheduleRelationship.delete({ where: { id } });
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
+// "allow line height modification and make it persistent across users"
+// (S-batch #64) — a single shared global setting, not per-browser.
+export async function setScheduleRowHeight(projectNumber: string, rowHeight: number) {
+  const clamped = Math.min(Math.max(Math.round(rowHeight), 20), 60);
+  await prisma.scheduleDisplaySetting.upsert({
+    where: { key: "global" },
+    update: { rowHeight: clamped },
+    create: { key: "global", rowHeight: clamped },
+  });
   revalidatePath(`/projects/${projectNumber}`);
 }

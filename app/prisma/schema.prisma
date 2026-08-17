@@ -99,9 +99,8 @@ model ChangeOrder {
 // Schedule scaffolding (S-batch #63): "build out the databases a bit
 // further [start, finish, duration, calendar type, activity id tracking,
 // wbs categories, views, etc.] so it can import a p6 xer." Fields cover
-// the owner's explicit list; predecessor/successor logic and true WBS
-// summary-row grouping are #64, deliberately not modeled here yet —
-// wbsCategory is stored as a plain label per activity, not a hierarchy.
+// the owner's explicit list; wbsCategory is stored as a plain label per
+// activity, not a true hierarchy.
 model ScheduleActivity {
   id           String    @id @default(cuid())
   projectId    String
@@ -116,6 +115,30 @@ model ScheduleActivity {
   pinned       Boolean   @default(false)
   seq          Int       @default(0)
   createdAt    DateTime  @default(now())
+
+  predecessorLinks ScheduleRelationship[] @relation("Successor")
+  successorLinks   ScheduleRelationship[] @relation("Predecessor")
+}
+
+// "right click list item to select predecessor successor/logic. allow
+// fs and ss. break existing relationships in xer import that are not
+// that" (S-batch #64) — only Finish-to-Start and Start-to-Start are
+// modeled; a P6 export's FF/SF relationships (or any other type) are
+// dropped entirely during import rather than approximated.
+enum ScheduleRelType {
+  FS
+  SS
+}
+
+model ScheduleRelationship {
+  id            String           @id @default(cuid())
+  predecessorId String
+  predecessor   ScheduleActivity @relation("Predecessor", fields: [predecessorId], references: [id], onDelete: Cascade)
+  successorId   String
+  successor     ScheduleActivity @relation("Successor", fields: [successorId], references: [id], onDelete: Cascade)
+  type          ScheduleRelType
+
+  @@unique([predecessorId, successorId])
 }
 
 // "add a spot for schedule styles in the settings" (S-batch #63) — the
@@ -127,6 +150,16 @@ model ScheduleStyle {
   name        String   @unique
   description String?
   createdAt   DateTime @default(now())
+}
+
+// "allow line height modification and make it persistent across users"
+// (S-batch #64) — a single global row (key "global"), not per-browser
+// localStorage like DataTable's column widths, since this one needs to
+// actually be shared across users, not just remembered per device.
+model ScheduleDisplaySetting {
+  id        String @id @default(cuid())
+  key       String @unique @default("global")
+  rowHeight Int    @default(30)
 }
 
 // "it is a new entity part of the subcontracts / commitments tool. Once

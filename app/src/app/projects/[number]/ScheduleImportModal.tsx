@@ -3,16 +3,20 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { parseXerFile, commitScheduleActivities } from "./actions";
-import type { ParsedActivity } from "@/lib/xer";
+import type { ParsedActivity, ParsedRelationship } from "@/lib/xer";
 
 // P6 XER import (S-batch #63) — a new two-stage pattern for this app:
 // parse first (no writes), then let the owner uncheck anything before
 // committing, rather than importing every row from the file blind.
+// Predecessor/successor relationships (S-batch #64) ride along with
+// each activity, but only ones where both ends stay selected actually
+// commit — see actions.ts.
 export function ScheduleImportModal({ projectNumber }: { projectNumber: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const open = searchParams.get("importSchedule") === "1";
   const [candidates, setCandidates] = useState<ParsedActivity[] | null>(null);
+  const [relationships, setRelationships] = useState<ParsedRelationship[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [parsing, setParsing] = useState(false);
   const [committing, setCommitting] = useState(false);
@@ -22,6 +26,7 @@ export function ScheduleImportModal({ projectNumber }: { projectNumber: string }
 
   function close() {
     setCandidates(null);
+    setRelationships([]);
     setSelected(new Set());
     setError(null);
     router.push(`/projects/${projectNumber}`);
@@ -34,19 +39,20 @@ export function ScheduleImportModal({ projectNumber }: { projectNumber: string }
     fd.set("file", file);
     const parsed = await parseXerFile(fd);
     setParsing(false);
-    if (parsed.length === 0) {
+    if (parsed.activities.length === 0) {
       setError("No TASK rows found — check this is a Primavera .xer export.");
       return;
     }
-    setCandidates(parsed);
-    setSelected(new Set(parsed.map((_, i) => i)));
+    setCandidates(parsed.activities);
+    setRelationships(parsed.relationships);
+    setSelected(new Set(parsed.activities.map((_, i) => i)));
   }
 
   async function commit() {
     if (!candidates) return;
     setCommitting(true);
     const toImport = candidates.filter((_, i) => selected.has(i));
-    await commitScheduleActivities(projectNumber, toImport);
+    await commitScheduleActivities(projectNumber, toImport, relationships);
     setCommitting(false);
     close();
   }
@@ -98,6 +104,7 @@ export function ScheduleImportModal({ projectNumber }: { projectNumber: string }
             <div className="flex items-center justify-between" style={{ padding: "0 18px" }}>
               <p style={{ fontSize: 12.5, color: "var(--text-dim)" }}>
                 {selected.size} of {candidates.length} activities selected
+                {relationships.length > 0 && ` · ${relationships.length} FS/SS link${relationships.length === 1 ? "" : "s"} found`}
               </p>
               <div className="flex gap-2">
                 <button
