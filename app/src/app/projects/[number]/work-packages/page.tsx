@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
 import { formatCents } from "@/lib/format";
 import { ItbHero } from "./ItbHero";
 import { AddBiddersModal } from "./AddBiddersModal";
+import { AddPackageModal } from "./AddPackageModal";
 import { ScopeWorksheetTable } from "./ScopeWorksheetTable";
 import { PackageStatusRow } from "./PackageStatusRow";
 import { computePackageStatus, STATUS_META, type PackageStatusKind } from "./packageStatus";
@@ -84,8 +86,23 @@ export default async function WorkPackagesPage({
   const project = await getPackages(number);
   if (!project) notFound();
 
+  const packageTemplates = await prisma.packageTemplate.findMany({
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, division: true, csiCodes: true },
+  });
+
   if (project.bidPackages.length === 0) {
-    return <p style={{ color: "var(--text-dim)" }}>No bid packages yet.</p>;
+    return (
+      <div className="flex flex-col items-start gap-3">
+        <p style={{ color: "var(--text-dim)" }}>No bid packages yet.</p>
+        <Link href={`/projects/${number}/work-packages?newPackage=1`} className="btn btn--acc btn--sm">
+          + New package
+        </Link>
+        <Suspense fallback={null}>
+          <AddPackageModal projectNumber={number} templates={packageTemplates} />
+        </Suspense>
+      </div>
+    );
   }
 
   // Default landing view: the app's anchor screen (S-batch #69) — global
@@ -157,7 +174,12 @@ export default async function WorkPackagesPage({
         </div>
 
         <div>
-          <div className="lbl">Work packages</div>
+          <div className="flex items-center justify-between" style={{ marginBottom: 8 }}>
+            <div className="lbl">Work packages</div>
+            <Link href={`/projects/${number}/work-packages?newPackage=1`} className="btn btn--acc btn--sm">
+              + New package
+            </Link>
+          </div>
           <div className="mt-2">
             <DataTable id="wp-packages-tbl" columns={packageColumns}>
               {sorted.map((p) => (
@@ -184,6 +206,9 @@ export default async function WorkPackagesPage({
             </DataTable>
           </div>
         </div>
+        <Suspense fallback={null}>
+          <AddPackageModal projectNumber={number} templates={packageTemplates} />
+        </Suspense>
       </div>
     );
   }

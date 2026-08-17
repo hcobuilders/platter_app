@@ -85,3 +85,33 @@ export async function setPackageSelfPerform(projectNumber: string, bidPackageId:
   await prisma.bidPackage.update({ where: { id: bidPackageId }, data: { selfPerform } });
   revalidatePath(`/projects/${projectNumber}/work-packages`);
 }
+
+// Manual "add bid package" (GH #73, follow-up to #53) — previously the
+// only way a BidPackage got created was the whole-project template-apply
+// flow at project creation. An optional PackageTemplate picker prefills
+// csiCodes and sets templateId, so "pick up roofing TPO, metal, asphalt
+// in one package automatically" (the owner's #53 spec) actually lands.
+export async function createBidPackage(projectNumber: string, formData: FormData) {
+  const code = str(formData, "code");
+  const name = str(formData, "name");
+  if (!code || !name) return;
+
+  const project = await prisma.project.findUnique({ where: { number: projectNumber }, select: { id: true } });
+  if (!project) return;
+
+  const templateId = optionalStr(formData, "templateId");
+  const template = templateId ? await prisma.packageTemplate.findUnique({ where: { id: templateId } }) : null;
+
+  await prisma.bidPackage.create({
+    data: {
+      projectId: project.id,
+      code,
+      name,
+      csiCodes: template?.csiCodes ?? [],
+      templateId: template?.id ?? null,
+      status: "draft",
+    },
+  });
+
+  revalidatePath(`/projects/${projectNumber}/work-packages`);
+}
