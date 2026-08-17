@@ -2,9 +2,34 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import type { ProjectStatus } from "@/generated/prisma/enums";
 
 function str(fd: FormData, key: string): string {
   return String(fd.get(key) ?? "").trim();
+}
+
+// Click-to-edit fields on the Overview "Project" container (S-batch #60) —
+// one field per call, autosaved on blur, so an edit to one field can never
+// clobber a sibling the way a full-form replace would.
+type ProjectFieldValues = {
+  owner: string | null;
+  architectOfRecord: string | null;
+  deliveryMethod: string | null;
+  status: ProjectStatus;
+  bondPct: number | null;
+  retainagePct: number | null;
+};
+
+export async function updateProjectField<K extends keyof ProjectFieldValues>(
+  projectNumber: string,
+  field: K,
+  value: ProjectFieldValues[K]
+) {
+  await prisma.project.update({
+    where: { number: projectNumber },
+    data: { [field]: value },
+  });
+  revalidatePath(`/projects/${projectNumber}`);
 }
 
 export async function updateProjectBonding(projectNumber: string, formData: FormData) {

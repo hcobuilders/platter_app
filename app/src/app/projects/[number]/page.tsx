@@ -14,6 +14,7 @@ import {
 import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 import { FlagChip } from "@/components/FlagChip";
 import { KeyDatesTimeline, MiniMap } from "./OverviewWidgets";
+import { EditableOverviewFields } from "./EditableOverviewFields";
 
 export const dynamic = "force-dynamic";
 
@@ -66,17 +67,17 @@ export default async function ProjectOverviewPage({
     <div className="flex flex-col gap-5 max-w-4xl">
       <section className="card">
         <div className="ov2col">
-          <div>
-            <div className="lbl">Project</div>
-            <div className="cf mt-2">
-              <Field label="Owner" value={project.owner} />
-              <Field label="Architect of record" value={project.architectOfRecord} />
-              <Field label="Delivery method" value={project.deliveryMethod} />
-              <Field label="Status" value={project.status} />
-              <Field label="Bond %" value={project.bondPct ? `${project.bondPct}%` : null} />
-              <Field label="Retainage %" value={project.retainagePct ? `${project.retainagePct}%` : null} />
-            </div>
-          </div>
+          <EditableOverviewFields
+            projectNumber={number}
+            initial={{
+              owner: project.owner,
+              architectOfRecord: project.architectOfRecord,
+              deliveryMethod: project.deliveryMethod,
+              status: project.status,
+              bondPct: project.bondPct,
+              retainagePct: project.retainagePct,
+            }}
+          />
 
           <div className="flex flex-col gap-5">
             <div>
@@ -335,15 +336,6 @@ export default async function ProjectOverviewPage({
           {formatCents(totalBudget)}
         </div>
       </section>
-    </div>
-  );
-}
-
-function Field({ label, value }: { label: string; value: string | null | undefined }) {
-  return (
-    <div>
-      <div className="lbl">{label}</div>
-      <div style={{ font: "var(--t-body)", marginTop: 4 }}>{value ?? "—"}</div>
     </div>
   );
 }
