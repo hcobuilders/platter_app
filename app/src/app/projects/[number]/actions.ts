@@ -253,3 +253,11 @@ export async function removeScheduleActivity(projectNumber: string, id: string) 
   await prisma.scheduleActivity.delete({ where: { id } });
   revalidatePath(`/projects/${projectNumber}`);
 }
+
+// "allow 'pinned' dates by glyph pin and pin_active so some dates always
+// show on top" (S-batch #64). Pinned activities sort above every WBS
+// group regardless of the 10-row collapse limit.
+export async function toggleScheduleActivityPin(projectNumber: string, id: string, pinned: boolean) {
+  await prisma.scheduleActivity.update({ where: { id }, data: { pinned } });
+  revalidatePath(`/projects/${projectNumber}`);
+}
