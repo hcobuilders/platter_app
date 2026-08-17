@@ -3,15 +3,15 @@ import { Fragment, Suspense } from "react";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { Logo } from "@/components/Logo";
-import { deleteFlag, createTrade, deleteTrade, deleteTag, uploadBidBondTemplate, updateAccountProfile, importTagsCsv } from "./actions";
+import { deleteFlag, deleteTag, uploadBidBondTemplate, updateAccountProfile, importTagsCsv } from "./actions";
 import { deleteProjectTemplate } from "@/app/actions";
-import { CsiCodeInput } from "@/components/CsiCodeInput";
 import { AccountMenu, ROLE_LABEL } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
 import { FlagModal } from "./FlagModal";
 import { TagAddRow } from "./TagAddRow";
 import { TemplateModal } from "./TemplateModal";
+import { PackageBuilder } from "./PackageBuilder";
 
 export const dynamic = "force-dynamic";
 
@@ -37,9 +37,9 @@ export default async function SettingsPage({
 }) {
   const { view = "flags" } = await searchParams;
 
-  const [flags, trades, tags, bidBondTemplate, projectTemplates, allProjects, session] = await Promise.all([
+  const [flags, packageTemplates, tags, bidBondTemplate, projectTemplates, allProjects, session] = await Promise.all([
     prisma.flag.findMany({ orderBy: { label: "asc" }, include: { _count: { select: { projectFlags: true } } } }),
-    prisma.trade.findMany({ orderBy: { name: "asc" } }),
+    prisma.packageTemplate.findMany({ orderBy: { name: "asc" } }),
     prisma.tag.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { projectTags: true } } } }),
     prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
     prisma.projectTemplate.findMany({ orderBy: { createdAt: "desc" }, include: { packages: true } }),
@@ -77,8 +77,8 @@ export default async function SettingsPage({
           <a href="?view=flags" className={view === "flags" ? "on" : undefined}>
             Flags
           </a>
-          <a href="?view=trades" className={view === "trades" ? "on" : undefined}>
-            Trades
+          <a href="?view=packages" className={view === "packages" ? "on" : undefined}>
+            Bid Packages
           </a>
           <a href="?view=tags" className={view === "tags" ? "on" : undefined}>
             Tags
@@ -150,48 +150,9 @@ export default async function SettingsPage({
           </div>
         )}
 
-        {view === "trades" && (
-          <div className="flex flex-col gap-6" style={{ maxWidth: 520 }}>
-            <div>
-              <div className="lbl" style={{ marginBottom: 8 }}>
-                {trades.length} trades
-              </div>
-              {trades.map((t) => (
-                <div key={t.id} className="cclist">
-                  <span>
-                    {t.name} <span style={{ color: "var(--text-faint)", marginLeft: 8 }}>{t.csiCode ? `CSI ${t.csiCode}` : ""}</span>
-                  </span>
-                  <form
-                    action={async () => {
-                      "use server";
-                      await deleteTrade(t.id);
-                    }}
-                  >
-                    <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
-                      Delete
-                    </button>
-                  </form>
-                </div>
-              ))}
-            </div>
-            <div className="card">
-              <div className="lbl" style={{ marginBottom: 10 }}>
-                New trade
-              </div>
-              <form
-                action={async (fd) => {
-                  "use server";
-                  await createTrade(fd);
-                }}
-                className="cf"
-              >
-                <input className="fld" name="name" placeholder="Name" required />
-                <CsiCodeInput className="fld" name="csiCode" placeholder="CSI code" />
-                <button className="btn btn--acc" type="submit" style={{ width: "fit-content" }}>
-                  Add trade
-                </button>
-              </form>
-            </div>
+        {view === "packages" && (
+          <div style={{ maxWidth: 1100 }}>
+            <PackageBuilder packages={packageTemplates} />
           </div>
         )}
 

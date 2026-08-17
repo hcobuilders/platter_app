@@ -681,10 +681,18 @@ model ProjectTag {
   @@unique([projectId, tagId])
 }
 
+// Settings "Bid Packages" builder (S-batch #53) — drag CSI codes from the
+// left-pane master list into a package on the right (or arrow-click one
+// in as a new single-item package) to build a reusable code-to-package
+// grouping, e.g. one "Roofing" package pulling together TPO, metal panel,
+// and insulation CSI sections. `division` is the CSI division selected
+// when the package is created; purely descriptive, not enforced against
+// its csiCodes' own divisions.
 model PackageTemplate {
   id           String   @id @default(cuid())
   code         String   @unique
   name         String
+  division     String?
   csiCodes     String[]
   defaultFlags String[]
 

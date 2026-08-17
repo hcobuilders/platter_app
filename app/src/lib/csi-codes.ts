@@ -179,9 +179,13 @@ export const CSI_CODES: CsiCode[] = SECTIONS.map(([code, title]) => {
   return { code, title, division, divisionName: DIVISION_NAMES[division] ?? "Other" };
 });
 
-export const CSI_DIVISIONS: Array<{ code: string; name: string }> = Object.entries(DIVISION_NAMES).map(
-  ([code, name]) => ({ code, name })
-);
+// Sorted explicitly by code string — Object.entries would otherwise put
+// the non-leading-zero keys ("10".."33") first in numeric order, then
+// "00".."09" afterward, since JS reorders integer-like object keys but
+// "01" etc. don't qualify (their canonical form drops the leading zero).
+export const CSI_DIVISIONS: Array<{ code: string; name: string }> = Object.entries(DIVISION_NAMES)
+  .map(([code, name]) => ({ code, name }))
+  .sort((a, b) => a.code.localeCompare(b.code));
 
 // Strips everything but digits and dots, for comparing "033000" against
 // "03 30 00" or "10 21 13.19" against "102113.19".

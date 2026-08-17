@@ -71,15 +71,80 @@ export async function deleteFlag(id: string) {
   revalidatePath("/settings");
 }
 
-export async function createTrade(formData: FormData) {
-  const name = str(formData, "name");
-  if (!name) return;
-  await prisma.trade.create({ data: { name, csiCode: str(formData, "csiCode") || null } });
+// "trades [rename to bid packages] ... allow name input and div select"
+// (S-batch #53) — a PackageTemplate's `code` isn't a form field, just an
+// internal unique key derived from the name, since the owner's spec only
+// asks for name + division on creation.
+async function uniquePackageCode(base: string): Promise<string> {
+  const slug =
+    base
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, "-")
+      .replace(/(^-+|-+$)/g, "")
+      .slice(0, 30) || "PKG";
+  let code = slug;
+  let n = 2;
+  while (await prisma.packageTemplate.findUnique({ where: { code } })) {
+    code = `${slug}-${n++}`;
+  }
+  return code;
+}
+
+export async function createPackageTemplate(name: string, division: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  const code = await uniquePackageCode(trimmed);
+  await prisma.packageTemplate.create({
+    data: { code, name: trimmed, division: division || null, csiCodes: [], defaultFlags: [] },
+  });
   revalidatePath("/settings");
 }
 
-export async function deleteTrade(id: string) {
-  await prisma.trade.delete({ where: { id } });
+export async function updatePackageTemplateMeta(id: string, name: string, division: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  await prisma.packageTemplate.update({
+    where: { id },
+    data: { name: trimmed, division: division || null },
+  });
+  revalidatePath("/settings");
+}
+
+export async function deletePackageTemplate(id: string) {
+  await prisma.packageTemplate.delete({ where: { id } });
+  revalidatePath("/settings");
+}
+
+// Drag a CSI row from the left pane onto a package card on the right.
+export async function addCsiToPackageTemplate(id: string, csiCode: string) {
+  const tpl = await prisma.packageTemplate.findUnique({ where: { id } });
+  if (!tpl || tpl.csiCodes.includes(csiCode)) return;
+  await prisma.packageTemplate.update({
+    where: { id },
+    data: { csiCodes: { push: csiCode } },
+  });
+  revalidatePath("/settings");
+}
+
+export async function removeCsiFromPackageTemplate(id: string, csiCode: string) {
+  const tpl = await prisma.packageTemplate.findUnique({ where: { id } });
+  if (!tpl) return;
+  await prisma.packageTemplate.update({
+    where: { id },
+    data: { csiCodes: tpl.csiCodes.filter((c) => c !== csiCode) },
+  });
+  revalidatePath("/settings");
+}
+
+// "arrow clicked adds as new package with same name and div" (S-batch
+// #53) — the one-click shortcut from a CSI row straight into its own
+// single-item package.
+export async function quickAddPackageFromCsi(csiCode: string, title: string, division: string) {
+  const code = await uniquePackageCode(title || csiCode);
+  await prisma.packageTemplate.create({
+    data: { code, name: title || csiCode, division: division || null, csiCodes: [csiCode], defaultFlags: [] },
+  });
   revalidatePath("/settings");
 }
 
