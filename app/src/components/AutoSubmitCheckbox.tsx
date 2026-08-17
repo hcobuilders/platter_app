@@ -1,5 +1,7 @@
 "use client";
 
+import { Checkbox } from "@/components/Checkbox";
+
 export function AutoSubmitCheckbox({
   name,
   defaultChecked,
@@ -12,15 +14,12 @@ export function AutoSubmitCheckbox({
   label: string;
 }) {
   return (
-    <label className="flex items-center gap-2" style={{ fontSize: 13 }}>
-      <input
-        type="checkbox"
-        form={form}
-        name={name}
-        defaultChecked={defaultChecked}
-        onChange={(e) => e.currentTarget.form?.requestSubmit()}
-      />
-      {label}
-    </label>
+    <Checkbox
+      form={form}
+      name={name}
+      defaultChecked={defaultChecked}
+      onChange={(e) => e.currentTarget.form?.requestSubmit()}
+      label={label}
+    />
   );
 }

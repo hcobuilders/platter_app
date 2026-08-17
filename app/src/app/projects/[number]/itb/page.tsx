@@ -46,6 +46,8 @@ export default async function ItbPage({
     return <p style={{ color: "var(--text-dim)" }}>No bid packages yet.</p>;
   }
 
+  const inviteFormId = "invite-sub-form";
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -61,6 +63,30 @@ export default async function ItbPage({
             intent: inv.intent,
             sentAt: inv.sentAt,
           }))}
+          footer={
+            <div className="dt-addrow" style={{ flexWrap: "wrap" }}>
+              <select className="fld" form={inviteFormId} name="existingSubcontractorId" defaultValue="" style={{ width: 220 }}>
+                <option value="">— existing sub —</option>
+                {availableSubs.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} {s.trades.length ? `(${s.trades.join(", ")})` : ""}
+                  </option>
+                ))}
+              </select>
+              <span style={{ fontSize: 11.5, color: "var(--text-faint)" }}>or new —</span>
+              <input className="fld" form={inviteFormId} name="newSubName" placeholder="Name" style={{ width: 150 }} />
+              <input className="fld" form={inviteFormId} name="newSubTrade" placeholder="Trade" style={{ width: 130 }} />
+              <button type="submit" form={inviteFormId}>+ Invite subcontractor</button>
+            </div>
+          }
+        />
+        <form
+          id={inviteFormId}
+          action={async (fd) => {
+            "use server";
+            await inviteSubcontractor(number, pkg.id, fd);
+          }}
+          style={{ display: "none" }}
         />
         <p style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 10 }}>
           Sending is stubbed for this prototype — &quot;Send ITB&quot; marks the invitation sent
@@ -68,44 +94,6 @@ export default async function ItbPage({
           <span className="mono"> sendMail</span> behind the <span className="mono">Mailer</span>{" "}
           interface (D-14).
         </p>
-      </div>
-
-      <div className="card" style={{ maxWidth: 520 }}>
-        <div className="lbl" style={{ marginBottom: 10 }}>
-          Invite a subcontractor
-        </div>
-        <form
-          action={async (fd) => {
-            "use server";
-            await inviteSubcontractor(number, pkg.id, fd);
-          }}
-          className="flex flex-col gap-3"
-        >
-          <div>
-            <div className="lbl">Existing subcontractor</div>
-            <select className="fld mt-1" name="existingSubcontractorId" defaultValue="">
-              <option value="">— none, add new below —</option>
-              {availableSubs.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name} {s.trades.length ? `(${s.trades.join(", ")})` : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="cf">
-            <div>
-              <div className="lbl">Or new sub — name</div>
-              <input className="fld mt-1" name="newSubName" />
-            </div>
-            <div>
-              <div className="lbl">Trade</div>
-              <input className="fld mt-1" name="newSubTrade" placeholder="e.g. Concrete" />
-            </div>
-          </div>
-          <button className="btn btn--acc" type="submit" style={{ width: "fit-content" }}>
-            Add to invite list
-          </button>
-        </form>
       </div>
     </div>
   );

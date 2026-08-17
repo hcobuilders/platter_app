@@ -8,7 +8,7 @@ import { CurrencyInput } from "@/components/CurrencyInput";
 import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 import { UndoListener } from "@/components/UndoListener";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
-import { ResizableColumns } from "@/components/ResizableColumns";
+import { DataTable, type DataTableColumn } from "@/components/DataTable";
 
 export const dynamic = "force-dynamic";
 
@@ -122,21 +122,39 @@ export default async function BudgetPage({
 
       {view === "table" && (
         <div>
-          <ResizableColumns tableId="budget-tbl" />
-          <div className="bwrap">
-          <table className="tbl" id="budget-tbl">
-            <thead>
+          {(() => {
+            const budgetColumns: DataTableColumn[] = [
+              { id: "csi", label: "CSI", width: 90 },
+              { id: "pkg", label: "Package", width: 260 },
+              { id: "budget", label: "Budget", width: 130, align: "right" },
+              { id: "current", label: "Current", width: 130, align: "right" },
+              { id: "buyout", label: "Buyout exp.", width: 130, align: "right" },
+              { id: "awarded", label: "Awarded to", width: 180 },
+              { id: "tags", label: "Tags", width: 160 },
+            ];
+            return (
+          <DataTable
+            id="budget-tbl"
+            columns={budgetColumns}
+            footer={
               <tr>
-                <th>CSI</th>
-                <th>Package</th>
-                <th className="n">Budget</th>
-                <th className="n">Current</th>
-                <th className="n">Buyout exp.</th>
-                <th>Awarded to</th>
-                <th>Tags</th>
+                <td colSpan={2} style={{ textAlign: "right", font: "600 12.5px var(--font-body)", padding: "11px 12px" }}>
+                  Total
+                </td>
+                <td className="n mono" style={{ fontWeight: 700 }}>
+                  {formatCents(total)}
+                </td>
+                <td className="n mono" style={{ fontWeight: 700 }}>
+                  {formatCents(currentTotal)}
+                </td>
+                <td className="n mono" style={{ fontWeight: 700 }}>
+                  {formatCents(buyoutTotal)}
+                </td>
+                <td></td>
+                <td></td>
               </tr>
-            </thead>
-            <tbody>
+            }
+          >
               {sortedGroups.map((group) => {
                 const groupBudget = group.lines.reduce((s, b) => s + b.budget, 0n);
                 const groupCurrent = group.lines.reduce((s, b) => s + b.current, 0n);
@@ -226,9 +244,9 @@ export default async function BudgetPage({
                     <td>
                       <AutoSubmitSelect form={formId} className="tfld" name="awardedTo" defaultValue={line.awardedTo ?? ""} options={awardedToOptions} />
                     </td>
-                    <td>
+                    <td className="wrap">
                       {line.tags.map((t) => (
-                        <span key={t} className="chip" style={{ marginRight: 4 }}>
+                        <span key={t} className="chip" style={{ marginRight: 4, marginBottom: 4 }}>
                           {t}
                         </span>
                       ))}
@@ -239,27 +257,9 @@ export default async function BudgetPage({
                   </Fragment>
                 );
               })}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan={2} style={{ textAlign: "right", font: "600 12.5px var(--font-body)", padding: "11px 12px" }}>
-                  Total
-                </td>
-                <td className="n mono" style={{ fontWeight: 700 }}>
-                  {formatCents(total)}
-                </td>
-                <td className="n mono" style={{ fontWeight: 700 }}>
-                  {formatCents(currentTotal)}
-                </td>
-                <td className="n mono" style={{ fontWeight: 700 }}>
-                  {formatCents(buyoutTotal)}
-                </td>
-                <td></td>
-                <td></td>
-              </tr>
-            </tfoot>
-          </table>
-          </div>
+          </DataTable>
+            );
+          })()}
           <p style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 10 }}>
             Changes are saved automatically — press Ctrl/Cmd+Z to undo the last edit. Current-value
             color follows E-02/E-39&apos;s rule — sea green once a real award is on record (Awarded to
@@ -383,40 +383,38 @@ function RevisionsView({
             </button>
           </form>
 
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Package</th>
-                <th className="n">Rev {a.revNo}</th>
-                <th className="n">Rev {b.revNo}</th>
-                <th className="n">Δ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {allKeys.map((key) => {
-                const va = snapA[key];
-                const vb = snapB[key];
-                const delta = va !== undefined && vb !== undefined ? vb - va : null;
-                return (
-                  <tr key={key}>
-                    <td>{key}</td>
-                    <td className="n mono">{va !== undefined ? formatCents(va) : "—"}</td>
-                    <td className="n mono">{vb !== undefined ? formatCents(vb) : "—"}</td>
-                    <td className="n">
-                      {delta === null || delta === 0 ? (
-                        <span style={{ color: "var(--text-faint)" }}>—</span>
-                      ) : (
-                        <span className={`delta ${delta > 0 ? "up" : "down"}`}>
-                          {delta > 0 ? "+" : ""}
-                          {formatCents(delta)}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <DataTable
+            id="budget-rev-diff-tbl"
+            columns={[
+              { id: "pkg", label: "Package", width: 240 },
+              { id: "a", label: `Rev ${a.revNo}`, width: 130, align: "right" },
+              { id: "b", label: `Rev ${b.revNo}`, width: 130, align: "right" },
+              { id: "delta", label: "Δ", width: 130, align: "right", resizable: false },
+            ]}
+          >
+            {allKeys.map((key) => {
+              const va = snapA[key];
+              const vb = snapB[key];
+              const delta = va !== undefined && vb !== undefined ? vb - va : null;
+              return (
+                <tr key={key}>
+                  <td>{key}</td>
+                  <td className="n mono">{va !== undefined ? formatCents(va) : "—"}</td>
+                  <td className="n mono">{vb !== undefined ? formatCents(vb) : "—"}</td>
+                  <td className="n">
+                    {delta === null || delta === 0 ? (
+                      <span style={{ color: "var(--text-faint)" }}>—</span>
+                    ) : (
+                      <span className={`delta ${delta > 0 ? "up" : "down"}`}>
+                        {delta > 0 ? "+" : ""}
+                        {formatCents(delta)}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </DataTable>
         </div>
       )}
     </div>

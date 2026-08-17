@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useTransition } from "react";
 import {
   sendInvite,
   bulkSendInvites,
@@ -8,7 +8,10 @@ import {
   removeInvitation,
   bulkRemoveInvitations,
 } from "./actions";
-import { ResizableColumns } from "@/components/ResizableColumns";
+import { DataTable, type DataTableColumn } from "@/components/DataTable";
+import { Checkbox } from "@/components/Checkbox";
+import { RowMenu } from "@/components/RowMenu";
+import { useTableSelection } from "@/components/useTableSelection";
 
 type InvitationRow = {
   id: string;
@@ -24,35 +27,27 @@ const INTENT_LABEL: Record<string, { label: string; chip: string }> = {
   no_bid: { label: "No bid", chip: "chip chip--dgr" },
 };
 
-export function ItbTable({ projectNumber, invitations }: { projectNumber: string; invitations: InvitationRow[] }) {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+export function ItbTable({
+  projectNumber,
+  invitations,
+  footer,
+}: {
+  projectNumber: string;
+  invitations: InvitationRow[];
+  footer?: React.ReactNode;
+}) {
   const [, startTransition] = useTransition();
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!openMenuId) return;
-    function onDocClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpenMenuId(null);
-    }
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, [openMenuId]);
-
-  function toggle(id: string) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-  function toggleAll() {
-    setSelected((prev) => (prev.size === invitations.length ? new Set() : new Set(invitations.map((i) => i.id))));
-  }
-
-  const allSelected = invitations.length > 0 && selected.size === invitations.length;
+  const { selected, toggle, toggleAll, clear, allSelected } = useTableSelection(invitations.map((i) => i.id));
   const ids = Array.from(selected);
+
+  const columns: DataTableColumn[] = [
+    { id: "sel", label: <Checkbox checked={allSelected} onChange={toggleAll} aria-label="Select all" />, width: 38, minWidth: 38, resizable: false, icon: true },
+    { id: "sub", label: "Subcontractor", width: 220 },
+    { id: "trades", label: "Trades", width: 220 },
+    { id: "status", label: "Status", width: 150 },
+    { id: "sent", label: "Sent", width: 100 },
+    { id: "actions", label: "", width: 44, minWidth: 44, resizable: false, icon: true },
+  ];
 
   return (
     <div>
@@ -65,10 +60,12 @@ export function ItbTable({ projectNumber, invitations }: { projectNumber: string
           <button
             className="btn btn--sm btn--acc"
             type="button"
-            onClick={() => startTransition(async () => {
-              await bulkSendInvites(projectNumber, ids);
-              setSelected(new Set());
-            })}
+            onClick={() =>
+              startTransition(async () => {
+                await bulkSendInvites(projectNumber, ids);
+                clear();
+              })
+            }
           >
             Send / resend ITB
           </button>
@@ -80,65 +77,43 @@ export function ItbTable({ projectNumber, invitations }: { projectNumber: string
               if (!confirm(`Remove ${selected.size} invitation(s)? This also removes any bids submitted under them.`)) return;
               startTransition(async () => {
                 await bulkRemoveInvitations(projectNumber, ids);
-                setSelected(new Set());
+                clear();
               });
             }}
           >
             Remove
           </button>
-          <button className="btn btn--sm btn--gh" type="button" onClick={() => setSelected(new Set())}>
+          <button className="btn btn--sm btn--gh" type="button" onClick={clear}>
             Clear
           </button>
         </div>
       )}
 
-      <ResizableColumns tableId="itb-tbl" />
-      <div className="bwrap">
-      <table className="tbl" id="itb-tbl">
-        <thead>
-          <tr>
-            <th style={{ width: 30 }}>
-              <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all" />
-            </th>
-            <th>Subcontractor</th>
-            <th>Trades</th>
-            <th>Status</th>
-            <th>Sent</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {invitations.map((inv) => {
-            const intent = INTENT_LABEL[inv.intent];
-            return (
-              <tr key={inv.id}>
-                <td>
-                  <input type="checkbox" checked={selected.has(inv.id)} onChange={() => toggle(inv.id)} aria-label={`Select ${inv.subcontractorName}`} />
-                </td>
-                <td>{inv.subcontractorName}</td>
-                <td style={{ color: "var(--text-dim)", fontSize: 12 }}>{inv.trades.join(", ")}</td>
-                <td>
-                  <span className={intent.chip}>{intent.label}</span>
-                </td>
-                <td className="mono" style={{ fontSize: 12 }}>
-                  {inv.sentAt ? inv.sentAt.toLocaleDateString() : "—"}
-                </td>
-                <td style={{ position: "relative" }}>
-                  <button
-                    className="btn btn--sm btn--gh"
-                    type="button"
-                    onClick={() => setOpenMenuId(openMenuId === inv.id ? null : inv.id)}
-                    aria-label="Row actions"
-                  >
-                    ⋮
-                  </button>
-                  {openMenuId === inv.id && (
-                    <div ref={menuRef} className="rowmenu">
+      <DataTable id="itb-tbl" columns={columns} footer={footer && <tr><td colSpan={columns.length}>{footer}</td></tr>}>
+        {invitations.map((inv) => {
+          const intent = INTENT_LABEL[inv.intent];
+          return (
+            <tr key={inv.id}>
+              <td className="icon">
+                <Checkbox checked={selected.has(inv.id)} onChange={() => toggle(inv.id)} aria-label={`Select ${inv.subcontractorName}`} />
+              </td>
+              <td>{inv.subcontractorName}</td>
+              <td style={{ color: "var(--text-dim)", fontSize: 12 }}>{inv.trades.join(", ")}</td>
+              <td>
+                <span className={intent.chip}>{intent.label}</span>
+              </td>
+              <td className="mono" style={{ fontSize: 12 }}>
+                {inv.sentAt ? inv.sentAt.toLocaleDateString() : "—"}
+              </td>
+              <td className="icon">
+                <RowMenu>
+                  {(close) => (
+                    <>
                       <button
                         type="button"
                         onClick={() => {
                           startTransition(() => sendInvite(projectNumber, inv.id));
-                          setOpenMenuId(null);
+                          close();
                         }}
                       >
                         {inv.sentAt ? "Resend ITB" : "Send ITB"}
@@ -151,7 +126,7 @@ export function ItbTable({ projectNumber, invitations }: { projectNumber: string
                           disabled={inv.intent === k}
                           onClick={() => {
                             startTransition(() => updateInvitationIntent(projectNumber, inv.id, k));
-                            setOpenMenuId(null);
+                            close();
                           }}
                         >
                           {INTENT_LABEL[k].label}
@@ -164,27 +139,26 @@ export function ItbTable({ projectNumber, invitations }: { projectNumber: string
                         onClick={() => {
                           if (!confirm(`Remove ${inv.subcontractorName}? This also removes any bids submitted under this invitation.`)) return;
                           startTransition(() => removeInvitation(projectNumber, inv.id));
-                          setOpenMenuId(null);
+                          close();
                         }}
                       >
                         Remove
                       </button>
-                    </div>
+                    </>
                   )}
-                </td>
-              </tr>
-            );
-          })}
-          {invitations.length === 0 && (
-            <tr>
-              <td colSpan={6} style={{ color: "var(--text-faint)" }}>
-                No invitations yet.
+                </RowMenu>
               </td>
             </tr>
-          )}
-        </tbody>
-      </table>
-      </div>
+          );
+        })}
+        {invitations.length === 0 && (
+          <tr>
+            <td colSpan={6} style={{ color: "var(--text-faint)" }}>
+              No invitations yet.
+            </td>
+          </tr>
+        )}
+      </DataTable>
     </div>
   );
 }

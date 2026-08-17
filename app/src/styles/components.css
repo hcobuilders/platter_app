@@ -182,15 +182,6 @@
 .prov .src{font:400 11px/1.4 var(--font-data);color:var(--text-dim);margin-top:4px}
 
 /* ── bid tab specific ── */
-.bwrap{overflow-x:auto;border-radius:var(--r-md);border:1px solid var(--border)}
-.bidtbl{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--bg-surface-raised)}
-.bidtbl th,.bidtbl td{padding:9px 11px;border-bottom:1px solid var(--border-hairline);white-space:nowrap;vertical-align:top}
-.bidtbl th{font:500 9.5px/1 var(--font-data);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);text-align:left;background:var(--bg-inset);border-bottom:1px solid var(--border-strong)}
-.bidtbl td.desc,.bidtbl th.desc{position:sticky;left:0;background:var(--bg-surface-raised);z-index:2;white-space:normal;min-width:210px;max-width:240px}
-.bidtbl th.desc{background:var(--bg-inset);z-index:3}
-.bidtbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
-.bidtbl tr.sec td{background:var(--bg-inset);font:600 10.5px var(--font-display);text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);padding:6px 11px}
-.bidtbl tr.newline td{box-shadow:inset 3px 0 0 var(--danger-fill)}
 .srcb{display:inline-flex;align-items:center;gap:5px;font:500 9.5px/1 var(--font-data);color:var(--text-dim);margin-top:3px}
 .srcb i{width:6px;height:6px;border-radius:50%;flex:none;display:inline-block}
 .srcb--sub i{background:var(--success-fill)}
@@ -216,10 +207,73 @@
 .csi-suggest__row:hover{background:var(--bg-inset)}
 .csi-suggest__row .mono{font-family:var(--font-data);color:var(--text-dim);flex:none}
 
-/* ── resizable table columns ── */
-.col-resize-handle{position:absolute;top:0;right:-4px;width:8px;height:100%;cursor:col-resize;z-index:6;touch-action:none}
-.col-resize-handle::after{content:"";position:absolute;right:3px;top:22%;bottom:22%;width:1px;background:var(--border-strong)}
-.col-resize-handle:hover::after,.col-resize-handle:active::after{background:var(--accent-fill);width:2px;right:2.5px}
+/* ============================================================
+   .dtbl — global table system (S-batch #67)
+   One base table skin for Scope/Bid Tab/Budget/ITB, replacing
+   .tbl/.bidtbl/.col-resize-handle. Columns get real widths via
+   <colgroup>, so resizing one column never rescales its
+   neighbors — the table's own width is the sum of its columns
+   (min-width:100%, no fixed cap), and .dtwrap scrolls when that
+   sum exceeds the container instead of every column
+   redistributing to fit. Data cells clip overflow by default so
+   variable-width cell content (badges, chips, buttons) can never
+   visually bleed into a neighboring column.
+   ============================================================ */
+.dtwrap{position:relative;overflow-x:auto;border-radius:var(--r-md);border:1px solid var(--border);
+  scrollbar-width:none;
+  background:
+    linear-gradient(to right,var(--bg-surface-raised) 30%,rgba(0,0,0,0)),
+    linear-gradient(to left,var(--bg-surface-raised) 30%,rgba(0,0,0,0)) 100% 0,
+    radial-gradient(farthest-side at 0 50%,rgba(14,31,39,.16),rgba(0,0,0,0)),
+    radial-gradient(farthest-side at 100% 50%,rgba(14,31,39,.16),rgba(0,0,0,0)) 100% 0;
+  background-repeat:no-repeat;background-color:var(--bg-surface-raised);
+  background-size:32px 100%,32px 100%,10px 100%,10px 100%;
+  background-attachment:local,local,scroll,scroll}
+.dtwrap::-webkit-scrollbar{height:0}
+.dtwrap:hover{scrollbar-width:thin}
+.dtwrap:hover::-webkit-scrollbar{height:9px}
+.dtwrap::-webkit-scrollbar-track{background:transparent}
+.dtwrap::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:5px}
+
+.dtbl{table-layout:fixed;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised)}
+.dtbl th{position:relative;font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;
+  padding:11px 12px;border-bottom:1px solid var(--border-strong);background:var(--bg-inset);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dtbl td{padding:10px 12px;border-bottom:1px solid var(--border-hairline);vertical-align:top;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dtbl td.wrap{white-space:normal;overflow:visible;text-overflow:clip}
+.dtbl td.icon,.dtbl th.icon{padding-left:8px;padding-right:8px;overflow:visible;text-overflow:clip}
+.dtbl th.n,.dtbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.dtbl th.ctr,.dtbl td.ctr{text-align:center}
+.dtbl tbody tr:hover{background:var(--accent-wash)}
+.dtbl tr.sec td{background:var(--bg-inset);font:600 10.5px var(--font-display);text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);padding:6px 11px}
+.dtbl tr.newline td{box-shadow:inset 3px 0 0 var(--danger-fill)}
+.dtbl--dense th,.dtbl--dense td{padding:9px 11px;font-size:12.5px}
+.dtbl .dt-sticky{position:sticky;left:0;background:var(--bg-surface-raised);z-index:2;white-space:normal;overflow:visible;text-overflow:clip;min-width:210px;max-width:240px}
+.dtbl th.dt-sticky{background:var(--bg-inset);z-index:3}
+
+.dt-col-resize{position:absolute;top:0;right:-4px;width:8px;height:100%;cursor:col-resize;z-index:6;touch-action:none}
+.dt-col-resize::after{content:"";position:absolute;right:3px;top:22%;bottom:22%;width:1px;background:var(--border-strong)}
+.dt-col-resize:hover::after,.dt-col-resize.is-active::after{background:var(--accent-fill);width:2px;right:2.5px}
+
+/* in-table add-row/add-group controls — tfoot, not a separate .card */
+.dtbl tfoot td{padding:0;border-bottom:none}
+.dt-addrow{display:flex;gap:14px;align-items:center;padding:9px 12px;background:var(--bg-inset)}
+.dt-addrow button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font:600 11.5px/1 var(--font-data);letter-spacing:.03em;color:var(--accent-text)}
+.dt-addrow button:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* themed checkbox — native input stays for a11y/forms, visually replaced.
+   Raw unstyled checkboxes are the fallback only. */
+.chk{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:inherit;user-select:none;position:relative}
+.chk input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0}
+.chk__box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border-strong);background:var(--bg-surface-raised);
+  display:grid;place-items:center;flex:none;transition:background var(--dur-fast),border-color var(--dur-fast)}
+.chk__box svg{width:11px;height:11px;opacity:0;transform:scale(.5);transition:opacity var(--dur-fast),transform var(--dur-fast);
+  stroke:var(--accent-on);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.chk input:checked~.chk__box{background:var(--accent-strong);border-color:var(--accent-strong)}
+.chk input:checked~.chk__box svg{opacity:1;transform:scale(1)}
+.chk input:indeterminate~.chk__box{background:var(--accent-strong);border-color:var(--accent-strong)}
+.chk input:focus-visible~.chk__box{outline:2px solid var(--focus-ring);outline-offset:1px}
+.chk input:disabled~.chk__box{opacity:.45;cursor:not-allowed}
+.chk input:disabled{cursor:not-allowed}
 
 /* ── per-row action menu (ITB, etc.) ── */
 .rowmenu{position:absolute;top:calc(100% + 4px);right:0;z-index:20;min-width:170px;

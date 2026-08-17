@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
 import { acceptPlug, acceptSubAddedAsScopeLine, trackOnlySubAdded, setLineIncluded, setBidBondIncluded, acceptBondAlternate, clearBondAlternate } from "./actions";
 import { updatePackageBonding } from "../actions";
-import { ResizableColumns } from "@/components/ResizableColumns";
+import { DataTable, type DataTableColumn } from "@/components/DataTable";
 import { BidCellInput } from "./BidCellInput";
 import { AutoSubmitCheckbox } from "@/components/AutoSubmitCheckbox";
 import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
@@ -254,23 +254,16 @@ export default async function BidTabPage({
         )}
       </div>
 
-      <div className="bwrap">
-        <ResizableColumns tableId="bidtab-tbl" />
-        <table className="bidtbl" id="bidtab-tbl">
-          <thead>
-            <tr>
-              <th className="desc">
-                {pkg.code} — {pkg.name}
-              </th>
-              {invitations.map((inv) => (
-                <th key={inv.id}>{inv.subcontractor.name}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
+      {(() => {
+        const columns: DataTableColumn[] = [
+          { id: "desc", label: `${pkg.code} — ${pkg.name}`, sticky: true, width: 220, minWidth: 160 },
+          ...invitations.map((inv): DataTableColumn => ({ id: inv.id, label: inv.subcontractor.name, width: 150, minWidth: 100 })),
+        ];
+        return (
+          <DataTable id="bidtab-tbl" columns={columns} dense>
             {pkg.scopeLineItems.map((line, rowIdx) => (
               <tr key={line.id}>
-                <td className="desc">
+                <td className="dt-sticky">
                   {line.description}{" "}
                   <span className={`kb kb--${line.kind}`} style={{ marginLeft: 4 }}>
                     {KIND_LABEL[line.kind]}
@@ -279,14 +272,14 @@ export default async function BidTabPage({
                 {invitations.map((inv, colIdx) => {
                   if (inv.intent === "no_bid") {
                     return (
-                      <td key={inv.id} style={{ color: "var(--text-faint)", textAlign: "center" }}>
+                      <td key={inv.id} className="ctr" style={{ color: "var(--text-faint)" }}>
                         No bid
                       </td>
                     );
                   }
                   if (!inv.bids[0]) {
                     return (
-                      <td key={inv.id} style={{ color: "var(--text-faint)", textAlign: "center" }}>
+                      <td key={inv.id} className="ctr" style={{ color: "var(--text-faint)" }}>
                         Pending
                       </td>
                     );
@@ -295,7 +288,7 @@ export default async function BidTabPage({
                   if (!matched) {
                     const plug = recommendedPlug(line.id, inv.id);
                     return (
-                      <td key={inv.id}>
+                      <td key={inv.id} className="wrap">
                         <span className="gapc">Gap</span>
                         {plug !== null && (
                           <form
@@ -318,7 +311,7 @@ export default async function BidTabPage({
                   }
                   const isAltOrVA = line.kind === "alternate" || line.kind === "va_option";
                   return (
-                    <td key={inv.id} className="n">
+                    <td key={inv.id} className="n wrap">
                       <div style={matched.included ? undefined : { opacity: 0.5, textDecoration: "line-through" }}>
                         <BidCellInput
                           bidLineId={matched.id}
@@ -357,13 +350,13 @@ export default async function BidTabPage({
               </tr>
             ))}
             <tr>
-              <td className="desc" style={{ fontWeight: 700 }}>
+              <td className="dt-sticky" style={{ fontWeight: 700 }}>
                 Package total (included)
               </td>
               {invitations.map((inv) => {
                 if (inv.intent === "no_bid" || !inv.bids[0]) {
                   return (
-                    <td key={inv.id} style={{ textAlign: "center" }}>
+                    <td key={inv.id} className="ctr">
                       —
                     </td>
                   );
@@ -378,20 +371,20 @@ export default async function BidTabPage({
             </tr>
             {altVaLines.length > 0 && (
               <tr>
-                <td className="desc" style={{ fontWeight: 700, color: "var(--text-dim)" }}>
+                <td className="dt-sticky" style={{ fontWeight: 700, color: "var(--text-dim)" }}>
                   + accepted alternates/VA
                 </td>
                 {invitations.map((inv) => {
                   if (inv.intent === "no_bid" || !inv.bids[0]) {
                     return (
-                      <td key={inv.id} style={{ textAlign: "center" }}>
+                      <td key={inv.id} className="ctr">
                         —
                       </td>
                     );
                   }
                   const { total, complete, acceptedCount } = totalWithAccepted(inv.id);
                   return (
-                    <td key={inv.id} className="n" style={{ fontWeight: 700, color: complete ? "var(--text-dim)" : "var(--danger-text)" }}>
+                    <td key={inv.id} className="n wrap" style={{ fontWeight: 700, color: complete ? "var(--text-dim)" : "var(--danger-text)" }}>
                       {complete ? (
                         <>
                           {formatCents(total)}
@@ -407,9 +400,9 @@ export default async function BidTabPage({
                 })}
               </tr>
             )}
-          </tbody>
-        </table>
-      </div>
+          </DataTable>
+        );
+      })()}
 
       {pendingSubAdded.length > 0 && (
         <div>
