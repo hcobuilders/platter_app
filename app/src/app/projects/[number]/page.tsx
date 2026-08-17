@@ -16,7 +16,7 @@ import {
 } from "./actions";
 import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 import { FlagChip } from "@/components/FlagChip";
-import { KeyDatesTimeline, MiniMap, GoogleMapsLink } from "./OverviewWidgets";
+import { GanttTimeline, MiniMap, GoogleMapsLink } from "./OverviewWidgets";
 import { EditableOverviewFields } from "./EditableOverviewFields";
 import { HotItemsList } from "./HotItemsList";
 
@@ -251,22 +251,11 @@ export default async function ProjectOverviewPage({
         <div className="lbl" style={{ marginBottom: 8 }}>
           Key dates
         </div>
-        <KeyDatesTimeline dates={project.dates} />
-        {project.dates.length > 0 && (
-          <div className="mt-3 flex flex-col gap-2">
-            {project.dates.map((d) => (
-              <div key={d.id} className="flex justify-between items-center" style={{ fontSize: 13 }}>
-                <span className="lbl" style={{ display: "inline" }}>
-                  {d.kind.replace(/_/g, " ")}
-                </span>
-                <span className="mono">
-                  {d.at.toLocaleDateString()}
-                  {d.isMandatory && <span style={{ color: "var(--danger-text)", marginLeft: 8 }}>Mandatory</span>}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+        <GanttTimeline
+          dates={project.dates}
+          contractDays={project.contractDays}
+          changeOrderDays={project.changeOrders.reduce((s, co) => s + co.days, 0)}
+        />
         <form
           action={async (fd) => {
             "use server";
