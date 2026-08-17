@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { formatCents } from "@/lib/format";
+import { setDashboardStatusFilters } from "@/app/actions";
+import { StatusPill } from "@/components/StatusPill";
+import type { ProjectStatus } from "@/generated/prisma/enums";
 
 export type CardProject = {
   number: string;
   name: string;
   status: string;
   address: string | null;
-  bondPct: number | null;
-  bidBondRequired: boolean;
   packageCount: number;
   quotedCount: number;
   unresolvedCount: number;
@@ -23,22 +24,6 @@ export type CardProject = {
   awardTarget: string | null;
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  draft: "Draft",
-  scoping: "Scoping",
-  bidding: "Bidding",
-  leveling: "Leveling",
-  submitted: "Submitted",
-  awarded: "Awarded",
-  lost: "Lost",
-};
-const STATUS_CLASS: Record<string, string> = {
-  draft: "st--draft",
-  bidding: "st--bid",
-  leveling: "st--bid",
-  awarded: "st--won",
-  lost: "st--lost",
-};
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -114,10 +99,7 @@ function Card({ p }: { p: CardProject }) {
         </div>
         <div className="pc__tags">
           <div className="flex items-center gap-2" style={{ position: "relative" }}>
-            <span className={`st ${STATUS_CLASS[p.status] ?? ""}`}>
-              <i />
-              {STATUS_LABEL[p.status] ?? p.status}
-            </span>
+            <StatusPill projectNumber={p.number} status={p.status as ProjectStatus} />
             <button className="kebab" onClick={() => setMenuOpen((v) => !v)} aria-label="Project actions">
               ⋯
             </button>
@@ -143,7 +125,6 @@ function Card({ p }: { p: CardProject }) {
               </div>
             )}
           </div>
-          {p.bidBondRequired ? <span className="chip chip--dgr">Bond {p.bondPct ?? 100}%</span> : null}
           {isDraft && p.unresolvedCount > 0 && <span className="chip">{p.unresolvedCount} unresolved</span>}
         </div>
       </div>
@@ -202,19 +183,41 @@ function Card({ p }: { p: CardProject }) {
   );
 }
 
-export function DashboardBody({ projects }: { projects: CardProject[] }) {
+const FILTER_MATCH: Record<string, (status: string) => boolean> = {
+  active: (status) => !["awarded", "lost"].includes(status),
+  draft: (status) => status === "draft",
+  closed: (status) => status === "awarded" || status === "lost",
+};
+
+export function DashboardBody({ projects, initialStatusFilters }: { projects: CardProject[]; initialStatusFilters: string[] }) {
   const [view, setView] = useState<"cards" | "rows">("cards");
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [statusFilters, setStatusFilters] = useState<Set<string>>(() => new Set(initialStatusFilters));
   const [search, setSearch] = useState("");
+  const [, startTransition] = useTransition();
+
+  function toggleFilter(key: string) {
+    setStatusFilters((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      startTransition(() => {
+        setDashboardStatusFilters([...next]);
+      });
+      return next;
+    });
+  }
 
   const activeCount = projects.filter((p) => !["awarded", "lost"].includes(p.status)).length;
   const draftCount = projects.filter((p) => p.status === "draft").length;
   const closedCount = projects.filter((p) => p.status === "awarded" || p.status === "lost").length;
 
+  // Multi-select: any project matching at least one checked filter shows —
+  // e.g. Active + Draft together, or Closed + Draft together (per the
+  // owner's own examples). No filters checked shows everything.
   let filtered = projects;
-  if (statusFilter === "active") filtered = filtered.filter((p) => !["awarded", "lost"].includes(p.status));
-  if (statusFilter === "draft") filtered = filtered.filter((p) => p.status === "draft");
-  if (statusFilter === "closed") filtered = filtered.filter((p) => p.status === "awarded" || p.status === "lost");
+  if (statusFilters.size > 0) {
+    filtered = filtered.filter((p) => [...statusFilters].some((key) => FILTER_MATCH[key]?.(p.status)));
+  }
   if (search.trim()) {
     const q = search.trim().toLowerCase();
     filtered = filtered.filter((p) => p.name.toLowerCase().includes(q) || p.number.toLowerCase().includes(q));
@@ -230,13 +233,13 @@ export function DashboardBody({ projects }: { projects: CardProject[] }) {
     <div className="frame" style={{ background: "var(--bg-surface)" }}>
       <div className="dtoolbar">
         <div className="flex gap-2 items-center" style={{ flexWrap: "wrap" }}>
-          <button className="fchip" aria-pressed={statusFilter === "active"} onClick={() => setStatusFilter(statusFilter === "active" ? null : "active")}>
+          <button className="fchip" aria-pressed={statusFilters.has("active")} onClick={() => toggleFilter("active")}>
             Active · {activeCount}
           </button>
-          <button className="fchip" aria-pressed={statusFilter === "draft"} onClick={() => setStatusFilter(statusFilter === "draft" ? null : "draft")}>
+          <button className="fchip" aria-pressed={statusFilters.has("draft")} onClick={() => toggleFilter("draft")}>
             Draft · {draftCount}
           </button>
-          <button className="fchip" aria-pressed={statusFilter === "closed"} onClick={() => setStatusFilter(statusFilter === "closed" ? null : "closed")}>
+          <button className="fchip" aria-pressed={statusFilters.has("closed")} onClick={() => toggleFilter("closed")}>
             Closed · {closedCount}
           </button>
           {search && (
@@ -306,10 +309,7 @@ export function DashboardBody({ projects }: { projects: CardProject[] }) {
                       <span style={{ color: "var(--text-dim)", fontFamily: "var(--font-data)", fontSize: 11 }}>{p.number}</span>
                     </td>
                     <td>
-                      <span className={`st ${STATUS_CLASS[p.status] ?? ""}`}>
-                        <i />
-                        {STATUS_LABEL[p.status] ?? p.status}
-                      </span>
+                      <StatusPill projectNumber={p.number} status={p.status as ProjectStatus} />
                     </td>
                     <td className="n" style={urgent ? { color: "var(--danger-text)", fontWeight: 700 } : undefined}>
                       {fmtDate(p.bidsDue)}

@@ -628,9 +628,12 @@ model User {
   role           UserRole  @default(estimator)
   phone          String?
   emailSignature String?
-  emailVerified  DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  // Dashboard status-filter chip selection (S-batch #71) — "remember what
+  // i last had selected" per user, not per browser session.
+  dashboardStatusFilters String[]  @default([])
+  emailVerified          DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
   accounts  Account[]
   sessions  Session[]

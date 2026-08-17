@@ -41,8 +41,6 @@ async function getProjects(): Promise<CardProject[]> {
       name: project.name,
       status: project.status,
       address: project.address,
-      bondPct: project.bondPct,
-      bidBondRequired: project.bidBondRequired,
       packageCount: project.bidPackages.length,
       quotedCount,
       unresolvedCount,
@@ -60,7 +58,10 @@ async function getProjects(): Promise<CardProject[]> {
 export default async function Home() {
   const session = await auth();
   if (!session?.user) redirect("/login");
-  const projects = await getProjects();
+  const [projects, currentUser] = await Promise.all([
+    getProjects(),
+    prisma.user.findUnique({ where: { id: session.user.id }, select: { dashboardStatusFilters: true } }),
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -96,7 +97,7 @@ export default async function Home() {
       </div>
 
       <div className="appbody flex-1" style={{ padding: "22px clamp(16px,3vw,32px)" }}>
-        <DashboardBody projects={projects} />
+        <DashboardBody projects={projects} initialStatusFilters={currentUser?.dashboardStatusFilters ?? []} />
       </div>
 
       <CommandBar />
