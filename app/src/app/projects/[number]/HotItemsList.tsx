@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { addHotItem, updateHotItem, removeHotItem } from "./actions";
+import { useEffect, useState, useTransition } from "react";
+import { addHotItem, updateHotItem, removeHotItem, markItemsSeen } from "./actions";
+import { NewBadge } from "@/components/NewBadge";
 import type { ProjectNoteState } from "@/generated/prisma/enums";
 
 const STATE_META: Record<ProjectNoteState, { label: string; color: string }> = {
@@ -18,6 +19,7 @@ export type HotItem = {
   state: ProjectNoteState;
   associatedAt: Date | null;
   createdAt: Date;
+  isNew?: boolean;
 };
 
 function ColorPick({ value, onChange }: { value: ProjectNoteState; onChange: (v: ProjectNoteState) => void }) {
@@ -55,6 +57,17 @@ export function HotItemsList({ projectNumber, initial }: { projectNumber: string
   const [editingId, setEditingId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [, startTransition] = useTransition();
+  const [unseenIdsAtMount] = useState(() => initial.filter((it) => it.isNew).map((it) => it.id));
+
+  // Marks this view's "new" items seen so the glyph won't show again for
+  // this user — but only after they've actually rendered once (this effect,
+  // not the initial server-computed isNew), so it doesn't clear itself.
+  useEffect(() => {
+    if (unseenIdsAtMount.length === 0) return;
+    startTransition(() => {
+      markItemsSeen("hot_item", unseenIdsAtMount);
+    });
+  }, [unseenIdsAtMount]);
 
   function handleSaveEdit(id: string, body: string, state: ProjectNoteState) {
     setItems((prev) => prev.map((it) => (it.id === id ? { ...it, body, state } : it)));
@@ -104,7 +117,10 @@ export function HotItemsList({ projectNumber, initial }: { projectNumber: string
             >
               <span className="dot" style={{ background: STATE_META[item.state].color, marginTop: 6 }} />
               <div className="rtxt">
-                {item.body}
+                <span className="flex items-center gap-2">
+                  {item.isNew && <NewBadge />}
+                  {item.body}
+                </span>
                 <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>
                   Added by {item.author}
                   {item.associatedAt && ` · re: ${item.associatedAt.toLocaleDateString()}`} · {item.createdAt.toLocaleDateString()}

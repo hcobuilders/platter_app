@@ -632,8 +632,26 @@ model User {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  accounts Account[]
-  sessions Session[]
+  accounts  Account[]
+  sessions  Session[]
+  seenItems SeenItem[]
+}
+
+// Generic "seen by this user" marker (S-batch #66) — "stored as user not
+// browser session" so a glyph disappears for good once a user has viewed
+// an item, on any device. entityType is a free-form tag ("hot_item" today;
+// budget items/plugs/awards/files/addenda are the same mechanism, added as
+// those surfaces pick it up) rather than a relation per type, so one table
+// covers every future entity without a schema change each time.
+model SeenItem {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String
+  entityId   String
+  seenAt     DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
 }
 
 model Account {

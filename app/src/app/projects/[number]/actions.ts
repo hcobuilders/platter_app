@@ -153,3 +153,16 @@ export async function removeHotItem(projectNumber: string, noteId: string) {
   await prisma.projectNote.delete({ where: { id: noteId } });
   revalidatePath(`/projects/${projectNumber}`);
 }
+
+// Per-user "unseen item" indicator (S-batch #66), starting with hot items.
+// Deliberately does NOT revalidatePath — marking an item seen must not wipe
+// its "new" glyph on the very view that's showing it; the change only takes
+// effect on the user's next visit.
+export async function markItemsSeen(entityType: string, entityIds: string[]) {
+  const session = await auth();
+  if (!session?.user?.id || entityIds.length === 0) return;
+  await prisma.seenItem.createMany({
+    data: entityIds.map((entityId) => ({ userId: session.user.id, entityType, entityId })),
+    skipDuplicates: true,
+  });
+}

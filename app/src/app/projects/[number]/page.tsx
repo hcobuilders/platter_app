@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { auth } from "@/auth";
 import { notFound } from "next/navigation";
 import { formatCents } from "@/lib/format";
+import { getSeenIds } from "@/lib/seen";
 import {
   updateProjectBonding,
   setBidBondRequired,
@@ -53,8 +55,16 @@ export default async function ProjectOverviewPage({
   params: Promise<{ number: string }>;
 }) {
   const { number } = await params;
-  const project = await getProjectDetail(number);
+  const [project, session] = await Promise.all([getProjectDetail(number), auth()]);
   if (!project) notFound();
+
+  const seenHotItemIds = session?.user?.id
+    ? await getSeenIds(
+        session.user.id,
+        "hot_item",
+        project.notes.map((n) => n.id)
+      )
+    : new Set<string>();
 
   const allFlags = await prisma.flag.findMany({ orderBy: { label: "asc" } });
   const attachedFlagIds = new Set(project.projectFlags.map((pf) => pf.flagId));
@@ -223,6 +233,7 @@ export default async function ProjectOverviewPage({
               state: n.state,
               associatedAt: n.associatedAt,
               createdAt: n.createdAt,
+              isNew: !seenHotItemIds.has(n.id),
             }))}
           />
         </div>
