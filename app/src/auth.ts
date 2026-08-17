@@ -10,6 +10,11 @@ import { prisma } from "@/lib/db";
 // rewrite, per the owner's stated plan ("we can link with ms auth when we
 // get to that step").
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  // Auth.js only auto-trusts the request Host header when it detects a
+  // Vercel deployment. Railway isn't Vercel, so without this every
+  // production request gets rejected with an UntrustedHost error, which
+  // surfaces to the user as a generic "server configuration" failure.
+  trustHost: true,
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
