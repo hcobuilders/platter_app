@@ -21,6 +21,13 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Platter",
   description: "Preconstruction command center for LEMA.",
+  other: {
+    // Data-dense pages (CSI codes, chip abbreviations, mono figures) throw
+    // off Chrome's language auto-detection enough to trigger an unprompted
+    // translate offer. This suppresses that automatic prompt without
+    // blocking manual translation (still available via right-click).
+    google: "notranslate",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
