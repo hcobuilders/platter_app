@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
+import { ExportCsvButton } from "@/components/ExportCsvButton";
 import { formatCents } from "@/lib/format";
 import { ItbHero } from "./ItbHero";
 import { AddBiddersModal } from "./AddBiddersModal";
@@ -176,9 +177,23 @@ export default async function WorkPackagesPage({
         <div>
           <div className="flex items-center justify-between" style={{ marginBottom: 8 }}>
             <div className="lbl">Work packages</div>
-            <Link href={`/projects/${number}/work-packages?newPackage=1`} className="btn btn--acc btn--sm">
-              + New package
-            </Link>
+            <div className="flex items-center gap-2">
+              <ExportCsvButton
+                filename={`${number}-work-packages.csv`}
+                headers={["Code", "Name", "Status", "Scope lines", "Invited subs", "Budget"]}
+                rows={sorted.map((p) => [
+                  p.code,
+                  p.name,
+                  STATUS_META[p.statusKind].label,
+                  p.scopeLineItems.length,
+                  p.invitations.length,
+                  p.budgetAmount != null ? formatCents(p.budgetAmount) : "",
+                ])}
+              />
+              <Link href={`/projects/${number}/work-packages?newPackage=1`} className="btn btn--acc btn--sm">
+                + New package
+              </Link>
+            </div>
           </div>
           <div className="mt-2">
             <DataTable id="wp-packages-tbl" columns={packageColumns}>

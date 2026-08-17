@@ -8,6 +8,7 @@ import { deleteProjectTemplate } from "@/app/actions";
 import { AccountMenu, ROLE_LABEL } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
+import { ExportCsvButton } from "@/components/ExportCsvButton";
 import { FlagModal } from "./FlagModal";
 import { DeleteFlagModal } from "./DeleteFlagModal";
 import { TagAddRow } from "./TagAddRow";
@@ -96,9 +97,16 @@ export default async function SettingsPage({
           <div className="flex flex-col gap-4" style={{ maxWidth: 900 }}>
             <div className="flex items-center justify-between">
               <div className="lbl">{flags.length} flags</div>
-              <Link href="?view=flags&flag=new" className="btn btn--acc btn--sm">
-                + New flag
-              </Link>
+              <div className="flex items-center gap-2">
+                <ExportCsvButton
+                  filename="flags.csv"
+                  headers={["Label", "Type", "Description", "Used on"]}
+                  rows={flags.map((f) => [f.label, f.type, f.description ?? "", f._count.projectFlags])}
+                />
+                <Link href="?view=flags&flag=new" className="btn btn--acc btn--sm">
+                  + New flag
+                </Link>
+              </div>
             </div>
             <DataTable
               id="settings-flags-tbl"
