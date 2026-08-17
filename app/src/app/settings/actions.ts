@@ -2,11 +2,33 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { auth } from "@/auth";
 import { FlagType } from "@/generated/prisma/enums";
 import { saveFile } from "@/lib/storage";
 
 function str(fd: FormData, key: string): string {
   return String(fd.get(key) ?? "").trim();
+}
+
+// Per-user profile section (S-batch #57) — name/phone/signature for the
+// signed-in user, not scoped by project like the rest of Settings.
+export async function updateAccountProfile(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) return;
+
+  const name = str(formData, "name");
+  const phone = str(formData, "phone");
+  const emailSignature = str(formData, "emailSignature");
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: {
+      name: name || undefined,
+      phone: phone || null,
+      emailSignature: emailSignature || null,
+    },
+  });
+  revalidatePath("/settings");
 }
 
 export async function createFlag(formData: FormData) {

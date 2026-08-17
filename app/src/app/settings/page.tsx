@@ -2,9 +2,9 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { Logo } from "@/components/Logo";
-import { createFlag, deleteFlag, createTrade, deleteTrade, createTag, deleteTag, uploadBidBondTemplate } from "./actions";
+import { createFlag, deleteFlag, createTrade, deleteTrade, createTag, deleteTag, uploadBidBondTemplate, updateAccountProfile } from "./actions";
 import { CsiCodeInput } from "@/components/CsiCodeInput";
-import { AccountMenu } from "@/components/AccountMenu";
+import { AccountMenu, ROLE_LABEL } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +29,8 @@ export default async function SettingsPage({
     prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
     auth(),
   ]);
+
+  const currentUser = session?.user?.id ? await prisma.user.findUnique({ where: { id: session.user.id } }) : null;
 
   return (
     <div style={{ background: "var(--bg-shell)", minHeight: "100vh" }}>
@@ -66,6 +68,9 @@ export default async function SettingsPage({
           </a>
           <a href="?view=templates" className={view === "templates" ? "on" : undefined}>
             Templates
+          </a>
+          <a href="?view=account" className={view === "account" ? "on" : undefined}>
+            Account
           </a>
         </div>
 
@@ -260,7 +265,66 @@ export default async function SettingsPage({
             </div>
           </div>
         )}
+
+        {view === "account" && currentUser && (
+          <div className="flex flex-col gap-6" style={{ maxWidth: 480 }}>
+            <div>
+              <div className="lbl" style={{ marginBottom: 8 }}>
+                Your account
+              </div>
+              <div className="cf">
+                <Field label="Email" value={currentUser.email} />
+                <Field label="Role" value={ROLE_LABEL[currentUser.role] ?? currentUser.role} />
+              </div>
+            </div>
+            <form
+              action={async (fd) => {
+                "use server";
+                await updateAccountProfile(fd);
+              }}
+              className="flex flex-col gap-3"
+            >
+              <div>
+                <div className="lbl" style={{ marginBottom: 6 }}>
+                  Name
+                </div>
+                <input className="fld" name="name" defaultValue={currentUser.name} required />
+              </div>
+              <div>
+                <div className="lbl" style={{ marginBottom: 6 }}>
+                  Phone
+                </div>
+                <input className="fld" name="phone" type="tel" defaultValue={currentUser.phone ?? ""} placeholder="(555) 555-5555" />
+              </div>
+              <div>
+                <div className="lbl" style={{ marginBottom: 6 }}>
+                  Email signature
+                </div>
+                <textarea
+                  className="fld"
+                  name="emailSignature"
+                  rows={4}
+                  defaultValue={currentUser.emailSignature ?? ""}
+                  placeholder={`${currentUser.name}\n${currentUser.email}`}
+                  style={{ resize: "vertical" }}
+                />
+              </div>
+              <button className="btn btn--acc" type="submit" style={{ width: "fit-content" }}>
+                Save
+              </button>
+            </form>
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string | null | undefined }) {
+  return (
+    <div>
+      <div className="lbl">{label}</div>
+      <div style={{ font: "var(--t-body)", marginTop: 4 }}>{value ?? "—"}</div>
     </div>
   );
 }

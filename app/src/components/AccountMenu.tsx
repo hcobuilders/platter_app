@@ -1,9 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { logoutAction } from "@/app/login/actions";
 
-const ROLE_LABEL: Record<string, string> = {
+type Status = { ok: boolean; uptimeSeconds: number } | null;
+
+function formatUptime(seconds: number): string {
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+export const ROLE_LABEL: Record<string, string> = {
   admin: "Admin",
   estimator: "Estimator",
   manager: "Manager",
@@ -31,6 +43,23 @@ export function AccountMenu({
   buildVersion: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState<Status>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    fetch("/api/status")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) setStatus(data);
+      })
+      .catch(() => {
+        if (!cancelled) setStatus({ ok: false, uptimeSeconds: 0 });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   return (
     <div style={{ position: "relative" }}>
@@ -47,20 +76,29 @@ export function AccountMenu({
           <div className="sec">{name}</div>
           <div style={{ padding: "2px 11px 9px", fontSize: 12, color: "var(--text-dim)" }}>{ROLE_LABEL[role] ?? role}</div>
           <hr />
-          <button disabled title="Not wired up yet">
-            Server status
-          </button>
-          <button disabled title="Not wired up yet">
-            Uptime
-          </button>
+          <div style={{ display: "flex", justifyContent: "space-between", padding: "9px 11px", fontSize: 12.5, color: "var(--text-faint)" }}>
+            <span>Server status</span>
+            {status ? (
+              <span className="flex items-center gap-2" style={{ color: status.ok ? "var(--success-text)" : "var(--danger-text)" }}>
+                <span className="dot" style={{ background: status.ok ? "var(--success-fill)" : "var(--danger-fill)" }} />
+                {status.ok ? "OK" : "Down"}
+              </span>
+            ) : (
+              <span>…</span>
+            )}
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", padding: "9px 11px", fontSize: 12.5, color: "var(--text-faint)" }}>
+            <span>Uptime</span>
+            <span className="mono">{status ? formatUptime(status.uptimeSeconds) : "…"}</span>
+          </div>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "9px 11px", fontSize: 12.5, color: "var(--text-faint)" }}>
             <span>Build</span>
             <span className="mono">v{buildVersion}</span>
           </div>
           <hr />
-          <button disabled title="Not wired up yet">
+          <Link href="/settings?view=account" onClick={() => setOpen(false)}>
             Account settings
-          </button>
+          </Link>
           <form action={logoutAction}>
             <button type="submit" style={{ color: "var(--danger-text)", width: "100%", textAlign: "left" }}>
               Log out

@@ -86,8 +86,8 @@
 .pc.is-closed:hover{opacity:1}
 
 .pop{position:absolute;z-index:30;background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--e-3);padding:6px;min-width:216px}
-.pop button{all:unset;display:flex;justify-content:space-between;gap:14px;width:100%;box-sizing:border-box;cursor:pointer;padding:9px 11px;border-radius:var(--r-sm);font-size:12.5px;color:var(--text)}
-.pop button:hover{background:var(--accent-wash);color:var(--accent-text)}
+.pop button,.pop a{all:unset;display:flex;justify-content:space-between;gap:14px;width:100%;box-sizing:border-box;cursor:pointer;padding:9px 11px;border-radius:var(--r-sm);font-size:12.5px;color:var(--text)}
+.pop button:hover,.pop a:hover{background:var(--accent-wash);color:var(--accent-text)}
 .pop button:disabled{opacity:.45;cursor:not-allowed}
 .pop button:disabled:hover{background:none;color:var(--text)}
 .pop hr{border:none;border-top:1px solid var(--border-hairline);margin:5px 4px}
