@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { formatCents } from "@/lib/format";
-import { setDashboardStatusFilters } from "@/app/actions";
+import { setDashboardStatusFilters, archiveProject, unarchiveProject, saveProjectAsTemplate } from "@/app/actions";
 import { StatusPill } from "@/components/StatusPill";
 import type { ProjectStatus } from "@/generated/prisma/enums";
 
@@ -22,6 +22,7 @@ export type CardProject = {
   siteWalkMandatory: boolean;
   bidsDue: string | null;
   awardTarget: string | null;
+  archivedAt: string | null;
 };
 
 
@@ -77,12 +78,15 @@ function GlyphDocs() {
 
 function Card({ p }: { p: CardProject }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [templateSaved, setTemplateSaved] = useState(false);
+  const [, startTransition] = useTransition();
   const dueDays = daysUntil(p.bidsDue);
   const isOpenStage = !["awarded", "lost"].includes(p.status);
   const urgent = isOpenStage && dueDays !== null && dueDays <= 2;
   const overdue = isOpenStage && dueDays !== null && dueDays < 0;
   const isClosed = p.status === "awarded" || p.status === "lost";
   const isDraft = p.status === "draft";
+  const isArchived = p.archivedAt !== null;
 
   const cls = ["pc", urgent || overdue ? "is-urgent" : "", isDraft ? "is-draft" : "", isClosed ? "is-closed" : ""].filter(Boolean).join(" ");
 
@@ -105,11 +109,27 @@ function Card({ p }: { p: CardProject }) {
             </button>
             {menuOpen && (
               <div className="pop" style={{ right: 0, top: "calc(100% + 4px)" }} onMouseLeave={() => setMenuOpen(false)}>
-                <button onClick={() => setMenuOpen(false)} disabled>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    startTransition(() => {
+                      saveProjectAsTemplate(p.number);
+                    });
+                    setTemplateSaved(true);
+                  }}
+                >
                   Duplicate as template
                 </button>
-                <button onClick={() => setMenuOpen(false)} disabled>
-                  Archive project
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    startTransition(() => {
+                      if (isArchived) unarchiveProject(p.number);
+                      else archiveProject(p.number);
+                    });
+                  }}
+                >
+                  {isArchived ? "Unarchive project" : "Archive project"}
                 </button>
                 <hr />
                 <div className="sec">Open in</div>
@@ -126,6 +146,7 @@ function Card({ p }: { p: CardProject }) {
             )}
           </div>
           {isDraft && p.unresolvedCount > 0 && <span className="chip">{p.unresolvedCount} unresolved</span>}
+          {templateSaved && <span className="chip chip--ok">Template saved</span>}
         </div>
       </div>
 
@@ -183,10 +204,14 @@ function Card({ p }: { p: CardProject }) {
   );
 }
 
-const FILTER_MATCH: Record<string, (status: string) => boolean> = {
-  active: (status) => !["awarded", "lost"].includes(status),
-  draft: (status) => status === "draft",
-  closed: (status) => status === "awarded" || status === "lost",
+// Archived projects are hidden unless the "Archived" chip is explicitly
+// checked (S-batch #72) — matches how archiving is expected to work
+// everywhere else: out of the way by default, not deleted.
+const FILTER_MATCH: Record<string, (p: CardProject) => boolean> = {
+  active: (p) => !p.archivedAt && !["awarded", "lost"].includes(p.status),
+  draft: (p) => !p.archivedAt && p.status === "draft",
+  closed: (p) => !p.archivedAt && (p.status === "awarded" || p.status === "lost"),
+  archived: (p) => p.archivedAt !== null,
 };
 
 export function DashboardBody({ projects, initialStatusFilters }: { projects: CardProject[]; initialStatusFilters: string[] }) {
@@ -207,17 +232,19 @@ export function DashboardBody({ projects, initialStatusFilters }: { projects: Ca
     });
   }
 
-  const activeCount = projects.filter((p) => !["awarded", "lost"].includes(p.status)).length;
-  const draftCount = projects.filter((p) => p.status === "draft").length;
-  const closedCount = projects.filter((p) => p.status === "awarded" || p.status === "lost").length;
+  const activeCount = projects.filter(FILTER_MATCH.active).length;
+  const draftCount = projects.filter(FILTER_MATCH.draft).length;
+  const closedCount = projects.filter(FILTER_MATCH.closed).length;
+  const archivedCount = projects.filter(FILTER_MATCH.archived).length;
 
   // Multi-select: any project matching at least one checked filter shows —
   // e.g. Active + Draft together, or Closed + Draft together (per the
-  // owner's own examples). No filters checked shows everything.
-  let filtered = projects;
-  if (statusFilters.size > 0) {
-    filtered = filtered.filter((p) => [...statusFilters].some((key) => FILTER_MATCH[key]?.(p.status)));
-  }
+  // owner's own examples). No filters checked shows everything EXCEPT
+  // archived projects, which stay hidden until "Archived" is checked.
+  let filtered =
+    statusFilters.size > 0
+      ? projects.filter((p) => [...statusFilters].some((key) => FILTER_MATCH[key]?.(p)))
+      : projects.filter((p) => !p.archivedAt);
   if (search.trim()) {
     const q = search.trim().toLowerCase();
     filtered = filtered.filter((p) => p.name.toLowerCase().includes(q) || p.number.toLowerCase().includes(q));
@@ -242,6 +269,11 @@ export function DashboardBody({ projects, initialStatusFilters }: { projects: Ca
           <button className="fchip" aria-pressed={statusFilters.has("closed")} onClick={() => toggleFilter("closed")}>
             Closed · {closedCount}
           </button>
+          {archivedCount > 0 && (
+            <button className="fchip" aria-pressed={statusFilters.has("archived")} onClick={() => toggleFilter("archived")}>
+              Archived · {archivedCount}
+            </button>
+          )}
           {search && (
             <span className="chip chip--acc">
               &quot;{search}&quot; <span style={{ opacity: 0.55, cursor: "pointer" }} onClick={() => setSearch("")}>✕</span>

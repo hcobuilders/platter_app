@@ -45,6 +45,7 @@ model Project {
   status            ProjectStatus @default(draft)
   externalIds       Json          @default("{}")
   addressVerifiedAt DateTime?
+  archivedAt        DateTime?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
@@ -286,6 +287,34 @@ model BidPackage {
   budgetLines    BudgetLine[]
 
   @@unique([projectId, code])
+}
+
+// "Save as template" (S-batch #72) — captures a project's bid package
+// structure and bidder list only, explicitly not cost data, project info,
+// or scope line items, for reuse setting up future manual (non-parsed)
+// projects. Distinct from the pre-existing, unused PackageTemplate model
+// (a single reusable package definition, never wired to any UI) — this is
+// a whole-project snapshot of multiple packages at once.
+model ProjectTemplate {
+  id            String            @id @default(cuid())
+  name          String
+  sourceProject String?
+  createdAt     DateTime          @default(now())
+  packages      TemplatePackage[]
+}
+
+model TemplatePackage {
+  id         String          @id @default(cuid())
+  templateId String
+  template   ProjectTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  code       String
+  name       String
+  csiCodes   String[]
+  // [{ subcontractorId: string | null, name: string }] — denormalized name
+  // so the template still means something if a subcontractor is later
+  // deleted; subcontractorId is a best-effort link for re-inviting exactly
+  // that sub when a template gets applied.
+  bidders    Json            @default("[]")
 }
 
 enum ScopeLineKind {

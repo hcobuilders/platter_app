@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { Logo } from "@/components/Logo";
 import { createFlag, deleteFlag, createTrade, deleteTrade, createTag, deleteTag, uploadBidBondTemplate, updateAccountProfile } from "./actions";
+import { deleteProjectTemplate } from "@/app/actions";
 import { CsiCodeInput } from "@/components/CsiCodeInput";
 import { AccountMenu, ROLE_LABEL } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
@@ -22,11 +23,12 @@ export default async function SettingsPage({
 }) {
   const { view = "flags" } = await searchParams;
 
-  const [flags, trades, tags, bidBondTemplate, session] = await Promise.all([
+  const [flags, trades, tags, bidBondTemplate, projectTemplates, session] = await Promise.all([
     prisma.flag.findMany({ orderBy: { label: "asc" }, include: { _count: { select: { projectFlags: true } } } }),
     prisma.trade.findMany({ orderBy: { name: "asc" } }),
     prisma.tag.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { projectTags: true } } } }),
     prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
+    prisma.projectTemplate.findMany({ orderBy: { createdAt: "desc" }, include: { packages: true } }),
     auth(),
   ]);
 
@@ -262,6 +264,45 @@ export default async function SettingsPage({
                 that integration is wired up. Shown as a download whenever a project or package has
                 &quot;Bid bond required&quot; checked.
               </p>
+            </div>
+
+            <div>
+              <div className="lbl" style={{ marginBottom: 8 }}>
+                Project templates
+              </div>
+              <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginBottom: 10 }}>
+                Saved from a project&apos;s &quot;Duplicate as template&quot; card action — bid package
+                structure and bidder lists only, no cost data or scope line items. For setting up
+                future manual projects.
+              </p>
+              {projectTemplates.length === 0 ? (
+                <p style={{ color: "var(--text-dim)", fontSize: 13 }}>None saved yet.</p>
+              ) : (
+                projectTemplates.map((t) => {
+                  const bidderCount = t.packages.reduce((sum, p) => sum + (Array.isArray(p.bidders) ? p.bidders.length : 0), 0);
+                  return (
+                    <div key={t.id} className="rule">
+                      <div className="rtxt">
+                        <b>{t.name}</b>
+                        <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>
+                          {t.packages.length} package{t.packages.length === 1 ? "" : "s"} · {bidderCount} bidder{bidderCount === 1 ? "" : "s"} ·
+                          saved {t.createdAt.toLocaleDateString()}
+                        </div>
+                      </div>
+                      <form
+                        action={async () => {
+                          "use server";
+                          await deleteProjectTemplate(t.id);
+                        }}
+                      >
+                        <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                          Delete
+                        </button>
+                      </form>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         )}

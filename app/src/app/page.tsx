@@ -51,6 +51,7 @@ async function getProjects(): Promise<CardProject[]> {
       siteWalkMandatory: siteWalk?.isMandatory ?? false,
       bidsDue: bidsDue?.at.toISOString() ?? null,
       awardTarget: null,
+      archivedAt: project.archivedAt?.toISOString() ?? null,
     };
   });
 }

@@ -25,3 +25,56 @@ export async function setDashboardStatusFilters(filters: string[]) {
   // optimistically client-side; the persisted value only matters on the
   // user's next visit/reload.
 }
+
+// Project archiving (S-batch #72) — wires up the dashboard kebab's
+// previously-disabled "Archive project" stub.
+export async function archiveProject(projectNumber: string) {
+  await prisma.project.update({ where: { number: projectNumber }, data: { archivedAt: new Date() } });
+  revalidatePath("/");
+}
+
+export async function unarchiveProject(projectNumber: string) {
+  await prisma.project.update({ where: { number: projectNumber }, data: { archivedAt: null } });
+  revalidatePath("/");
+}
+
+// "Save as template" (S-batch #72) — wires up the dashboard kebab's
+// previously-disabled "Duplicate as template" stub. Captures bid package
+// code/name/csiCodes and the invited bidder list only — deliberately no
+// cost data, project info, or scope line items, per the owner's spec.
+export async function saveProjectAsTemplate(projectNumber: string) {
+  const project = await prisma.project.findUnique({
+    where: { number: projectNumber },
+    include: {
+      bidPackages: {
+        include: { invitations: { include: { subcontractor: true } } },
+      },
+    },
+  });
+  if (!project) return;
+
+  await prisma.projectTemplate.create({
+    data: {
+      name: `${project.name} — Template`,
+      sourceProject: project.name,
+      packages: {
+        create: project.bidPackages.map((pkg) => ({
+          code: pkg.code,
+          name: pkg.name,
+          csiCodes: pkg.csiCodes,
+          bidders: pkg.invitations.map((inv) => ({
+            subcontractorId: inv.subcontractorId,
+            name: inv.subcontractor.name,
+          })),
+        })),
+      },
+    },
+  });
+  revalidatePath("/");
+  revalidatePath("/settings");
+}
+
+export async function deleteProjectTemplate(templateId: string) {
+  await prisma.projectTemplate.delete({ where: { id: templateId } });
+  revalidatePath("/settings");
+}
