@@ -1,14 +1,27 @@
 import Link from "next/link";
+import { Fragment, Suspense } from "react";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { Logo } from "@/components/Logo";
-import { createFlag, deleteFlag, createTrade, deleteTrade, createTag, deleteTag, uploadBidBondTemplate, updateAccountProfile } from "./actions";
+import { deleteFlag, createTrade, deleteTrade, deleteTag, uploadBidBondTemplate, updateAccountProfile, importTagsCsv } from "./actions";
 import { deleteProjectTemplate } from "@/app/actions";
 import { CsiCodeInput } from "@/components/CsiCodeInput";
 import { AccountMenu, ROLE_LABEL } from "@/components/AccountMenu";
 import { getBuildVersion } from "@/lib/version";
+import { DataTable, type DataTableColumn } from "@/components/DataTable";
+import { FlagModal } from "./FlagModal";
+import { TagAddRow } from "./TagAddRow";
 
 export const dynamic = "force-dynamic";
+
+const TAG_TYPE_ORDER = ["location", "requirement", "project_type", "contract_type", "special"] as const;
+const TAG_TYPE_LABEL: Record<string, string> = {
+  location: "Location",
+  requirement: "Requirement",
+  project_type: "Project type",
+  contract_type: "Contract type",
+  special: "Special",
+};
 
 const FLAG_TYPE_CHIP: Record<string, string> = {
   requirement: "chip chip--dgr",
@@ -77,58 +90,61 @@ export default async function SettingsPage({
         </div>
 
         {view === "flags" && (
-          <div className="flex flex-col gap-6" style={{ maxWidth: 640 }}>
-            <div>
-              <div className="lbl" style={{ marginBottom: 8 }}>
-                {flags.length} flags
-              </div>
-              {flags.map((f) => (
-                <div key={f.id} className="rule">
-                  <div className="rtxt">
-                    <b>{f.label}</b> — {f.description || "no description"}{" "}
-                    <span className={FLAG_TYPE_CHIP[f.type]} style={{ marginLeft: 8 }}>
-                      {f.type}
-                    </span>
-                  </div>
-                  <span style={{ fontSize: 11.5, color: "var(--text-dim)", marginTop: 4 }}>
-                    Used on {f._count.projectFlags} project{f._count.projectFlags === 1 ? "" : "s"}
-                  </span>
-                  <form
-                    action={async () => {
-                      "use server";
-                      await deleteFlag(f.id);
-                    }}
-                  >
-                    <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
-                      Delete
-                    </button>
-                  </form>
-                </div>
-              ))}
+          <div className="flex flex-col gap-4" style={{ maxWidth: 900 }}>
+            <div className="flex items-center justify-between">
+              <div className="lbl">{flags.length} flags</div>
+              <Link href="?view=flags&flag=new" className="btn btn--acc btn--sm">
+                + New flag
+              </Link>
             </div>
-            <div className="card">
-              <div className="lbl" style={{ marginBottom: 10 }}>
-                New flag
-              </div>
-              <form
-                action={async (fd) => {
-                  "use server";
-                  await createFlag(fd);
-                }}
-                className="flex flex-col gap-3"
-              >
-                <input className="fld" name="label" placeholder="Label" required />
-                <select className="fld" name="type" defaultValue="requirement">
-                  <option value="requirement">Requirement</option>
-                  <option value="informational">Informational</option>
-                  <option value="risk">Risk</option>
-                </select>
-                <input className="fld" name="description" placeholder="Description (optional)" />
-                <button className="btn btn--acc" type="submit" style={{ width: "fit-content" }}>
-                  Save flag
-                </button>
-              </form>
-            </div>
+            <DataTable
+              id="settings-flags-tbl"
+              columns={
+                [
+                  { id: "glyph", label: "", width: 40, minWidth: 40, resizable: false, icon: true },
+                  { id: "label", label: "Label", width: 280 },
+                  { id: "type", label: "Type", width: 120 },
+                  { id: "description", label: "Description", width: 280 },
+                  { id: "used", label: "Used on", width: 80, align: "right" },
+                  { id: "actions", label: "", width: 130, minWidth: 130, resizable: false },
+                ] as DataTableColumn[]
+              }
+            >
+              {flags.map((f) => {
+                const chipClass = f.color ? `chip chip--${f.color}` : (FLAG_TYPE_CHIP[f.type] ?? "chip");
+                return (
+                  <tr key={f.id}>
+                    <td className="icon">{f.glyph ?? ""}</td>
+                    <td>
+                      <span className={chipClass}>{f.label}</span>
+                    </td>
+                    <td style={{ color: "var(--text-dim)" }}>{f.type}</td>
+                    <td style={{ color: "var(--text-dim)" }}>{f.description || "—"}</td>
+                    <td className="n">{f._count.projectFlags}</td>
+                    <td>
+                      <div className="flex items-center gap-2 justify-end">
+                        <Link href={`?view=flags&flag=${f.id}`} className="btn btn--sm btn--gh">
+                          Edit
+                        </Link>
+                        <form
+                          action={async () => {
+                            "use server";
+                            await deleteFlag(f.id);
+                          }}
+                        >
+                          <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                            Delete
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </DataTable>
+            <Suspense fallback={null}>
+              <FlagModal flags={flags.map((f) => ({ id: f.id, label: f.label, type: f.type, description: f.description, color: f.color, glyph: f.glyph }))} />
+            </Suspense>
           </div>
         )}
 
@@ -178,46 +194,71 @@ export default async function SettingsPage({
         )}
 
         {view === "tags" && (
-          <div className="flex flex-col gap-6" style={{ maxWidth: 520 }}>
-            <div>
-              <div className="lbl" style={{ marginBottom: 8 }}>
-                {tags.length} project tags
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                {tags.map((t) => (
-                  <span key={t.id} className="chip" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                    {t.name}
-                    <form
-                      action={async () => {
-                        "use server";
-                        await deleteTag(t.id);
-                      }}
-                    >
-                      <button type="submit" style={{ all: "unset", cursor: "pointer", color: "var(--danger-text)" }}>
-                        ×
-                      </button>
-                    </form>
-                  </span>
-                ))}
+          <div className="flex flex-col gap-4" style={{ maxWidth: 640 }}>
+            <div className="flex items-center justify-between">
+              <div className="lbl">{tags.length} project tags</div>
+              <div className="flex items-center gap-2">
+                <a className="btn btn--sm btn--gh" href="/api/tags/export">
+                  Export CSV
+                </a>
+                <form
+                  action={async (fd) => {
+                    "use server";
+                    await importTagsCsv(fd);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <input className="fld" name="file" type="file" accept=".csv,text/csv" required style={{ width: 160, fontSize: 11.5 }} />
+                  <button className="btn btn--sm btn--gh" type="submit">
+                    Import CSV
+                  </button>
+                </form>
               </div>
             </div>
-            <div className="card">
-              <div className="lbl" style={{ marginBottom: 10 }}>
-                New tag
-              </div>
-              <form
-                action={async (fd) => {
-                  "use server";
-                  await createTag(fd);
-                }}
-                className="flex gap-3"
-              >
-                <input className="fld" name="name" placeholder="Name" required />
-                <button className="btn btn--acc" type="submit">
-                  Add tag
-                </button>
-              </form>
-            </div>
+            <DataTable
+              id="settings-tags-tbl"
+              columns={
+                [
+                  { id: "name", label: "Name", width: 260 },
+                  { id: "used", label: "Used on", width: 90, align: "right" },
+                  { id: "actions", label: "", width: 90, minWidth: 90, resizable: false },
+                ] as DataTableColumn[]
+              }
+            >
+              {TAG_TYPE_ORDER.map((type) => {
+                const groupTags = tags.filter((t) => t.type === type).sort((a, b) => a.name.localeCompare(b.name));
+                if (groupTags.length === 0) return null;
+                return (
+                  <Fragment key={type}>
+                    <tr style={{ background: "var(--bg-inset)" }}>
+                      <td colSpan={3} style={{ fontWeight: 700 }}>
+                        {TAG_TYPE_LABEL[type]}
+                      </td>
+                    </tr>
+                    {groupTags.map((t) => (
+                      <tr key={t.id}>
+                        <td>{t.name}</td>
+                        <td className="n">{t._count.projectTags}</td>
+                        <td>
+                          <form
+                            action={async () => {
+                              "use server";
+                              await deleteTag(t.id);
+                            }}
+                            style={{ textAlign: "right" }}
+                          >
+                            <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                              Delete
+                            </button>
+                          </form>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
+                );
+              })}
+              <TagAddRow colSpan={3} />
+            </DataTable>
           </div>
         )}
 

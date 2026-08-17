@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
-import { FlagType } from "@/generated/prisma/enums";
+import { FlagType, TagType } from "@/generated/prisma/enums";
 import { saveFile } from "@/lib/storage";
 
 function str(fd: FormData, key: string): string {
@@ -36,7 +36,31 @@ export async function createFlag(formData: FormData) {
   const type = str(formData, "type") as FlagType;
   if (!label) return;
   await prisma.flag.create({
-    data: { label, type, description: str(formData, "description") || null },
+    data: {
+      label,
+      type,
+      description: str(formData, "description") || null,
+      color: str(formData, "color") || null,
+      glyph: str(formData, "glyph") || null,
+    },
+  });
+  revalidatePath("/settings");
+}
+
+// "allow edit of existing there is no edit only delete" (S-batch #52).
+export async function updateFlag(id: string, formData: FormData) {
+  const label = str(formData, "label");
+  const type = str(formData, "type") as FlagType;
+  if (!label) return;
+  await prisma.flag.update({
+    where: { id },
+    data: {
+      label,
+      type,
+      description: str(formData, "description") || null,
+      color: str(formData, "color") || null,
+      glyph: str(formData, "glyph") || null,
+    },
   });
   revalidatePath("/settings");
 }
@@ -62,13 +86,41 @@ export async function deleteTrade(id: string) {
 export async function createTag(formData: FormData) {
   const name = str(formData, "name");
   if (!name) return;
-  await prisma.tag.create({ data: { name } });
+  const type = (str(formData, "type") || "special") as TagType;
+  await prisma.tag.create({ data: { name, type } });
   revalidatePath("/settings");
 }
 
 export async function deleteTag(id: string) {
   await prisma.projectTag.deleteMany({ where: { tagId: id } });
   await prisma.tag.delete({ where: { id } });
+  revalidatePath("/settings");
+}
+
+const TAG_TYPES: TagType[] = ["location", "requirement", "project_type", "contract_type", "special"];
+
+// CSV import (S-batch #54) — two columns, name,type. Unknown/blank type
+// falls back to "special" rather than rejecting the row, since a partial
+// import (owner's own export re-uploaded, or a quick list without a type
+// column) should still add the tags.
+export async function importTagsCsv(formData: FormData) {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return;
+
+  const text = await file.text();
+  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const startIdx = lines[0]?.toLowerCase().startsWith("name") ? 1 : 0;
+
+  for (const line of lines.slice(startIdx)) {
+    const [rawName, rawType] = line.split(",").map((c) => c.trim().replace(/^"|"$/g, ""));
+    if (!rawName) continue;
+    const type = TAG_TYPES.includes(rawType as TagType) ? (rawType as TagType) : "special";
+    await prisma.tag.upsert({
+      where: { name: rawName },
+      update: { type },
+      create: { name: rawName, type },
+    });
+  }
   revalidatePath("/settings");
 }
 

@@ -624,6 +624,13 @@ model Flag {
   type          FlagType
   description   String?
   parseKeywords String[]
+  // "allow customization of tag and add glyph" (S-batch #52) — color
+  // overrides the type-derived chip style when set (one of the existing
+  // chip variant suffixes: dgr/info/risk/ok/acc); glyph is a short
+  // emoji/character shown in the chip. Both optional — null falls back
+  // to the type-derived default.
+  color         String?
+  glyph         String?
 
   projectFlags ProjectFlag[]
 }
@@ -644,9 +651,20 @@ model Trade {
   csiCode String?
 }
 
+// "sort tags by types and group by types [location tags, requirement
+// tags, project types, contract type, special tags]" (S-batch #54).
+enum TagType {
+  location
+  requirement
+  project_type
+  contract_type
+  special
+}
+
 model Tag {
-  id   String @id @default(cuid())
-  name String @unique
+  id   String  @id @default(cuid())
+  name String  @unique
+  type TagType @default(special)
 
   projectTags ProjectTag[]
 }
