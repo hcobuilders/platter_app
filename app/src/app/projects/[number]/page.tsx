@@ -63,8 +63,8 @@ export default async function ProjectOverviewPage({
   const totalBudget = project.budgetLines.reduce((sum, b) => sum + b.current, 0n);
 
   return (
-    <div className="flex flex-col gap-8 max-w-4xl">
-      <section>
+    <div className="flex flex-col gap-5 max-w-4xl">
+      <section className="card">
         <div className="lbl">Project</div>
         <div className="cf mt-2">
           <Field label="Owner" value={project.owner} />
@@ -76,7 +76,7 @@ export default async function ProjectOverviewPage({
         </div>
       </section>
 
-      <section>
+      <section className="card">
         <div className="lbl" style={{ marginBottom: 8 }}>
           Address
         </div>
@@ -107,13 +107,11 @@ export default async function ProjectOverviewPage({
         )}
       </section>
 
-      <section>
+      <section className="card">
         <div className="lbl" style={{ marginBottom: 8 }}>
           Key dates
         </div>
-        <div className="card" style={{ padding: "10px 4px 16px" }}>
-          <KeyDatesTimeline dates={project.dates} />
-        </div>
+        <KeyDatesTimeline dates={project.dates} />
         {project.dates.length > 0 && (
           <div className="mt-3 flex flex-col gap-2">
             {project.dates.map((d) => (
@@ -131,7 +129,7 @@ export default async function ProjectOverviewPage({
         )}
       </section>
 
-      <section>
+      <section className="card">
         <div className="lbl" style={{ marginBottom: 8 }}>
           Bonding
         </div>
@@ -165,7 +163,7 @@ export default async function ProjectOverviewPage({
         </p>
       </section>
 
-      <section>
+      <section className="card">
         <div className="lbl" style={{ marginBottom: 8 }}>
           Flags
         </div>
@@ -237,7 +235,7 @@ export default async function ProjectOverviewPage({
         ))}
       </section>
 
-      <section>
+      <section className="card">
         <div className="lbl" style={{ marginBottom: 8 }}>
           Hot items
         </div>
@@ -265,7 +263,7 @@ export default async function ProjectOverviewPage({
             </div>
           ))}
         </div>
-        <div className="card" style={{ marginTop: 12, maxWidth: 520 }}>
+        <div style={{ marginTop: 12, maxWidth: 520, borderTop: "1px solid var(--border-hairline)", paddingTop: 14 }}>
           <div className="lbl" style={{ marginBottom: 10 }}>
             Add hot item
           </div>
@@ -288,9 +286,11 @@ export default async function ProjectOverviewPage({
         </div>
       </section>
 
-      <section>
-        <div className="lbl">Bid packages</div>
-        <table className="tbl mt-2">
+      <section className="card" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="lbl" style={{ padding: "16px 16px 0" }}>
+          Bid packages
+        </div>
+        <table className="tbl mt-2" style={{ borderRadius: 0 }}>
           <thead>
             <tr>
               <th>Code</th>
@@ -323,12 +323,12 @@ export default async function ProjectOverviewPage({
             })}
           </tbody>
         </table>
-        <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 8 }}>
+        <p style={{ fontSize: 11.5, color: "var(--text-faint)", padding: "8px 16px 16px" }}>
           Click a package to open its bid tab. Bond requirements for a package show there now, not here.
         </p>
       </section>
 
-      <section>
+      <section className="card">
         <div className="lbl">Current budget total</div>
         <div className="mono" style={{ fontSize: 22, fontWeight: 700, marginTop: 4 }}>
           {formatCents(totalBudget)}
