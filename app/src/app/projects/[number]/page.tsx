@@ -105,6 +105,7 @@ export default async function ProjectOverviewPage({
               bondPct: project.bondPct,
               retainagePct: project.retainagePct,
               contractDays: project.contractDays,
+              squareFootage: project.squareFootage,
             }}
           />
 

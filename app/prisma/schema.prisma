@@ -53,6 +53,10 @@ model Project {
   // for now, set once verified. The clock itself starts at the
   // notice_to_proceed ProjectDate (below), not stored here.
   contractDays      Int?
+  // Bid Tab "Base Bid"/"Leveled Price" summary rows show a $/sf figure
+  // alongside the flat total (S-batch #70, from the owner's reference
+  // screenshot) — needs a real building area to divide by.
+  squareFootage     Int?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 

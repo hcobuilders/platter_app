@@ -22,6 +22,7 @@ type ProjectFieldValues = {
   bondPct: number | null;
   retainagePct: number | null;
   contractDays: number | null;
+  squareFootage: number | null;
 };
 
 export async function updateProjectField<K extends keyof ProjectFieldValues>(

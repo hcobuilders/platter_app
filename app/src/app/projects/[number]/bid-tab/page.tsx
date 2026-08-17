@@ -5,6 +5,7 @@ import { acceptPlug, acceptSubAddedAsScopeLine, trackOnlySubAdded, setLineInclud
 import { updatePackageBonding } from "../actions";
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
 import { BidCellInput } from "./BidCellInput";
+import { ScopeSheetRows } from "./ScopeSheetRows";
 import { AutoSubmitCheckbox } from "@/components/AutoSubmitCheckbox";
 import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 
@@ -42,7 +43,7 @@ async function getPackage(number: string, packageCode?: string) {
     ? project.bidPackages.find((p) => p.code === packageCode)
     : project.bidPackages[0];
   if (!pkg) return null;
-  return { pkg, projectPAndPMode: project.pAndPMode };
+  return { pkg, projectPAndPMode: project.pAndPMode, squareFootage: project.squareFootage };
 }
 
 const KIND_LABEL: Record<string, string> = {
@@ -62,6 +63,15 @@ const SOURCE_LABEL: Record<string, string> = {
   ours: "GC est.",
 };
 
+// "$0.00/sf" alongside each summary total (owner's reference screenshot,
+// S-batch #70) — blank without a real building area rather than dividing
+// by a placeholder.
+function perSfLabel(cents: bigint, squareFootage: number | null): string | null {
+  if (!squareFootage || squareFootage <= 0) return null;
+  const perSf = Number(cents) / 100 / squareFootage;
+  return `${perSf.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 })}/sf`;
+}
+
 export default async function BidTabPage({
   params,
   searchParams,
@@ -73,7 +83,7 @@ export default async function BidTabPage({
   const { package: packageCode } = await searchParams;
   const result = await getPackage(number, packageCode);
   if (!result) notFound();
-  const { pkg, projectPAndPMode } = result;
+  const { pkg, projectPAndPMode, squareFootage } = result;
 
   const invitations = pkg.invitations;
   const effectivePAndP = pkg.pAndPMode ?? projectPAndPMode;
@@ -123,6 +133,27 @@ export default async function BidTabPage({
       else complete = false;
     }
     return { total, complete };
+  }
+  // "Leveled Price" (owner's reference screenshot, S-batch #70) — the
+  // industry term for normalizing bids to a common scope basis so they're
+  // comparable: fill any gap with the same recommended-plug estimate
+  // already used for the per-cell "Accept plug" action, so an incomplete
+  // bid still gets a comparable total instead of blocking the row on
+  // "Incomplete". Only actually incomplete if a gap has no peer bids to
+  // plug from at all.
+  function leveledTotal(invId: string): { total: bigint; complete: boolean } {
+    let total = 0n;
+    for (const line of inclusionLines) {
+      const matched = matchedByInvitation.get(invId)?.get(line.id);
+      if (matched && matched.included) {
+        total += matched.amount;
+        continue;
+      }
+      const plug = recommendedPlug(line.id, invId);
+      if (plug === null) return { total, complete: false };
+      total += plug;
+    }
+    return { total, complete: true };
   }
   // Base bid plus whichever alternates/VA options the GC has accepted (per
   // the toggle above) — the number that actually reflects a decision, not
@@ -256,103 +287,20 @@ export default async function BidTabPage({
 
       {(() => {
         const columns: DataTableColumn[] = [
-          { id: "desc", label: `${pkg.code} — ${pkg.name}`, sticky: true, width: 220, minWidth: 160 },
+          { id: "desc", label: "Line Items", sticky: true, width: 220, minWidth: 160 },
+          { id: "qty", label: "Required Qty", width: 90, align: "right" },
+          { id: "unit", label: "Units", width: 70 },
           ...invitations.map((inv): DataTableColumn => ({ id: inv.id, label: inv.subcontractor.name, width: 150, minWidth: 100 })),
         ];
+        const colSpan = columns.length;
         return (
           <DataTable id="bidtab-tbl" columns={columns} dense>
-            {pkg.scopeLineItems.map((line, rowIdx) => (
-              <tr key={line.id}>
-                <td className="dt-sticky">
-                  {line.description}{" "}
-                  <span className={`kb kb--${line.kind}`} style={{ marginLeft: 4 }}>
-                    {KIND_LABEL[line.kind]}
-                  </span>
-                </td>
-                {invitations.map((inv, colIdx) => {
-                  if (inv.intent === "no_bid") {
-                    return (
-                      <td key={inv.id} className="ctr" style={{ color: "var(--text-faint)" }}>
-                        No bid
-                      </td>
-                    );
-                  }
-                  if (!inv.bids[0]) {
-                    return (
-                      <td key={inv.id} className="ctr" style={{ color: "var(--text-faint)" }}>
-                        Pending
-                      </td>
-                    );
-                  }
-                  const matched = matchedByInvitation.get(inv.id)?.get(line.id);
-                  if (!matched) {
-                    const plug = recommendedPlug(line.id, inv.id);
-                    return (
-                      <td key={inv.id} className="wrap">
-                        <span className="gapc">Gap</span>
-                        {plug !== null && (
-                          <form
-                            action={async () => {
-                              "use server";
-                              await acceptPlug(number, inv.bids[0].id, line.id, plug);
-                            }}
-                            className="mt-1"
-                          >
-                            <div style={{ fontSize: 10.5, color: "var(--text-dim)" }}>
-                              Suggest {formatCents(plug)}
-                            </div>
-                            <button className="btn btn--sm btn--acc mt-1" type="submit">
-                              Accept plug
-                            </button>
-                          </form>
-                        )}
-                      </td>
-                    );
-                  }
-                  const isAltOrVA = line.kind === "alternate" || line.kind === "va_option";
-                  return (
-                    <td key={inv.id} className="n wrap">
-                      <div style={matched.included ? undefined : { opacity: 0.5, textDecoration: "line-through" }}>
-                        <BidCellInput
-                          bidLineId={matched.id}
-                          projectNumber={number}
-                          defaultAmountCents={matched.amount}
-                          row={rowIdx}
-                          col={colIdx}
-                        />
-                      </div>
-                      <div className={`srcb srcb--${matched.source}`}>
-                        <i />
-                        {SOURCE_LABEL[matched.source]}
-                        {matched.confidence ? ` · ${matched.confidence.toFixed(2)}` : ""}
-                      </div>
-                      {isAltOrVA && (
-                        <form
-                          action={async () => {
-                            "use server";
-                            await setLineIncluded(number, matched.id, !matched.included);
-                          }}
-                          className="mt-1"
-                        >
-                          <button
-                            type="submit"
-                            className={matched.included ? "chip chip--ok" : "chip chip--dgr"}
-                            style={{ cursor: "pointer", border: "none" }}
-                            title="GC decision — click to toggle whether this alternate/VA price counts toward the budget"
-                          >
-                            {matched.included ? "Included in budget" : "Not included"}
-                          </button>
-                        </form>
-                      )}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
             <tr>
               <td className="dt-sticky" style={{ fontWeight: 700 }}>
-                Package total (included)
+                Base Bid
               </td>
+              <td />
+              <td />
               {invitations.map((inv) => {
                 if (inv.intent === "no_bid" || !inv.bids[0]) {
                   return (
@@ -362,18 +310,46 @@ export default async function BidTabPage({
                   );
                 }
                 const { total, complete } = packageTotal(inv.id);
+                const sf = complete ? perSfLabel(total, squareFootage) : null;
                 return (
-                  <td key={inv.id} className="n" style={{ fontWeight: 700, color: complete ? undefined : "var(--danger-text)" }}>
+                  <td key={inv.id} className="n wrap" style={{ fontWeight: 700, color: complete ? undefined : "var(--danger-text)" }}>
                     {complete ? formatCents(total) : "Incomplete"}
+                    {sf && <div style={{ fontSize: 10.5, fontWeight: 400, color: "var(--text-dim)" }}>{sf}</div>}
+                  </td>
+                );
+              })}
+            </tr>
+            <tr>
+              <td className="dt-sticky" style={{ fontWeight: 700 }}>
+                Leveled Price
+              </td>
+              <td />
+              <td />
+              {invitations.map((inv) => {
+                if (inv.intent === "no_bid" || !inv.bids[0]) {
+                  return (
+                    <td key={inv.id} className="ctr">
+                      —
+                    </td>
+                  );
+                }
+                const { total, complete } = leveledTotal(inv.id);
+                const sf = complete ? perSfLabel(total, squareFootage) : null;
+                return (
+                  <td key={inv.id} className="n wrap" style={{ fontWeight: 700, color: complete ? undefined : "var(--danger-text)" }}>
+                    {complete ? formatCents(total) : "Incomplete"}
+                    {sf && <div style={{ fontSize: 10.5, fontWeight: 400, color: "var(--text-dim)" }}>{sf}</div>}
                   </td>
                 );
               })}
             </tr>
             {altVaLines.length > 0 && (
               <tr>
-                <td className="dt-sticky" style={{ fontWeight: 700, color: "var(--text-dim)" }}>
+                <td className="dt-sticky" style={{ color: "var(--text-dim)" }}>
                   + accepted alternates/VA
                 </td>
+                <td />
+                <td />
                 {invitations.map((inv) => {
                   if (inv.intent === "no_bid" || !inv.bids[0]) {
                     return (
@@ -384,13 +360,11 @@ export default async function BidTabPage({
                   }
                   const { total, complete, acceptedCount } = totalWithAccepted(inv.id);
                   return (
-                    <td key={inv.id} className="n wrap" style={{ fontWeight: 700, color: complete ? "var(--text-dim)" : "var(--danger-text)" }}>
+                    <td key={inv.id} className="n wrap" style={{ color: complete ? "var(--text-dim)" : "var(--danger-text)" }}>
                       {complete ? (
                         <>
                           {formatCents(total)}
-                          <div style={{ fontSize: 10.5, fontWeight: 400 }}>
-                            {acceptedCount} accepted
-                          </div>
+                          <div style={{ fontSize: 10.5 }}>{acceptedCount} accepted</div>
                         </>
                       ) : (
                         "Incomplete"
@@ -400,6 +374,96 @@ export default async function BidTabPage({
                 })}
               </tr>
             )}
+            <ScopeSheetRows colSpan={colSpan}>
+              {pkg.scopeLineItems.map((line, rowIdx) => (
+                <tr key={line.id}>
+                  <td className="dt-sticky">
+                    {line.description}{" "}
+                    <span className={`kb kb--${line.kind}`} style={{ marginLeft: 4 }}>
+                      {KIND_LABEL[line.kind]}
+                    </span>
+                  </td>
+                  <td className="n">{line.qty ?? ""}</td>
+                  <td>{line.unit ?? ""}</td>
+                  {invitations.map((inv, colIdx) => {
+                    if (inv.intent === "no_bid") {
+                      return (
+                        <td key={inv.id} className="ctr" style={{ color: "var(--text-faint)" }}>
+                          No bid
+                        </td>
+                      );
+                    }
+                    if (!inv.bids[0]) {
+                      return (
+                        <td key={inv.id} className="ctr" style={{ color: "var(--text-faint)" }}>
+                          Pending
+                        </td>
+                      );
+                    }
+                    const matched = matchedByInvitation.get(inv.id)?.get(line.id);
+                    if (!matched) {
+                      const plug = recommendedPlug(line.id, inv.id);
+                      return (
+                        <td key={inv.id} className="wrap">
+                          <span className="gapc">Gap</span>
+                          {plug !== null && (
+                            <form
+                              action={async () => {
+                                "use server";
+                                await acceptPlug(number, inv.bids[0].id, line.id, plug);
+                              }}
+                              className="mt-1"
+                            >
+                              <div style={{ fontSize: 10.5, color: "var(--text-dim)" }}>Suggest {formatCents(plug)}</div>
+                              <button className="btn btn--sm btn--acc mt-1" type="submit">
+                                Accept plug
+                              </button>
+                            </form>
+                          )}
+                        </td>
+                      );
+                    }
+                    const isAltOrVA = line.kind === "alternate" || line.kind === "va_option";
+                    return (
+                      <td key={inv.id} className="n wrap">
+                        <div style={matched.included ? undefined : { opacity: 0.5, textDecoration: "line-through" }}>
+                          <BidCellInput
+                            bidLineId={matched.id}
+                            projectNumber={number}
+                            defaultAmountCents={matched.amount}
+                            row={rowIdx}
+                            col={colIdx}
+                          />
+                        </div>
+                        <div className={`srcb srcb--${matched.source}`}>
+                          <i />
+                          {SOURCE_LABEL[matched.source]}
+                          {matched.confidence ? ` · ${matched.confidence.toFixed(2)}` : ""}
+                        </div>
+                        {isAltOrVA && (
+                          <form
+                            action={async () => {
+                              "use server";
+                              await setLineIncluded(number, matched.id, !matched.included);
+                            }}
+                            className="mt-1"
+                          >
+                            <button
+                              type="submit"
+                              className={matched.included ? "chip chip--ok" : "chip chip--dgr"}
+                              style={{ cursor: "pointer", border: "none" }}
+                              title="GC decision — click to toggle whether this alternate/VA price counts toward the budget"
+                            >
+                              {matched.included ? "Included in budget" : "Not included"}
+                            </button>
+                          </form>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </ScopeSheetRows>
           </DataTable>
         );
       })()}
