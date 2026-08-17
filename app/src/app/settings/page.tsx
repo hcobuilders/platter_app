@@ -11,6 +11,7 @@ import { getBuildVersion } from "@/lib/version";
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
 import { FlagModal } from "./FlagModal";
 import { TagAddRow } from "./TagAddRow";
+import { TemplateModal } from "./TemplateModal";
 
 export const dynamic = "force-dynamic";
 
@@ -36,12 +37,13 @@ export default async function SettingsPage({
 }) {
   const { view = "flags" } = await searchParams;
 
-  const [flags, trades, tags, bidBondTemplate, projectTemplates, session] = await Promise.all([
+  const [flags, trades, tags, bidBondTemplate, projectTemplates, allProjects, session] = await Promise.all([
     prisma.flag.findMany({ orderBy: { label: "asc" }, include: { _count: { select: { projectFlags: true } } } }),
     prisma.trade.findMany({ orderBy: { name: "asc" } }),
     prisma.tag.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { projectTags: true } } } }),
     prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
     prisma.projectTemplate.findMany({ orderBy: { createdAt: "desc" }, include: { packages: true } }),
+    prisma.project.findMany({ orderBy: { number: "asc" }, select: { number: true, name: true } }),
     auth(),
   ]);
 
@@ -263,88 +265,109 @@ export default async function SettingsPage({
         )}
 
         {view === "templates" && (
-          <div className="flex flex-col gap-6" style={{ maxWidth: 520 }}>
-            <div>
-              <div className="lbl" style={{ marginBottom: 8 }}>
-                Bid bond template
-              </div>
-              {bidBondTemplate ? (
-                <div className="cclist">
-                  <span>
-                    {bidBondTemplate.filename}
-                    <span style={{ color: "var(--text-faint)", marginLeft: 8, fontSize: 11.5 }}>
-                      uploaded {bidBondTemplate.uploadedAt.toLocaleDateString()}
-                    </span>
-                  </span>
-                  <a href="/api/bid-bond-template" className="btn btn--sm">
-                    Download
-                  </a>
+          <div className="flex flex-col gap-6" style={{ maxWidth: 900 }}>
+            <div style={{ maxWidth: 520, display: "flex", flexDirection: "column", gap: 24 }}>
+              <div>
+                <div className="lbl" style={{ marginBottom: 8 }}>
+                  Bid bond template
                 </div>
-              ) : (
-                <p style={{ color: "var(--text-dim)", fontSize: 13 }}>No template uploaded yet.</p>
-              )}
-            </div>
-            <div className="card">
-              <div className="lbl" style={{ marginBottom: 10 }}>
-                {bidBondTemplate ? "Replace template" : "Upload template"}
+                {bidBondTemplate ? (
+                  <div className="cclist">
+                    <span>
+                      {bidBondTemplate.filename}
+                      <span style={{ color: "var(--text-faint)", marginLeft: 8, fontSize: 11.5 }}>
+                        uploaded {bidBondTemplate.uploadedAt.toLocaleDateString()}
+                      </span>
+                    </span>
+                    <a href="/api/bid-bond-template" className="btn btn--sm">
+                      Download
+                    </a>
+                  </div>
+                ) : (
+                  <p style={{ color: "var(--text-dim)", fontSize: 13 }}>No template uploaded yet.</p>
+                )}
               </div>
-              <form
-                action={async (fd) => {
-                  "use server";
-                  await uploadBidBondTemplate(fd);
-                }}
-                className="flex flex-col gap-3"
-              >
-                <input className="fld" name="template" type="file" required />
-                <button className="btn btn--acc" type="submit" style={{ width: "fit-content" }}>
-                  Upload
-                </button>
-              </form>
-              <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 10 }}>
-                Stored on the app&apos;s own volume for now — will move to SharePoint/OneDrive once
-                that integration is wired up. Shown as a download whenever a project or package has
-                &quot;Bid bond required&quot; checked.
-              </p>
+              <div className="card">
+                <div className="lbl" style={{ marginBottom: 10 }}>
+                  {bidBondTemplate ? "Replace template" : "Upload template"}
+                </div>
+                <form
+                  action={async (fd) => {
+                    "use server";
+                    await uploadBidBondTemplate(fd);
+                  }}
+                  className="flex flex-col gap-3"
+                >
+                  <input className="fld" name="template" type="file" required />
+                  <button className="btn btn--acc" type="submit" style={{ width: "fit-content" }}>
+                    Upload
+                  </button>
+                </form>
+                <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 10 }}>
+                  Stored on the app&apos;s own volume for now — will move to SharePoint/OneDrive once
+                  that integration is wired up. Shown as a download whenever a project or package has
+                  &quot;Bid bond required&quot; checked.
+                </p>
+              </div>
             </div>
 
             <div>
-              <div className="lbl" style={{ marginBottom: 8 }}>
-                Project templates
+              <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
+                <div className="lbl">Project templates</div>
+                <Link href="?view=templates&template=new" className="btn btn--acc btn--sm">
+                  + New template
+                </Link>
               </div>
-              <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginBottom: 10 }}>
-                Saved from a project&apos;s &quot;Duplicate as template&quot; card action — bid package
-                structure and bidder lists only, no cost data or scope line items. For setting up
-                future manual projects.
+              <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginBottom: 12 }}>
+                Bid package structure and bidder lists only, no cost data or scope line items. For
+                setting up future manual projects.
               </p>
               {projectTemplates.length === 0 ? (
                 <p style={{ color: "var(--text-dim)", fontSize: 13 }}>None saved yet.</p>
               ) : (
-                projectTemplates.map((t) => {
-                  const bidderCount = t.packages.reduce((sum, p) => sum + (Array.isArray(p.bidders) ? p.bidders.length : 0), 0);
-                  return (
-                    <div key={t.id} className="rule">
-                      <div className="rtxt">
-                        <b>{t.name}</b>
-                        <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>
-                          {t.packages.length} package{t.packages.length === 1 ? "" : "s"} · {bidderCount} bidder{bidderCount === 1 ? "" : "s"} ·
-                          saved {t.createdAt.toLocaleDateString()}
+                <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14, padding: 0 }}>
+                  {projectTemplates.map((t) => {
+                    const bidderCount = t.packages.reduce((sum, p) => sum + (Array.isArray(p.bidders) ? p.bidders.length : 0), 0);
+                    return (
+                      <div key={t.id} className="card" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>{t.name}</div>
+                        <p style={{ fontSize: 12.5, color: "var(--text-dim)", flex: 1, margin: 0 }}>
+                          {t.description || "No description."}
+                        </p>
+                        <div style={{ fontSize: 11, color: "var(--text-faint)" }}>
+                          {t.packages.length} package{t.packages.length === 1 ? "" : "s"} · {bidderCount} bidder{bidderCount === 1 ? "" : "s"}
+                        </div>
+                        <div style={{ fontSize: 11, color: "var(--text-faint)" }}>
+                          Saved {t.createdAt.toLocaleDateString()}
+                          {t.updatedAt.getTime() !== t.createdAt.getTime() && ` · revised ${t.updatedAt.toLocaleDateString()}`}
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Link href={`?view=templates&template=${t.id}`} className="btn btn--sm btn--gh">
+                            Edit
+                          </Link>
+                          <form
+                            action={async () => {
+                              "use server";
+                              await deleteProjectTemplate(t.id);
+                            }}
+                          >
+                            <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                              Delete
+                            </button>
+                          </form>
                         </div>
                       </div>
-                      <form
-                        action={async () => {
-                          "use server";
-                          await deleteProjectTemplate(t.id);
-                        }}
-                      >
-                        <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
-                          Delete
-                        </button>
-                      </form>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </div>
               )}
             </div>
+            <Suspense fallback={null}>
+              <TemplateModal
+                templates={projectTemplates.map((t) => ({ id: t.id, name: t.name, description: t.description }))}
+                projects={allProjects}
+              />
+            </Suspense>
           </div>
         )}
 

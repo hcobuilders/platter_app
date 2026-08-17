@@ -42,7 +42,9 @@ export async function unarchiveProject(projectNumber: string) {
 // previously-disabled "Duplicate as template" stub. Captures bid package
 // code/name/csiCodes and the invited bidder list only — deliberately no
 // cost data, project info, or scope line items, per the owner's spec.
-export async function saveProjectAsTemplate(projectNumber: string) {
+// Also reused by the Settings "+" create flow (S-batch #55), which is why
+// name/description are overridable rather than always auto-derived.
+export async function saveProjectAsTemplate(projectNumber: string, name?: string, description?: string) {
   const project = await prisma.project.findUnique({
     where: { number: projectNumber },
     include: {
@@ -55,7 +57,8 @@ export async function saveProjectAsTemplate(projectNumber: string) {
 
   await prisma.projectTemplate.create({
     data: {
-      name: `${project.name} — Template`,
+      name: name?.trim() || `${project.name} — Template`,
+      description: description?.trim() || null,
       sourceProject: project.name,
       packages: {
         create: project.bidPackages.map((pkg) => ({
@@ -76,5 +79,18 @@ export async function saveProjectAsTemplate(projectNumber: string) {
 
 export async function deleteProjectTemplate(templateId: string) {
   await prisma.projectTemplate.delete({ where: { id: templateId } });
+  revalidatePath("/settings");
+}
+
+// Card "Edit" button (S-batch #55) — rename/re-describe a saved template.
+// Package/bidder contents aren't editable here; re-save from the source
+// project (or a different one) if the contents need to change.
+export async function updateProjectTemplate(templateId: string, name: string, description: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  await prisma.projectTemplate.update({
+    where: { id: templateId },
+    data: { name: trimmed, description: description.trim() || null },
+  });
   revalidatePath("/settings");
 }
