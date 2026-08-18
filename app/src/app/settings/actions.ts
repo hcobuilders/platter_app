@@ -1,13 +1,20 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
-import { FlagType, TagType } from "@/generated/prisma/enums";
+import { FlagType, TagType, UserRole } from "@/generated/prisma/enums";
 import { saveFile } from "@/lib/storage";
 
 function str(fd: FormData, key: string): string {
   return String(fd.get(key) ?? "").trim();
+}
+
+async function requireAdmin() {
+  const session = await auth();
+  if (session?.user?.role !== "admin") throw new Error("Admin access required");
+  return session;
 }
 
 // Per-user profile section (S-batch #57) — name/phone/signature for the
@@ -225,6 +232,48 @@ export async function createScheduleStyle(formData: FormData) {
 
 export async function deleteScheduleStyle(id: string) {
   await prisma.scheduleStyle.delete({ where: { id } });
+  revalidatePath("/settings");
+}
+
+// Global user management (#74) — admin-only. There was previously no
+// in-app way to create a login at all once you needed something other
+// than the fixed roster seed-users.ts writes; this replaces that with a
+// real interface.
+export async function createUser(formData: FormData) {
+  await requireAdmin();
+
+  const name = str(formData, "name");
+  const email = str(formData, "email").toLowerCase();
+  const role = str(formData, "role") as UserRole;
+  const password = str(formData, "password");
+  if (!name || !email || !role || !password) return;
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  await prisma.user.create({ data: { name, email, role, passwordHash } });
+  revalidatePath("/settings");
+}
+
+export async function updateUser(id: string, formData: FormData) {
+  await requireAdmin();
+
+  const name = str(formData, "name");
+  const email = str(formData, "email").toLowerCase();
+  const role = str(formData, "role") as UserRole;
+  const password = str(formData, "password");
+  if (!name || !email || !role) return;
+
+  const passwordHash = password ? await bcrypt.hash(password, 10) : undefined;
+  await prisma.user.update({
+    where: { id },
+    data: { name, email, role, ...(passwordHash ? { passwordHash } : {}) },
+  });
+  revalidatePath("/settings");
+}
+
+export async function deleteUser(id: string) {
+  const session = await requireAdmin();
+  if (session.user.id === id) return;
+  await prisma.user.delete({ where: { id } });
   revalidatePath("/settings");
 }
 

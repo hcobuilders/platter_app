@@ -11,6 +11,7 @@ import {
   importTagsCsv,
   createScheduleStyle,
   deleteScheduleStyle,
+  deleteUser,
 } from "./actions";
 import { deleteProjectTemplate } from "@/app/actions";
 import { AccountMenu, ROLE_LABEL } from "@/components/AccountMenu";
@@ -22,6 +23,7 @@ import { DeleteFlagModal } from "./DeleteFlagModal";
 import { TagAddRow } from "./TagAddRow";
 import { TemplateModal } from "./TemplateModal";
 import { PackageBuilder } from "./PackageBuilder";
+import { UserModal } from "./UserModal";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +49,7 @@ export default async function SettingsPage({
 }) {
   const { view = "flags" } = await searchParams;
 
-  const [flags, packageTemplates, tags, bidBondTemplate, projectTemplates, allProjects, scheduleStyles, session] = await Promise.all([
+  const [flags, packageTemplates, tags, bidBondTemplate, projectTemplates, allProjects, scheduleStyles, users, session] = await Promise.all([
     prisma.flag.findMany({ orderBy: { label: "asc" }, include: { _count: { select: { projectFlags: true } } } }),
     prisma.packageTemplate.findMany({ orderBy: { name: "asc" } }),
     prisma.tag.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { projectTags: true } } } }),
@@ -55,6 +57,7 @@ export default async function SettingsPage({
     prisma.projectTemplate.findMany({ orderBy: { createdAt: "desc" }, include: { packages: true } }),
     prisma.project.findMany({ orderBy: { number: "asc" }, select: { number: true, name: true } }),
     prisma.scheduleStyle.findMany({ orderBy: { name: "asc" } }),
+    prisma.user.findMany({ orderBy: { name: "asc" } }),
     auth(),
   ]);
 
@@ -100,6 +103,11 @@ export default async function SettingsPage({
           <a href="?view=schedule" className={view === "schedule" ? "on" : undefined}>
             Schedule
           </a>
+          {currentUser?.role === "admin" && (
+            <a href="?view=users" className={view === "users" ? "on" : undefined}>
+              Users
+            </a>
+          )}
           <a href="?view=account" className={view === "account" ? "on" : undefined}>
             Account
           </a>
@@ -424,6 +432,58 @@ export default async function SettingsPage({
                 </tr>
               ))}
             </DataTable>
+          </div>
+        )}
+
+        {view === "users" && currentUser?.role === "admin" && (
+          <div className="flex flex-col gap-4" style={{ maxWidth: 760 }}>
+            <div className="flex items-center justify-between">
+              <div className="lbl">{users.length} users</div>
+              <Link href="?view=users&user=new" className="btn btn--acc btn--sm">
+                + New user
+              </Link>
+            </div>
+            <DataTable
+              id="settings-users-tbl"
+              columns={
+                [
+                  { id: "name", label: "Name", width: 200 },
+                  { id: "email", label: "Email", width: 240 },
+                  { id: "role", label: "Role", width: 160 },
+                  { id: "actions", label: "", width: 130, minWidth: 130, resizable: false },
+                ] as DataTableColumn[]
+              }
+            >
+              {users.map((u) => (
+                <tr key={u.id}>
+                  <td>{u.name}</td>
+                  <td style={{ color: "var(--text-dim)" }}>{u.email}</td>
+                  <td style={{ color: "var(--text-dim)" }}>{ROLE_LABEL[u.role] ?? u.role}</td>
+                  <td>
+                    <div className="flex items-center gap-2 justify-end">
+                      <Link href={`?view=users&user=${u.id}`} className="btn btn--sm btn--gh">
+                        Edit
+                      </Link>
+                      {u.id !== currentUser.id && (
+                        <form
+                          action={async () => {
+                            "use server";
+                            await deleteUser(u.id);
+                          }}
+                        >
+                          <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                            Delete
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </DataTable>
+            <Suspense fallback={null}>
+              <UserModal users={users.map((u) => ({ id: u.id, name: u.name, email: u.email, role: u.role }))} />
+            </Suspense>
           </div>
         )}
 
