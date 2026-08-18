@@ -38,6 +38,20 @@ export async function unarchiveProject(projectNumber: string) {
   revalidatePath("/");
 }
 
+// Dashboard card drag-to-reorder (S-notes v135a475): admin-only, one order
+// shared by every user — same singleton-settings shape as the schedule row
+// height setting.
+export async function setDashboardOrder(order: string[]) {
+  const session = await auth();
+  if (session?.user?.role !== "admin") throw new Error("Admin access required");
+  await prisma.dashboardLayoutSetting.upsert({
+    where: { key: "global" },
+    create: { key: "global", order },
+    update: { order },
+  });
+  revalidatePath("/");
+}
+
 // "Save as template" (S-batch #72) — wires up the dashboard kebab's
 // previously-disabled "Duplicate as template" stub. Captures bid package
 // code/name/csiCodes and the invited bidder list only — deliberately no
@@ -83,8 +97,6 @@ export async function deleteProjectTemplate(templateId: string) {
 }
 
 // Card "Edit" button (S-batch #55) — rename/re-describe a saved template.
-// Package/bidder contents aren't editable here; re-save from the source
-// project (or a different one) if the contents need to change.
 export async function updateProjectTemplate(templateId: string, name: string, description: string) {
   const trimmed = name.trim();
   if (!trimmed) return;
@@ -92,5 +104,23 @@ export async function updateProjectTemplate(templateId: string, name: string, de
     where: { id: templateId },
     data: { name: trimmed, description: description.trim() || null },
   });
+  revalidatePath("/settings");
+}
+
+// S-notes v135a475: "i should be able to view and edit the project
+// templates" — the edit modal only covered name/description; this exposes
+// the captured packages/bidders too so a stale package or bidder can be
+// dropped without deleting and re-saving the whole template.
+export async function removeTemplatePackage(templatePackageId: string) {
+  await prisma.templatePackage.delete({ where: { id: templatePackageId } });
+  revalidatePath("/settings");
+}
+
+export async function removeTemplateBidder(templatePackageId: string, bidderIndex: number) {
+  const pkg = await prisma.templatePackage.findUnique({ where: { id: templatePackageId } });
+  if (!pkg) return;
+  const bidders = Array.isArray(pkg.bidders) ? pkg.bidders : [];
+  const next = bidders.filter((_, i) => i !== bidderIndex);
+  await prisma.templatePackage.update({ where: { id: templatePackageId }, data: { bidders: next } });
   revalidatePath("/settings");
 }

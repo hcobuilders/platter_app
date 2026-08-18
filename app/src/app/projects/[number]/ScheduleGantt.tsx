@@ -91,6 +91,10 @@ export function ScheduleGantt({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [menuFor, setMenuFor] = useState<{ id: string; x: number; y: number } | null>(null);
+  // Lazy-initialized rather than a bare Date.now() call, which the render
+  // purity lint rule (react-hooks) rightly flags — a "today" marker only
+  // needs to be current as of mount, not live-updating every re-render.
+  const [now] = useState(() => Date.now());
 
   const rowHControl = (
     <div className="flex items-center gap-1" style={{ fontSize: 11, color: "var(--text-faint)" }}>
@@ -117,8 +121,16 @@ export function ScheduleGantt({
 
   if (activities.length === 0) {
     return (
-      <div>
-        <p style={{ color: "var(--text-dim)", fontSize: 13 }}>No schedule imported yet.</p>
+      <div className="gantt-empty">
+        <div className="gantt-empty__glyph" aria-hidden>
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="15" rx="2" />
+            <path d="M3 10h18M7 5v-1M17 5v-1" />
+            <rect x="6" y="13" width="6" height="3" rx="1" />
+          </svg>
+        </div>
+        <p style={{ color: "var(--text-dim)", fontSize: 13, margin: 0 }}>No schedule imported yet.</p>
+        <p style={{ color: "var(--text-faint)", fontSize: 11.5, margin: 0 }}>Import a Primavera P6 (.xer) export to populate this chart.</p>
       </div>
     );
   }
@@ -139,50 +151,63 @@ export function ScheduleGantt({
   const rangeSpan = span + pad * 2;
   const rowH = rowHeight;
   const headerRowH = 24;
+  const axisH = 26;
+
+  // Six evenly-spaced date ticks across the visible range — gives the
+  // chart pane an actual axis instead of a blank strip, and doubles as
+  // the vertical gridlines behind the bars (a real Gantt reads left→right
+  // against a scale, not just as a stack of floating pills).
+  const TICK_COUNT = 6;
+  const ticks = Array.from({ length: TICK_COUNT + 1 }, (_, i) => {
+    const t = rangeMin + (rangeSpan * i) / TICK_COUNT;
+    return { pct: (i / TICK_COUNT) * 100, label: new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric" }) };
+  });
+  const todayPct = now >= rangeMin && now <= rangeMin + rangeSpan ? ((now - rangeMin) / rangeSpan) * 100 : null;
 
   const menuActivity = menuFor ? activities.find((a) => a.id === menuFor.id) : null;
   const otherActivities = menuActivity ? activities.filter((a) => a.id !== menuActivity.id) : [];
+
+  const Gridlines = (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+      {ticks.map((t, i) => (
+        <div key={i} style={{ position: "absolute", left: `${t.pct}%`, top: 0, bottom: 0, width: 1, background: "var(--border-hairline)" }} />
+      ))}
+      {todayPct != null && (
+        <div
+          title={`Today — ${new Date(now).toLocaleDateString()}`}
+          style={{ position: "absolute", left: `${todayPct}%`, top: 0, bottom: 0, width: 2, background: "var(--accent-fill)", opacity: 0.65 }}
+        />
+      )}
+    </div>
+  );
 
   return (
     <div>
       <div className="flex justify-end" style={{ marginBottom: 8 }}>
         {rowHControl}
       </div>
-      <div className="flex" style={{ border: "1px solid var(--border)", borderRadius: "var(--r-md)", overflow: "hidden" }}>
-        <div style={{ width: 340, flexShrink: 0, borderRight: "1px solid var(--border)" }}>
-          <div
-            className="lbl flex items-center"
-            style={{ height: 28, padding: "0 10px", background: "var(--bg-inset)", borderBottom: "1px solid var(--border)" }}
-          >
+      <div className="gantt" style={{ boxShadow: "var(--e-1)" }}>
+        <div className="gantt__pane gantt__pane--left">
+          <div className="gantt__colhead" style={{ height: axisH }}>
             <span style={{ width: 20, flexShrink: 0 }} />
             <span style={{ width: 150, flexShrink: 0 }}>Activity</span>
             <span style={{ whiteSpace: "nowrap" }}>Duration</span>
           </div>
           {rows.map((row, i) =>
             row.kind === "header" ? (
-              <div
-                key={`h-${i}`}
-                className="lbl"
-                style={{
-                  height: headerRowH,
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "0 10px",
-                  background: "var(--bg-inset)",
-                  color: "var(--text-dim)",
-                }}
-              >
+              <div key={`h-${i}`} className="gantt__grouphead" style={{ height: headerRowH }}>
+                <span className="gantt__groupbar" />
                 {row.label}
               </div>
             ) : (
               <div
                 key={row.data.id}
-                className="flex items-center"
+                className={`gantt__row${i % 2 === 0 ? " gantt__row--alt" : ""}`}
                 onContextMenu={(e) => {
                   e.preventDefault();
                   setMenuFor({ id: row.data.id, x: e.clientX, y: e.clientY });
                 }}
-                style={{ height: rowH, padding: "0 10px", fontSize: 12, borderBottom: "1px solid var(--border-hairline)" }}
+                style={{ height: rowH }}
               >
                 <button
                   type="button"
@@ -224,39 +249,52 @@ export function ScheduleGantt({
             )
           )}
         </div>
-        <div style={{ position: "relative", flex: 1 }}>
-          <div style={{ height: 28, background: "var(--bg-inset)", borderBottom: "1px solid var(--border)" }} />
-          {rows.map((row, i) => {
-            if (row.kind === "header") {
-              return <div key={`h-${i}`} style={{ height: headerRowH, background: "var(--bg-inset)" }} />;
-            }
-            const a = row.data;
-            const start = a.startAt?.getTime();
-            const finish = a.finishAt?.getTime();
-            if (start == null || finish == null) {
-              return <div key={a.id} style={{ height: rowH, borderBottom: "1px solid var(--border-hairline)" }} />;
-            }
-            const pct = ((start - rangeMin) / rangeSpan) * 100;
-            const endPct = ((finish - rangeMin) / rangeSpan) * 100;
-            return (
-              <div key={a.id} style={{ position: "relative", height: rowH, borderBottom: "1px solid var(--border-hairline)" }}>
-                <div
-                  title={`${a.startAt!.toLocaleDateString()} – ${a.finishAt!.toLocaleDateString()}`}
-                  style={{
-                    position: "absolute",
-                    left: `${pct}%`,
-                    width: `${Math.max(endPct - pct, 0.5)}%`,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    height: Math.min(rowH - 16, 16),
-                    borderRadius: "var(--r-pill)",
-                    background: "var(--info-wash)",
-                    border: "1px solid var(--info-fill)",
-                  }}
-                />
-              </div>
-            );
-          })}
+        <div className="gantt__pane gantt__pane--chart">
+          <div className="gantt__axis" style={{ height: axisH }}>
+            {ticks.map((t, i) => (
+              <span key={i} className="gantt__axistick" style={{ left: `${t.pct}%` }}>
+                {t.label}
+              </span>
+            ))}
+          </div>
+          <div style={{ position: "relative" }}>
+            {Gridlines}
+            {rows.map((row, i) => {
+              if (row.kind === "header") {
+                return <div key={`h-${i}`} className="gantt__grouphead" style={{ height: headerRowH }} />;
+              }
+              const a = row.data;
+              const start = a.startAt?.getTime();
+              const finish = a.finishAt?.getTime();
+              if (start == null || finish == null) {
+                return <div key={a.id} className={`gantt__row${i % 2 === 0 ? " gantt__row--alt" : ""}`} style={{ height: rowH }} />;
+              }
+              const pct = ((start - rangeMin) / rangeSpan) * 100;
+              const endPct = ((finish - rangeMin) / rangeSpan) * 100;
+              const barW = Math.max(endPct - pct, 0.5);
+              return (
+                <div key={a.id} className={`gantt__row${i % 2 === 0 ? " gantt__row--alt" : ""}`} style={{ position: "relative", height: rowH }}>
+                  <div
+                    className={`gantt__bar${a.pinned ? " gantt__bar--pinned" : ""}`}
+                    title={`${a.startAt!.toLocaleDateString()} – ${a.finishAt!.toLocaleDateString()}`}
+                    style={{
+                      left: `${pct}%`,
+                      width: `${barW}%`,
+                      height: Math.min(rowH - 16, 16),
+                    }}
+                  />
+                  {rowH >= 22 && (
+                    <span
+                      className="gantt__barlabel"
+                      style={{ left: `calc(${pct + barW}% + 8px)` }}
+                    >
+                      {a.durationDays != null ? `${a.durationDays}d` : ""}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
       {hiddenCount > 0 && (

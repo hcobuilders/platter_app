@@ -19,7 +19,7 @@ export function ScopeSheetRows({ colSpan, children }: { colSpan: number; childre
           className="lbl"
           style={{ cursor: "pointer", background: "var(--bg-inset)", userSelect: "none" }}
         >
-          <span style={{ display: "inline-block", transform: open ? "rotate(90deg)" : undefined, transition: "transform .1s", marginRight: 6 }}>
+          <span className="carat" style={{ display: "inline-block", transform: open ? "rotate(90deg)" : undefined, transition: "transform .1s", marginRight: 6 }}>
             ▸
           </span>
           Scope Sheet

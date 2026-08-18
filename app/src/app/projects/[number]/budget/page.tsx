@@ -82,7 +82,11 @@ export default async function BudgetPage({
 
   const total = project.budgetLines.reduce((s, b) => s + b.budget, 0n);
   const currentTotal = project.budgetLines.reduce((s, b) => s + b.current, 0n);
-  const buyoutTotal = project.budgetLines.reduce((s, b) => s + (b.buyoutExpected ?? 0n), 0n);
+  // Always derived from budget − current at render time (S-notes v135a475)
+  // rather than summed from the stored buyoutExpected column — that column
+  // only gets refreshed when a line is actually re-saved through the form,
+  // so a seeded-but-never-edited line would otherwise drag stale totals.
+  const buyoutTotal = project.budgetLines.reduce((s, b) => s + (b.budget - b.current), 0n);
 
   // Group lines under their division — CSI 2026 (raw csiCode) or the
   // legacy-16 transform, per the toggle.
@@ -161,7 +165,7 @@ export default async function BudgetPage({
               {sortedGroups.map((group) => {
                 const groupBudget = group.lines.reduce((s, b) => s + b.budget, 0n);
                 const groupCurrent = group.lines.reduce((s, b) => s + b.current, 0n);
-                const groupBuyout = group.lines.reduce((s, b) => s + (b.buyoutExpected ?? 0n), 0n);
+                const groupBuyout = group.lines.reduce((s, b) => s + (b.budget - b.current), 0n);
                 return (
                   <Fragment key={group.code}>
                     <tr style={{ background: "var(--bg-inset)" }}>
@@ -235,15 +239,10 @@ export default async function BudgetPage({
                         autoSubmit
                       />
                     </td>
-                    <td className="n">
-                      <CurrencyInput
-                        form={formId}
-                        className="tfld n"
-                        name="buyoutExpected"
-                        defaultValue={line.buyoutExpected ? Number(line.buyoutExpected) / 100 : ""}
-                        autoSubmit
-                      />
-                    </td>
+                    {/* Derived from budget - current (S-notes v135a475), not
+                        entered — read-only so it can't drift from the two
+                        fields it's computed from. */}
+                    <td className="n mono">{formatCents(line.budget - line.current)}</td>
                     <td>
                       <AutoSubmitSelect form={formId} className="tfld" name="awardedTo" defaultValue={line.awardedTo ?? ""} options={awardedToOptions} />
                     </td>

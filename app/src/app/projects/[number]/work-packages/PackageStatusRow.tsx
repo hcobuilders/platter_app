@@ -33,9 +33,7 @@ export function PackageStatusRow({ projectNumber, pkg }: { projectNumber: string
             style={{ all: "unset", cursor: "pointer" }}
             aria-label={expanded ? "Collapse bidders" : "Expand bidders"}
           >
-            <span className="mono" style={{ fontSize: 11, color: "var(--text-faint)" }}>
-              {expanded ? "▾" : "▸"}
-            </span>
+            <span className="carat">{expanded ? "▾" : "▸"}</span>
           </button>
         </td>
         <td className="mono">

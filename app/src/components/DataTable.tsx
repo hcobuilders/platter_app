@@ -138,7 +138,7 @@ export function DataTable({
         ref={tableRef}
         id={id}
         className={`dtbl${dense ? " dtbl--dense" : ""}`}
-        style={{ width: totalWidth }}
+        style={{ width: "100%", minWidth: totalWidth }}
       >
         <colgroup>
           {visibleColumns.map((col) => (

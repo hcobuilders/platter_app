@@ -48,9 +48,7 @@ export function ItbHero({
         }}
       >
         <span className="flex items-center gap-2">
-          <span className="mono" style={{ fontSize: 11, color: "var(--text-faint)" }}>
-            {expanded ? "▾" : "▸"}
-          </span>
+          <span className="carat">{expanded ? "▾" : "▸"}</span>
           <span style={{ font: "600 14px var(--font-display)" }}>Invited bidders — {total}</span>
         </span>
         <span style={{ fontSize: 12, color: "var(--text-dim)" }}>

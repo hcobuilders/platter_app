@@ -24,6 +24,7 @@ import { TagAddRow } from "./TagAddRow";
 import { TemplateModal } from "./TemplateModal";
 import { PackageBuilder } from "./PackageBuilder";
 import { UserModal } from "./UserModal";
+import { Tooltip } from "@/components/Tooltip";
 
 export const dynamic = "force-dynamic";
 
@@ -49,17 +50,25 @@ export default async function SettingsPage({
 }) {
   const { view = "flags" } = await searchParams;
 
-  const [flags, packageTemplates, tags, bidBondTemplate, projectTemplates, allProjects, scheduleStyles, users, session] = await Promise.all([
-    prisma.flag.findMany({ orderBy: { label: "asc" }, include: { _count: { select: { projectFlags: true } } } }),
-    prisma.packageTemplate.findMany({ orderBy: { name: "asc" } }),
-    prisma.tag.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { projectTags: true } } } }),
-    prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
-    prisma.projectTemplate.findMany({ orderBy: { createdAt: "desc" }, include: { packages: true } }),
-    prisma.project.findMany({ orderBy: { number: "asc" }, select: { number: true, name: true } }),
-    prisma.scheduleStyle.findMany({ orderBy: { name: "asc" } }),
-    prisma.user.findMany({ orderBy: { name: "asc" } }),
-    auth(),
-  ]);
+  const [flags, packageTemplates, tags, bidBondTemplate, projectTemplates, allProjects, scheduleStyles, users, csiDivisionOverrides, session] =
+    await Promise.all([
+      prisma.flag.findMany({ orderBy: { label: "asc" }, include: { _count: { select: { projectFlags: true } } } }),
+      prisma.packageTemplate.findMany({ orderBy: { name: "asc" } }),
+      prisma.tag.findMany({
+        orderBy: { name: "asc" },
+        include: {
+          _count: { select: { projectTags: true } },
+          projectTags: { include: { project: { select: { number: true, name: true } } } },
+        },
+      }),
+      prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
+      prisma.projectTemplate.findMany({ orderBy: { createdAt: "desc" }, include: { packages: true } }),
+      prisma.project.findMany({ orderBy: { number: "asc" }, select: { number: true, name: true } }),
+      prisma.scheduleStyle.findMany({ orderBy: { name: "asc" } }),
+      prisma.user.findMany({ orderBy: { name: "asc" } }),
+      prisma.csiDivisionOverride.findMany(),
+      auth(),
+    ]);
 
   const currentUser = session?.user?.id ? await prisma.user.findUnique({ where: { id: session.user.id } }) : null;
 
@@ -114,7 +123,7 @@ export default async function SettingsPage({
         </div>
 
         {view === "flags" && (
-          <div className="flex flex-col gap-4" style={{ maxWidth: 900 }}>
+          <div className="flex flex-col gap-4" style={{ maxWidth: 1200, margin: "0 auto" }}>
             <div className="flex items-center justify-between">
               <div className="lbl">{flags.length} flags</div>
               <div className="flex items-center gap-2">
@@ -199,13 +208,17 @@ export default async function SettingsPage({
         )}
 
         {view === "packages" && (
-          <div style={{ maxWidth: 1100 }}>
-            <PackageBuilder packages={packageTemplates} />
+          <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+            <PackageBuilder
+              packages={packageTemplates}
+              divisionOverrides={Object.fromEntries(csiDivisionOverrides.map((o) => [o.code, o.name]))}
+              isAdmin={currentUser?.role === "admin"}
+            />
           </div>
         )}
 
         {view === "tags" && (
-          <div className="flex flex-col gap-4" style={{ maxWidth: 640 }}>
+          <div className="flex flex-col gap-4" style={{ maxWidth: 900, margin: "0 auto" }}>
             <div className="flex items-center justify-between">
               <div className="lbl">{tags.length} project tags</div>
               <div className="flex items-center gap-2">
@@ -249,7 +262,18 @@ export default async function SettingsPage({
                     {groupTags.map((t) => (
                       <tr key={t.id}>
                         <td>{t.name}</td>
-                        <td className="n">{t._count.projectTags}</td>
+                        <td className="n">
+                          {t._count.projectTags === 0 ? (
+                            0
+                          ) : (
+                            <Tooltip
+                              side="bottom"
+                              label={t.projectTags.map((pt) => `${pt.project.number} — ${pt.project.name}`).join("\n")}
+                            >
+                              <span style={{ cursor: "default", borderBottom: "1px dotted var(--text-faint)" }}>{t._count.projectTags}</span>
+                            </Tooltip>
+                          )}
+                        </td>
                         <td>
                           <form
                             action={async () => {
@@ -274,7 +298,7 @@ export default async function SettingsPage({
         )}
 
         {view === "templates" && (
-          <div className="flex flex-col gap-6" style={{ maxWidth: 900 }}>
+          <div className="flex flex-col gap-6" style={{ maxWidth: 1200, margin: "0 auto" }}>
             <div style={{ maxWidth: 520, display: "flex", flexDirection: "column", gap: 24 }}>
               <div>
                 <div className="lbl" style={{ marginBottom: 8 }}>
@@ -373,7 +397,17 @@ export default async function SettingsPage({
             </div>
             <Suspense fallback={null}>
               <TemplateModal
-                templates={projectTemplates.map((t) => ({ id: t.id, name: t.name, description: t.description }))}
+                templates={projectTemplates.map((t) => ({
+                  id: t.id,
+                  name: t.name,
+                  description: t.description,
+                  packages: t.packages.map((p) => ({
+                    id: p.id,
+                    code: p.code,
+                    name: p.name,
+                    bidders: Array.isArray(p.bidders) ? (p.bidders as unknown as { subcontractorId: string | null; name: string }[]) : [],
+                  })),
+                }))}
                 projects={allProjects}
               />
             </Suspense>
@@ -381,7 +415,7 @@ export default async function SettingsPage({
         )}
 
         {view === "schedule" && (
-          <div className="flex flex-col gap-4" style={{ maxWidth: 640 }}>
+          <div className="flex flex-col gap-4" style={{ maxWidth: 900, margin: "0 auto" }}>
             <div className="lbl">{scheduleStyles.length} schedule styles</div>
             <p style={{ fontSize: 12.5, color: "var(--text-dim)" }}>
               Placeholder for now — named presets for the Timeline/Gantt views once that design is settled.
@@ -436,7 +470,7 @@ export default async function SettingsPage({
         )}
 
         {view === "users" && currentUser?.role === "admin" && (
-          <div className="flex flex-col gap-4" style={{ maxWidth: 760 }}>
+          <div className="flex flex-col gap-4" style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div className="flex items-center justify-between">
               <div className="lbl">{users.length} users</div>
               <Link href="?view=users&user=new" className="btn btn--acc btn--sm">
@@ -488,7 +522,7 @@ export default async function SettingsPage({
         )}
 
         {view === "account" && currentUser && (
-          <div className="flex flex-col gap-6" style={{ maxWidth: 480 }}>
+          <div className="flex flex-col gap-6" style={{ maxWidth: 560, margin: "0 auto" }}>
             <div>
               <div className="lbl" style={{ marginBottom: 8 }}>
                 Your account

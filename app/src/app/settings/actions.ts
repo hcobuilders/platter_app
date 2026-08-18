@@ -270,6 +270,25 @@ export async function updateUser(id: string, formData: FormData) {
   revalidatePath("/settings");
 }
 
+// Admin-editable CSI division names (#79 / S-notes v135a475) — a row here
+// shadows the built-in name from src/lib/csi-codes.ts for that division
+// code; deleting the override reverts to the shipped default.
+export async function setCsiDivisionName(code: string, name: string) {
+  await requireAdmin();
+  const trimmed = name.trim();
+  if (!trimmed) {
+    await prisma.csiDivisionOverride.deleteMany({ where: { code } });
+    revalidatePath("/settings");
+    return;
+  }
+  await prisma.csiDivisionOverride.upsert({
+    where: { code },
+    create: { code, name: trimmed },
+    update: { name: trimmed },
+  });
+  revalidatePath("/settings");
+}
+
 export async function deleteUser(id: string) {
   const session = await requireAdmin();
   if (session.user.id === id) return;

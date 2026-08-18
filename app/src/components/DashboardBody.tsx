@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { formatCents } from "@/lib/format";
-import { setDashboardStatusFilters, archiveProject, unarchiveProject, saveProjectAsTemplate } from "@/app/actions";
+import { setDashboardStatusFilters, archiveProject, unarchiveProject, saveProjectAsTemplate, setDashboardOrder } from "@/app/actions";
 import { StatusPill } from "@/components/StatusPill";
 import type { ProjectStatus } from "@/generated/prisma/enums";
 
@@ -89,7 +89,27 @@ function GlyphDocs() {
   );
 }
 
-function Card({ p }: { p: CardProject }) {
+function Card({
+  p,
+  draggable,
+  isDragging,
+  isDragOver,
+  onDragStart,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onDragEnd,
+}: {
+  p: CardProject;
+  draggable?: boolean;
+  isDragging?: boolean;
+  isDragOver?: boolean;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDragLeave?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
+  onDragEnd?: (e: React.DragEvent) => void;
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [templateSaved, setTemplateSaved] = useState(false);
   const [, startTransition] = useTransition();
@@ -114,18 +134,44 @@ function Card({ p }: { p: CardProject }) {
   const cls = ["pc", urgent || overdue ? "is-urgent" : "", isDraft ? "is-draft" : "", isClosed ? "is-closed" : ""].filter(Boolean).join(" ");
 
   return (
-    <article className={cls} style={{ position: "relative" }}>
+    <article
+      className={cls}
+      style={{
+        position: "relative",
+        opacity: isDragging ? 0.4 : 1,
+        outline: isDragOver ? "2px dashed var(--accent-fill)" : "2px dashed transparent",
+        outlineOffset: 2,
+        transition: "opacity .12s ease, outline-color .12s ease",
+      }}
+      draggable={draggable}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
+    >
       <div className="pc__hd">
-        <div style={{ minWidth: 0 }}>
-          <Link href={`/projects/${p.number}`} className="pc__name">
-            {p.name}
-          </Link>
-          <div className="pc__meta" title={p.address ?? undefined}>
-            {p.number} · {shortLocation(p.address)}
+        <div style={{ minWidth: 0, display: "flex", alignItems: "flex-start", gap: 8 }}>
+          {draggable && (
+            <span
+              className="carat"
+              title="Drag to reorder"
+              style={{ cursor: "grab", marginTop: 3, color: "var(--text-faint)" }}
+            >
+              ⠿
+            </span>
+          )}
+          <div style={{ minWidth: 0 }}>
+            <Link href={`/projects/${p.number}`} className="pc__name">
+              {p.name}
+            </Link>
+            <div className="pc__meta" title={p.address ?? undefined}>
+              {p.number} · {shortLocation(p.address)}
+            </div>
           </div>
         </div>
         <div className="pc__tags">
-          <div className="flex items-center gap-2" style={{ position: "relative" }}>
+          <div className="flex items-center gap-2" style={{ position: "relative", zIndex: menuOpen ? 70 : "auto" }}>
             <StatusPill projectNumber={p.number} status={p.status as ProjectStatus} />
             <button className="kebab" onClick={() => setMenuOpen((v) => !v)} aria-label="Project actions">
               ⋯
@@ -275,10 +321,23 @@ const FILTER_MATCH: Record<string, (p: CardProject) => boolean> = {
   archived: (p) => p.archivedAt !== null,
 };
 
-export function DashboardBody({ projects, initialStatusFilters }: { projects: CardProject[]; initialStatusFilters: string[] }) {
+export function DashboardBody({
+  projects,
+  initialStatusFilters,
+  savedOrder,
+  isAdmin,
+}: {
+  projects: CardProject[];
+  initialStatusFilters: string[];
+  savedOrder: string[];
+  isAdmin: boolean;
+}) {
   const [view, setView] = useState<"cards" | "rows">("cards");
   const [statusFilters, setStatusFilters] = useState<Set<string>>(() => new Set(initialStatusFilters));
   const [search, setSearch] = useState("");
+  const [order, setOrder] = useState(savedOrder);
+  const [dragNumber, setDragNumber] = useState<string | null>(null);
+  const [dragOverNumber, setDragOverNumber] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   function toggleFilter(key: string) {
@@ -311,11 +370,41 @@ export function DashboardBody({ projects, initialStatusFilters }: { projects: Ca
     filtered = filtered.filter((p) => p.name.toLowerCase().includes(q) || p.number.toLowerCase().includes(q));
   }
 
+  const orderIndex = new Map(order.map((num, i) => [num, i]));
   const sorted = [...filtered].sort((a, b) => {
+    const ia = orderIndex.has(a.number) ? orderIndex.get(a.number)! : Infinity;
+    const ib = orderIndex.has(b.number) ? orderIndex.get(b.number)! : Infinity;
+    if (ia !== ib) return ia - ib;
     const da = a.bidsDue ? new Date(a.bidsDue).getTime() : Infinity;
     const db = b.bidsDue ? new Date(b.bidsDue).getTime() : Infinity;
     return da - db;
   });
+
+  // Admin drag-to-reorder (S-notes v135a475): dropping card A onto card B
+  // moves A to B's position in the *full* saved order (not just the
+  // filtered/visible slice), so a reorder made while a filter is active
+  // still makes sense once that filter is cleared.
+  function handleDrop(targetNumber: string) {
+    if (!dragNumber || dragNumber === targetNumber) {
+      setDragNumber(null);
+      setDragOverNumber(null);
+      return;
+    }
+    const full = projects.map((p) => p.number).sort((a, b) => {
+      const ia = orderIndex.has(a) ? orderIndex.get(a)! : Infinity;
+      const ib = orderIndex.has(b) ? orderIndex.get(b)! : Infinity;
+      return ia - ib;
+    });
+    const next = full.filter((n) => n !== dragNumber);
+    const targetIdx = next.indexOf(targetNumber);
+    next.splice(targetIdx, 0, dragNumber);
+    setOrder(next);
+    setDragNumber(null);
+    setDragOverNumber(null);
+    startTransition(() => {
+      setDashboardOrder(next);
+    });
+  }
 
   return (
     <div className="frame" style={{ background: "var(--bg-surface)" }}>
@@ -373,7 +462,46 @@ export function DashboardBody({ projects, initialStatusFilters }: { projects: Ca
       ) : view === "cards" ? (
         <div className="grid">
           {sorted.map((p) => (
-            <Card key={p.number} p={p} />
+            <Card
+              key={p.number}
+              p={p}
+              draggable={isAdmin}
+              isDragging={dragNumber === p.number}
+              isDragOver={dragOverNumber === p.number && dragNumber !== p.number}
+              onDragStart={(e) => {
+                setDragNumber(p.number);
+                e.dataTransfer.effectAllowed = "move";
+                const ghost = document.createElement("div");
+                ghost.textContent = `${p.name} (${p.number})`;
+                Object.assign(ghost.style, {
+                  position: "fixed",
+                  top: "-1000px",
+                  left: "-1000px",
+                  padding: "6px 12px",
+                  borderRadius: "8px",
+                  background: "var(--bg-shell)",
+                  color: "var(--text-invert)",
+                  font: "600 12px var(--font-display)",
+                  boxShadow: "var(--e-2)",
+                } as CSSStyleDeclaration);
+                document.body.appendChild(ghost);
+                e.dataTransfer.setDragImage(ghost, 12, 12);
+                setTimeout(() => document.body.removeChild(ghost), 0);
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (dragNumber && dragNumber !== p.number) setDragOverNumber(p.number);
+              }}
+              onDragLeave={() => setDragOverNumber((cur) => (cur === p.number ? null : cur))}
+              onDrop={(e) => {
+                e.preventDefault();
+                handleDrop(p.number);
+              }}
+              onDragEnd={() => {
+                setDragNumber(null);
+                setDragOverNumber(null);
+              }}
+            />
           ))}
         </div>
       ) : (

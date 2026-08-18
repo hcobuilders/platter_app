@@ -17,9 +17,11 @@ import {
 } from "./actions";
 import { AutoSubmitSelect } from "@/components/AutoSubmitSelect";
 import { FlagChip } from "@/components/FlagChip";
+import { Tooltip } from "@/components/Tooltip";
 import { GanttTimeline, MiniMap, GoogleMapsLink } from "./OverviewWidgets";
 import { EditableOverviewFields } from "./EditableOverviewFields";
 import { HotItemsList } from "./HotItemsList";
+import { CommunicationLog } from "./CommunicationLog";
 import { ScheduleGantt } from "./ScheduleGantt";
 import { ScheduleImportModal } from "./ScheduleImportModal";
 
@@ -29,6 +31,16 @@ const FLAG_TYPE_CHIP: Record<string, string> = {
   requirement: "chip chip--dgr",
   informational: "chip chip--info",
   risk: "chip chip--risk",
+};
+
+const STATUS_CHIP: Record<string, string> = {
+  draft: "",
+  scoping: "chip--info",
+  bidding: "chip--info",
+  leveling: "chip--acc",
+  submitted: "chip--acc",
+  awarded: "chip--ok",
+  lost: "chip--dgr",
 };
 
 async function getProjectDetail(number: string) {
@@ -43,6 +55,7 @@ async function getProjectDetail(number: string) {
       budgetLines: true,
       projectFlags: { include: { flag: true } },
       changeOrders: { orderBy: { createdAt: "desc" } },
+      communications: { orderBy: { at: "desc" }, include: { subcontractor: { select: { name: true } } } },
       scheduleActivities: {
         orderBy: { seq: "asc" },
         include: {
@@ -69,10 +82,11 @@ export default async function ProjectOverviewPage({
   params: Promise<{ number: string }>;
 }) {
   const { number } = await params;
-  const [project, session, scheduleDisplaySetting] = await Promise.all([
+  const [project, session, scheduleDisplaySetting, bidBondTemplate] = await Promise.all([
     getProjectDetail(number),
     auth(),
     prisma.scheduleDisplaySetting.findUnique({ where: { key: "global" } }),
+    prisma.appFile.findUnique({ where: { key: "bid_bond_template" } }),
   ]);
   if (!project) notFound();
   const scheduleRowHeight = scheduleDisplaySetting?.rowHeight ?? 30;
@@ -90,9 +104,51 @@ export default async function ProjectOverviewPage({
   const unattachedFlags = allFlags.filter((f) => !attachedFlagIds.has(f.id));
 
   const totalBudget = project.budgetLines.reduce((sum, b) => sum + b.current, 0n);
+  const changeOrderDays = project.changeOrders.reduce((s, co) => s + co.days, 0);
+  const isAwarded = project.status === "awarded";
+  const invitedSubs = new Set(project.bidPackages.flatMap((p) => p.invitations.map((i) => i.subcontractorId))).size;
+  const subOptions = Array.from(
+    new Map(
+      project.bidPackages.flatMap((p) => p.invitations.map((i) => [i.subcontractorId, i.subcontractor.name] as const))
+    )
+  ).map(([id, name]) => ({ id, name }));
 
   return (
-    <div className="flex flex-col gap-5 max-w-4xl">
+    <div className="flex flex-col gap-5">
+      <section className="statrow">
+        <div className="statrow__item">
+          <div className="lbl">Current budget</div>
+          <div className="mono statrow__v">{formatCents(totalBudget)}</div>
+        </div>
+        <div className="statrow__item">
+          <div className="lbl">Bid packages</div>
+          <div className="mono statrow__v">{project.bidPackages.length}</div>
+        </div>
+        <div className="statrow__item">
+          <div className="lbl">Subs invited</div>
+          <div className="mono statrow__v">{invitedSubs}</div>
+        </div>
+        <div className="statrow__item">
+          <div className="lbl">Contract days</div>
+          <div className="mono statrow__v">
+            {project.contractDays ?? "—"}
+            {changeOrderDays !== 0 && (
+              <span style={{ fontSize: 13, color: "var(--text-dim)", fontWeight: 400 }}>
+                {" "}
+                ({changeOrderDays > 0 ? "+" : ""}
+                {changeOrderDays} CO)
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="statrow__item">
+          <div className="lbl">Status</div>
+          <div className="statrow__v">
+            <span className={`chip ${STATUS_CHIP[project.status] ?? ""}`}>{project.status}</span>
+          </div>
+        </div>
+      </section>
+
       <section className="card">
         <div className="ov2col">
           <EditableOverviewFields
@@ -178,15 +234,43 @@ export default async function ProjectOverviewPage({
               </p>
 
               <div className="mt-3 flex gap-2 flex-wrap items-center">
-                {project.bidBondRequired && (
-                  <FlagChip
-                    label="Bid bond required"
-                    className="chip chip--dgr"
-                    href="/api/bid-bond-template"
-                    title="Click to download the bid bond template · right-click to remove"
-                    removeFormId="rm-bidbond"
-                  />
-                )}
+                {project.bidBondRequired && (() => {
+                  const isAdmin = session?.user?.role === "admin";
+                  const alreadyDownloaded = Boolean(project.bidBondDownloadedAt) && !isAdmin;
+                  const canDownload = Boolean(bidBondTemplate) && !alreadyDownloaded;
+                  return (
+                    <span className="flex items-center gap-1">
+                      <FlagChip
+                        label="Bid bond required"
+                        className="chip chip--dgr"
+                        href={canDownload ? `/api/bid-bond-template?project=${encodeURIComponent(number)}` : undefined}
+                        title={
+                          canDownload
+                            ? "Click to download the bid bond template · right-click to remove"
+                            : "Right-click to remove"
+                        }
+                        removeFormId="rm-bidbond"
+                      />
+                      {/* No hard-navigation link to a 404/403 JSON response
+                          for either edge case (S-notes v135a475: "dont
+                          show an entire error page ... only show a red
+                          notification next to the bubble") — a small dot
+                          + tooltip instead of a dead link. */}
+                      {!bidBondTemplate && (
+                        <Tooltip label={"No template uploaded yet.\nUpload one in Settings → Templates."}>
+                          <span className="dot" style={{ background: "var(--danger-fill)", cursor: "default" }} />
+                        </Tooltip>
+                      )}
+                      {bidBondTemplate && alreadyDownloaded && (
+                        <Tooltip
+                          label={`Already downloaded for this project (${project.bidBondDownloadedAt!.toLocaleDateString()}).\nOnly one download is allowed — an admin can re-download if needed.`}
+                        >
+                          <span className="dot" style={{ background: "var(--text-faint)", cursor: "default" }} />
+                        </Tooltip>
+                      )}
+                    </span>
+                  );
+                })()}
                 {project.projectFlags.map((pf) => (
                   <FlagChip
                     key={pf.id}
@@ -261,43 +345,117 @@ export default async function ProjectOverviewPage({
             }))}
           />
         </div>
+
+        <div style={{ marginTop: 24, borderTop: "1px solid var(--border-hairline)", paddingTop: 20 }}>
+          <CommunicationLog
+            projectNumber={number}
+            subs={subOptions}
+            initial={project.communications.map((c) => ({
+              id: c.id,
+              kind: c.kind,
+              body: c.body,
+              author: c.author,
+              at: c.at,
+              subcontractorName: c.subcontractor?.name ?? null,
+            }))}
+          />
+        </div>
       </section>
 
-      <section className="card">
-        <div className="lbl" style={{ marginBottom: 8 }}>
-          Key dates
-        </div>
-        <GanttTimeline
-          dates={project.dates}
-          contractDays={project.contractDays}
-          changeOrderDays={project.changeOrders.reduce((s, co) => s + co.days, 0)}
-        />
-        <form
-          action={async (fd) => {
-            "use server";
-            await setNoticeToProceed(number, String(fd.get("noticeToProceedAt") ?? ""));
-          }}
-          className="flex items-center gap-2"
-          style={{ marginTop: 12, borderTop: "1px solid var(--border-hairline)", paddingTop: 12 }}
-        >
-          <span className="lbl" style={{ margin: 0 }}>
-            Notice to proceed
-          </span>
-          <input
-            className="fld"
-            type="date"
-            name="noticeToProceedAt"
-            defaultValue={project.dates.find((d) => d.kind === "notice_to_proceed")?.at.toISOString().slice(0, 10) ?? ""}
-            style={{ width: "auto" }}
-          />
-          <button className="btn btn--sm" type="submit">
-            Save
-          </button>
-        </form>
-        <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 6 }}>
-          Starts the awarded-status schedule clock (elapsed / completion date / days remaining).
-        </p>
-      </section>
+      <div className="ov2col-eq">
+        <section className="card">
+          <div className="lbl" style={{ marginBottom: 8 }}>
+            Key dates
+          </div>
+          <GanttTimeline dates={project.dates} contractDays={project.contractDays} changeOrderDays={changeOrderDays} />
+          <form
+            action={async (fd) => {
+              "use server";
+              await setNoticeToProceed(number, String(fd.get("noticeToProceedAt") ?? ""));
+            }}
+            className="flex items-center gap-2"
+            style={{ marginTop: 12, borderTop: "1px solid var(--border-hairline)", paddingTop: 12 }}
+          >
+            <span className="lbl" style={{ margin: 0 }}>
+              Notice to proceed
+            </span>
+            <input
+              className="fld"
+              type="date"
+              name="noticeToProceedAt"
+              defaultValue={project.dates.find((d) => d.kind === "notice_to_proceed")?.at.toISOString().slice(0, 10) ?? ""}
+              style={{ width: "auto" }}
+            />
+            <button className="btn btn--sm" type="submit">
+              Save
+            </button>
+          </form>
+          <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 6 }}>
+            Starts the awarded-status schedule clock (elapsed / completion date / days remaining).
+          </p>
+        </section>
+
+        <section className="card">
+          <div className="lbl" style={{ marginBottom: 8 }}>
+            Change orders
+          </div>
+          {!isAwarded ? (
+            <p style={{ color: "var(--text-dim)", fontSize: 13 }}>
+              Available once this project is <span className="mono">awarded</span> — set status above.
+            </p>
+          ) : (
+            <>
+              {project.changeOrders.length === 0 ? (
+                <p style={{ color: "var(--text-dim)", fontSize: 13 }}>None yet.</p>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {project.changeOrders.map((co) => (
+                    <div key={co.id} className="rule">
+                      <div className="rtxt">
+                        {co.description}
+                        <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>
+                          {co.days !== 0 && `${co.days > 0 ? "+" : ""}${co.days} days · `}
+                          {formatCents(co.value)} · {co.createdAt.toLocaleDateString()}
+                        </div>
+                      </div>
+                      <form
+                        action={async () => {
+                          "use server";
+                          await removeChangeOrder(number, co.id);
+                        }}
+                      >
+                        <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
+                          Remove
+                        </button>
+                      </form>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <form
+                action={async (fd) => {
+                  "use server";
+                  await addChangeOrder(
+                    number,
+                    String(fd.get("description") ?? ""),
+                    Number(fd.get("days") ?? 0),
+                    Number(fd.get("value") ?? 0)
+                  );
+                }}
+                className="flex items-center gap-2 mt-3"
+                style={{ borderTop: "1px solid var(--border-hairline)", paddingTop: 12 }}
+              >
+                <input className="fld" name="description" placeholder="Description" required style={{ flex: 1 }} />
+                <input className="fld" name="days" type="number" placeholder="Days ±" style={{ width: 90 }} />
+                <input className="fld" name="value" type="number" step="0.01" placeholder="Value $ ±" style={{ width: 120 }} />
+                <button className="btn btn--sm btn--acc" type="submit">
+                  Add
+                </button>
+              </form>
+            </>
+          )}
+        </section>
+      </div>
 
       <section className="card">
         <div className="flex items-center justify-between" style={{ marginBottom: 8 }}>
@@ -318,59 +476,6 @@ export default async function ProjectOverviewPage({
         <Suspense fallback={null}>
           <ScheduleImportModal projectNumber={number} />
         </Suspense>
-      </section>
-
-      <section className="card">
-        <div className="lbl" style={{ marginBottom: 8 }}>
-          Change orders
-        </div>
-        {project.changeOrders.length === 0 ? (
-          <p style={{ color: "var(--text-dim)", fontSize: 13 }}>None yet.</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {project.changeOrders.map((co) => (
-              <div key={co.id} className="rule">
-                <div className="rtxt">
-                  {co.description}
-                  <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>
-                    {co.days !== 0 && `${co.days > 0 ? "+" : ""}${co.days} days · `}
-                    {formatCents(co.value)} · {co.createdAt.toLocaleDateString()}
-                  </div>
-                </div>
-                <form
-                  action={async () => {
-                    "use server";
-                    await removeChangeOrder(number, co.id);
-                  }}
-                >
-                  <button className="btn btn--sm btn--gh" type="submit" style={{ color: "var(--danger-text)" }}>
-                    Remove
-                  </button>
-                </form>
-              </div>
-            ))}
-          </div>
-        )}
-        <form
-          action={async (fd) => {
-            "use server";
-            await addChangeOrder(
-              number,
-              String(fd.get("description") ?? ""),
-              Number(fd.get("days") ?? 0),
-              Number(fd.get("value") ?? 0)
-            );
-          }}
-          className="flex items-center gap-2 mt-3"
-          style={{ borderTop: "1px solid var(--border-hairline)", paddingTop: 12 }}
-        >
-          <input className="fld" name="description" placeholder="Description" required style={{ flex: 1 }} />
-          <input className="fld" name="days" type="number" placeholder="Days ±" style={{ width: 90 }} />
-          <input className="fld" name="value" type="number" step="0.01" placeholder="Value $ ±" style={{ width: 120 }} />
-          <button className="btn btn--sm btn--acc" type="submit">
-            Add
-          </button>
-        </form>
       </section>
 
       <section className="card" style={{ padding: 0, overflow: "hidden" }}>

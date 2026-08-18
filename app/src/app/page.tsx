@@ -69,10 +69,11 @@ async function getProjects(): Promise<CardProject[]> {
 export default async function Home() {
   const session = await auth();
   if (!session?.user) redirect("/login");
-  const [projects, currentUser, projectTemplates] = await Promise.all([
+  const [projects, currentUser, projectTemplates, dashboardLayout] = await Promise.all([
     getProjects(),
     prisma.user.findUnique({ where: { id: session.user.id }, select: { dashboardStatusFilters: true } }),
     prisma.projectTemplate.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, name: true } }),
+    prisma.dashboardLayoutSetting.findUnique({ where: { key: "global" } }),
   ]);
 
   return (
@@ -109,7 +110,12 @@ export default async function Home() {
       </div>
 
       <div className="appbody flex-1" style={{ padding: "22px clamp(16px,3vw,32px)" }}>
-        <DashboardBody projects={projects} initialStatusFilters={currentUser?.dashboardStatusFilters ?? []} />
+        <DashboardBody
+          projects={projects}
+          initialStatusFilters={currentUser?.dashboardStatusFilters ?? []}
+          savedOrder={dashboardLayout?.order ?? []}
+          isAdmin={session.user.role === "admin"}
+        />
       </div>
 
       <CommandBar />

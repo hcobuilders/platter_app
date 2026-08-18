@@ -40,6 +40,54 @@ const DIVISION_NAMES: Record<string, string> = {
   "33": "Utilities",
 };
 
+// The pre-2004 "16-division" MasterFormat — retired by CSI in favor of the
+// 49-division scheme above, but still what a lot of older spec sections,
+// legacy drawings, and some subs' own paperwork reference (S-notes
+// v135a475: "make sure you use both masterformat lists (16 and 32)").
+// Kept as a separate lookup rather than merged into DIVISION_NAMES so the
+// modern division numbers stay the single source of truth for new data —
+// this only widens what a search box will resolve.
+export const LEGACY_DIVISION_NAMES: Record<string, string> = {
+  "1": "General Requirements",
+  "2": "Site Work",
+  "3": "Concrete",
+  "4": "Masonry",
+  "5": "Metals",
+  "6": "Wood and Plastics",
+  "7": "Thermal and Moisture Protection",
+  "8": "Doors and Windows",
+  "9": "Finishes",
+  "10": "Specialties",
+  "11": "Equipment",
+  "12": "Furnishings",
+  "13": "Special Construction",
+  "14": "Conveying Systems",
+  "15": "Mechanical",
+  "16": "Electrical",
+};
+
+// Legacy division → the modern division(s) it split into, so a search for
+// the old "Division 15" or "Division 16" surfaces today's real codes
+// instead of a dead end.
+const LEGACY_TO_MODERN: Record<string, string[]> = {
+  "1": ["01"],
+  "2": ["02", "31", "32", "33"],
+  "3": ["03"],
+  "4": ["04"],
+  "5": ["05"],
+  "6": ["06"],
+  "7": ["07"],
+  "8": ["08"],
+  "9": ["09"],
+  "10": ["10"],
+  "11": ["11"],
+  "12": ["12"],
+  "13": ["13"],
+  "14": ["14"],
+  "15": ["21", "22", "23", "25"],
+  "16": ["26", "27", "28"],
+};
+
 const SECTIONS: Array<[string, string]> = [
   // 01 — General Requirements
   ["01 32 00", "Construction Progress Documentation"],
@@ -174,7 +222,163 @@ const SECTIONS: Array<[string, string]> = [
   ["33 41 00", "Storm Utility Drainage Piping"],
 ];
 
-export const CSI_CODES: CsiCode[] = SECTIONS.map(([code, title]) => {
+// Broadened coverage pass (S-notes v135a475: "it doesnt appear this csi
+// list is complete") — fills in divisions that had zero or thin coverage
+// and adds more of the sections a typical commercial GC's bid packages
+// actually reference. Still not exhaustive of the full published
+// MasterFormat (thousands of sections across 49 divisions) — this app
+// only carries the ones useful for autocomplete/validation, not a full
+// CSI database.
+const MORE_SECTIONS: Array<[string, string]> = [
+  // 00 — Procurement and Contracting Requirements
+  ["00 21 13", "Instructions to Bidders"],
+  ["00 41 13", "Bid Form"],
+  ["00 52 00", "Agreement Form"],
+  ["00 61 00", "Bond Forms"],
+  ["00 72 00", "General Conditions"],
+  ["00 73 00", "Supplementary Conditions"],
+  // 01 — General Requirements
+  ["01 21 00", "Allowances"],
+  ["01 23 00", "Alternates"],
+  ["01 26 00", "Contract Modification Procedures"],
+  ["01 29 00", "Payment Procedures"],
+  ["01 31 00", "Project Management and Coordination"],
+  ["01 40 00", "Quality Requirements"],
+  ["01 50 00", "Temporary Facilities and Controls"],
+  ["01 60 00", "Product Requirements"],
+  ["01 70 00", "Execution and Closeout Requirements"],
+  ["01 78 23", "Operation and Maintenance Data"],
+  ["01 78 39", "Project Record Documents"],
+  // 02 — Existing Conditions
+  ["02 21 00", "Surveys"],
+  ["02 32 00", "Geotechnical Investigations"],
+  // 03 — Concrete
+  ["03 05 00", "Common Work Results for Concrete"],
+  ["03 21 00", "Reinforcement Bars"],
+  ["03 31 00", "Structural Concrete"],
+  ["03 37 00", "Specialty Placed Concrete"],
+  ["03 39 00", "Concrete Curing"],
+  // 04 — Masonry
+  ["04 21 13", "Brick Masonry"],
+  ["04 43 13", "Stone Masonry Veneer"],
+  // 05 — Metals
+  ["05 05 00", "Common Work Results for Metals"],
+  ["05 40 00", "Cold-Formed Metal Framing"],
+  ["05 53 00", "Metal Gratings"],
+  ["05 58 00", "Formed Metal Fabrications"],
+  // 06 — Wood, Plastics, and Composites
+  ["06 05 73", "Wood Treatment"],
+  ["06 17 53", "Shop-Fabricated Wood Trusses"],
+  ["06 65 00", "Plastic Simulated Wood Trim"],
+  // 07 — Thermal and Moisture Protection
+  ["07 11 13", "Bituminous Dampproofing"],
+  ["07 13 00", "Sheet Waterproofing"],
+  ["07 25 00", "Weather Barriers"],
+  ["07 41 13", "Metal Roof Panels"],
+  ["07 46 00", "Siding"],
+  ["07 51 13", "Built-Up Asphalt Roofing"],
+  ["07 62 00", "Sheet Metal Flashing and Trim"],
+  ["07 72 00", "Roof Accessories"],
+  // 08 — Openings
+  ["08 12 13", "Hollow Metal Frames"],
+  ["08 33 23", "Overhead Coiling Doors"],
+  ["08 36 13", "Sectional Doors"],
+  ["08 42 13", "Aluminum-Framed Entrances"],
+  ["08 91 19", "Fixed Louvers"],
+  // 09 — Finishes
+  ["09 24 00", "Portland Cement Plastering"],
+  ["09 29 00", "Gypsum Board"],
+  ["09 53 00", "Acoustical Ceiling Suspension Assemblies"],
+  ["09 64 00", "Wood Flooring"],
+  ["09 67 23", "Resinous Flooring"],
+  ["09 77 23", "Fabric-Wrapped Panels"],
+  ["09 84 13", "Fixed Sound-Absorptive Panels"],
+  ["09 93 00", "Staining and Transparent Finishing"],
+  // 10 — Specialties
+  ["10 11 00", "Visual Display Units"],
+  ["10 22 13", "Wire Mesh Partitions"],
+  ["10 22 26", "Operable Partitions"],
+  ["10 51 13", "Metal Lockers"],
+  ["10 73 00", "Protective Covers"],
+  // 11 — Equipment
+  ["11 13 00", "Loading Dock Equipment"],
+  ["11 24 23", "Window Washing Equipment"],
+  ["11 40 00", "Foodservice Equipment"],
+  // 12 — Furnishings
+  ["12 21 13", "Horizontal Louver Blinds"],
+  ["12 32 00", "Manufactured Wood Casework"],
+  ["12 48 13", "Entrance Floor Mats and Frames"],
+  ["12 93 00", "Site Furnishings"],
+  // 13 — Special Construction
+  ["13 34 19", "Metal Building Systems"],
+  // 14 — Conveying Equipment
+  ["14 21 00", "Electric Traction Elevators"],
+  ["14 24 00", "Hydraulic Elevators"],
+  ["14 31 00", "Escalators"],
+  // 21 — Fire Suppression
+  ["21 05 00", "Common Work Results for Fire Suppression"],
+  ["21 12 00", "Fire-Suppression Standpipes"],
+  ["21 30 00", "Fire Pumps"],
+  // 22 — Plumbing
+  ["22 08 00", "Commissioning of Plumbing"],
+  ["22 14 00", "Facility Storm Drainage"],
+  ["22 33 00", "Electric Domestic Water Heaters"],
+  ["22 42 00", "Commercial Plumbing Fixtures"],
+  // 23 — HVAC
+  ["23 09 23", "Direct-Digital Control System for HVAC"],
+  ["23 21 13", "Hydronic Piping"],
+  ["23 25 00", "HVAC Water Treatment"],
+  ["23 34 00", "HVAC Fans"],
+  ["23 62 00", "Packaged Compressor and Condenser Units"],
+  ["23 74 00", "Packaged Outdoor HVAC Equipment"],
+  ["23 81 00", "Decentralized Unitary HVAC Equipment"],
+  // 25 — Integrated Automation
+  ["25 10 00", "Integrated Automation Network Equipment"],
+  ["25 90 00", "Integrated Automation Control Sequences"],
+  // 26 — Electrical
+  ["26 22 00", "Low-Voltage Transformers"],
+  ["26 24 16", "Panelboards"],
+  ["26 24 19", "Motor-Control Centers"],
+  ["26 29 00", "Low-Voltage Controllers"],
+  ["26 32 13", "Engine Generators"],
+  ["26 33 13", "Batteries and Battery Chargers"],
+  ["26 36 00", "Transfer Switches"],
+  ["26 52 00", "Emergency Lighting"],
+  ["26 56 00", "Exterior Lighting"],
+  // 27 — Communications
+  ["27 11 00", "Communications Equipment Room Fittings"],
+  ["27 15 00", "Communications Horizontal Cabling"],
+  ["27 21 00", "Data Communications Network Equipment"],
+  ["27 41 00", "Audio-Video Systems"],
+  ["27 51 00", "Distributed Audio-Video Communications Systems"],
+  // 28 — Electronic Safety and Security
+  ["28 13 00", "Access Control Systems"],
+  ["28 23 00", "Video Surveillance"],
+  ["28 31 00", "Fire Detection and Alarm"],
+  ["28 46 00", "Fire Detection and Alarm Interfaces"],
+  // 31 — Earthwork
+  ["31 05 00", "Common Work Results for Earthwork"],
+  ["31 25 00", "Erosion and Sedimentation Controls"],
+  ["31 31 16", "Termite Control"],
+  ["31 63 00", "Bored Piles"],
+  // 32 — Exterior Improvements
+  ["32 05 00", "Common Work Results for Exterior Improvements"],
+  ["32 11 23", "Aggregate Base Courses"],
+  ["32 14 13", "Precast Concrete Unit Paving"],
+  ["32 17 23", "Pavement Markings"],
+  ["32 31 13", "Chain Link Fences and Gates"],
+  ["32 32 13", "Cast-in-Place Concrete Retaining Walls"],
+  ["32 84 00", "Planting Irrigation"],
+  ["32 91 13", "Soil Preparation"],
+  ["32 93 00", "Plants"],
+  // 33 — Utilities
+  ["33 05 00", "Common Work Results for Utilities"],
+  ["33 11 00", "Water Utility Distribution Piping"],
+  ["33 31 00", "Sanitary Utility Sewerage Piping"],
+  ["33 71 00", "Electrical Utility Transmission and Distribution"],
+];
+
+export const CSI_CODES: CsiCode[] = [...SECTIONS, ...MORE_SECTIONS].map(([code, title]) => {
   const division = code.slice(0, 2);
   return { code, title, division, divisionName: DIVISION_NAMES[division] ?? "Other" };
 });
@@ -205,6 +409,9 @@ export function lookupExactCsi(raw: string): CsiCode | undefined {
 
 // Given partial input, returns the best-matching codes — by digit prefix
 // if the input looks numeric, otherwise by title/division-name substring.
+// Also resolves a legacy 16-division reference ("division 16", "old div
+// 15") to the modern codes it maps to, so a query using the retired
+// scheme still finds real, current results instead of nothing.
 export function findCsiMatches(raw: string, limit = 8): CsiCode[] {
   const q = raw.trim();
   if (!q) return [];
@@ -217,7 +424,21 @@ export function findCsiMatches(raw: string, limit = 8): CsiCode[] {
   }
 
   const qLower = q.toLowerCase();
+  const legacyMatch = qLower.match(/\bdiv(?:ision)?\.?\s*(\d{1,2})\b/) ?? (/^\d{1,2}$/.test(qLower) ? [null, qLower] : null);
+  if (legacyMatch) {
+    const modernDivs = LEGACY_TO_MODERN[legacyMatch[1]];
+    if (modernDivs) {
+      const byLegacyDiv = CSI_CODES.filter((c) => modernDivs.includes(c.division));
+      if (byLegacyDiv.length > 0) return byLegacyDiv.slice(0, limit);
+    }
+  }
+
   return CSI_CODES.filter(
-    (c) => c.title.toLowerCase().includes(qLower) || c.divisionName.toLowerCase().includes(qLower)
+    (c) =>
+      c.title.toLowerCase().includes(qLower) ||
+      c.divisionName.toLowerCase().includes(qLower) ||
+      Object.entries(LEGACY_DIVISION_NAMES).some(
+        ([legacyCode, legacyName]) => legacyName.toLowerCase().includes(qLower) && LEGACY_TO_MODERN[legacyCode]?.includes(c.division)
+      )
   ).slice(0, limit);
 }

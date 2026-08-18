@@ -38,6 +38,12 @@ model Project {
   bondPct           Float?
   retainagePct      Float?
   bidBondRequired   Boolean       @default(false)
+  // Single-download limit (S-notes v135a475: "only allow one download of
+  // the template") — set on the first successful download for this
+  // project; admins can still re-download after that (a hard, no-override
+  // block risks locking a project out of a required proposal document
+  // over something as ordinary as a cleared browser or a wrong device).
+  bidBondDownloadedAt DateTime?
   pAndPMode         PAndPMode?
   gcContactName     String?
   gcContactEmail    String?
@@ -164,6 +170,17 @@ model ScheduleDisplaySetting {
   id        String @id @default(cuid())
   key       String @unique @default("global")
   rowHeight Int    @default(30)
+}
+
+// Dashboard card drag-to-reorder (S-notes v135a475): one global order,
+// shared by every user, admin-editable only — same singleton-row shape as
+// ScheduleDisplaySetting. Stores project numbers; anything not listed
+// (new projects) falls back to the dashboard's existing bids-due sort and
+// renders after the pinned ones.
+model DashboardLayoutSetting {
+  id    String   @id @default(cuid())
+  key   String   @unique @default("global")
+  order String[] @default([])
 }
 
 // "it is a new entity part of the subcontracts / commitments tool. Once
@@ -768,6 +785,17 @@ model PackageTemplate {
   defaultFlags String[]
 
   bidPackages BidPackage[]
+}
+
+// Admin-editable override for a CSI MasterFormat division's display name
+// (S-notes v135a475: "allow me to enter my own or edit the names of the
+// divisions. only admins can do that.") — the built-in DIVISION_NAMES in
+// src/lib/csi-codes.ts stays the shipped default; a row here shadows it
+// for that division code without touching the static reference data.
+model CsiDivisionOverride {
+  code      String   @id
+  name      String
+  updatedAt DateTime @updatedAt
 }
 
 // ── Auth (S-batch: interim Credentials login, Auth.js/next-auth v5) ──

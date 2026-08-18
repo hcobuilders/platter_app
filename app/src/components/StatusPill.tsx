@@ -47,7 +47,27 @@ export function StatusPill({ projectNumber, status }: { projectNumber: string; s
       <button
         type="button"
         className={`st ${STATUS_CLASS[current] ?? ""}`}
-        style={{ all: "unset", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, font: "inherit" }}
+        style={{
+          // Was `all: "unset"` — resets EVERY property including `color`,
+          // which silently wins over the .st--draft/--won/--lost class's
+          // own `color` (inline style beats external-stylesheet
+          // specificity regardless of the selector). The dot (`<i>`,
+          // `background:currentColor`) inherits that color, so it rendered
+          // plain black instead of the status color (S-notes v135a475:
+          // "the tag colors in the dashboard page stopped working... just
+          // shows a black circle"). Reset only the structural button
+          // chrome instead, leaving `color` to the class.
+          border: "none",
+          background: "none",
+          padding: 0,
+          margin: 0,
+          textAlign: "left",
+          cursor: "pointer",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 7,
+          font: "inherit",
+        }}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();

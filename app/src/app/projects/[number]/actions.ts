@@ -121,6 +121,43 @@ export async function verifyProjectAddress(projectNumber: string) {
 // glyph opens this instead of a separate boxed form, with a 3-way color
 // pick at creation. Author comes from the signed-in session rather than a
 // free-text field now that real auth exists.
+// S-notes v135a475: "add the sub communication features we talked about" —
+// the wireframe's Quick Actions "Log communication" popover (batch-3,
+// screen 3.2): kind chip + optional sub + free-text body, logged against
+// the project (and, if picked, a specific subcontractor) rather than
+// living in some other tool.
+const COMMUNICATION_KINDS = ["call", "email", "site_visit", "note"] as const;
+
+export async function logCommunication(
+  projectNumber: string,
+  kind: string,
+  body: string,
+  subcontractorId: string
+) {
+  const trimmed = body.trim();
+  if (!trimmed) return;
+  const safeKind = (COMMUNICATION_KINDS as readonly string[]).includes(kind) ? kind : "note";
+  const [project, session] = await Promise.all([
+    prisma.project.findUniqueOrThrow({ where: { number: projectNumber } }),
+    auth(),
+  ]);
+  await prisma.communication.create({
+    data: {
+      projectId: project.id,
+      subcontractorId: subcontractorId || null,
+      kind: safeKind,
+      body: trimmed,
+      author: session?.user?.name ?? session?.user?.email ?? "Unknown",
+    },
+  });
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
+export async function removeCommunication(projectNumber: string, communicationId: string) {
+  await prisma.communication.delete({ where: { id: communicationId } });
+  revalidatePath(`/projects/${projectNumber}`);
+}
+
 export async function addHotItem(projectNumber: string, body: string, associatedAtStr: string, state: ProjectNoteState) {
   const trimmed = body.trim();
   if (!trimmed) return;

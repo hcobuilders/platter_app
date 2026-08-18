@@ -83,7 +83,19 @@ export function GanttTimeline({
   return (
     <div className="flex" style={{ border: "1px solid var(--border)", borderRadius: "var(--r-md)", overflow: "hidden" }}>
       <div style={{ width: 320, flexShrink: 0, borderRight: "1px solid var(--border)" }}>
-        <div className="lbl flex items-center" style={{ height: 28, padding: "0 10px", background: "var(--bg-inset)", borderBottom: "1px solid var(--border)" }}>
+        <div
+          className="flex items-center"
+          style={{
+            height: 28,
+            padding: "0 10px",
+            background: "var(--bg-inset)",
+            borderBottom: "1px solid var(--border)",
+            font: "500 10.5px/1 var(--font-data)",
+            letterSpacing: ".12em",
+            textTransform: "uppercase",
+            color: "var(--text-faint)",
+          }}
+        >
           <span style={{ width: 140, flexShrink: 0 }}>Item</span>
           <span style={{ width: 72, flexShrink: 0 }}>Date</span>
           <span style={{ whiteSpace: "nowrap" }}>Duration</span>

@@ -34,15 +34,21 @@ export async function revokeCommitment(projectNumber: string, budgetLineId: stri
 export async function updateBudgetLine(projectNumber: string, id: string, formData: FormData) {
   const budget = str(formData, "budget");
   const current = str(formData, "current");
-  const buyoutExpected = str(formData, "buyoutExpected");
   const awardedTo = str(formData, "awardedTo");
+
+  const budgetCents = dollarsToCents(Number(budget));
+  const currentCents = dollarsToCents(Number(current));
 
   await prisma.budgetLine.update({
     where: { id },
     data: {
-      budget: dollarsToCents(Number(budget)),
-      current: dollarsToCents(Number(current)),
-      buyoutExpected: buyoutExpected === "" ? null : dollarsToCents(Number(buyoutExpected)),
+      budget: budgetCents,
+      current: currentCents,
+      // Derived, not entered (S-notes v135a475: "expected buyout should
+      // auto calc from the line budget-current") — always recomputed from
+      // whatever budget/current land in this same save, never trusted
+      // from a client-submitted value.
+      buyoutExpected: budgetCents - currentCents,
       awardedTo: awardedTo === "" ? null : awardedTo,
     },
   });

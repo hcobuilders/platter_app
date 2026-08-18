@@ -85,7 +85,34 @@
 .pc.is-closed{opacity:.62}
 .pc.is-closed:hover{opacity:1}
 
-.pop{position:absolute;z-index:30;background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--e-3);padding:6px;min-width:216px}
+/* z-index raised 30->70 (S-notes v135a475: "the dropdowns in the overall
+   dashboard hide behind the other cards") — every .pc card is itself a
+   position:relative box, so a neighboring card hovered while this popover
+   is open can out-rank a too-low z-index; 70 clears every other z-index
+   in the app (.rowmenu/.csi-suggest 20, .cmdpanel 40) with headroom. */
+.pop{position:absolute;z-index:70;background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--e-3);padding:6px;min-width:216px}
+
+/* Schedule Gantt (S-notes v135a475: redesigned container) — a real date
+   axis + gridlines + today marker instead of a blank strip over floating
+   pills, WBS group headers with a left accent instead of flat gray bars,
+   and zebra striping so a wide row of activities stays scannable. */
+.gantt{display:flex;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;background:var(--bg-surface-raised)}
+.gantt__pane--left{width:340px;flex-shrink:0;border-right:1px solid var(--border)}
+.gantt__pane--chart{position:relative;flex:1;min-width:0}
+.gantt__colhead{display:flex;align-items:center;padding:0 10px;background:var(--bg-inset);border-bottom:1px solid var(--border);font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint)}
+.gantt__axis{position:relative;background:var(--bg-inset);border-bottom:1px solid var(--border)}
+.gantt__axistick{position:absolute;top:50%;transform:translate(-50%,-50%);font:600 10px/1 var(--font-jetbrains-mono,monospace);color:var(--text-faint);white-space:nowrap}
+.gantt__grouphead{display:flex;align-items:center;gap:7px;padding:0 10px;background:var(--bg-inset);font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim)}
+.gantt__groupbar{width:3px;align-self:stretch;border-radius:2px;background:var(--accent-fill);opacity:.55;flex-shrink:0}
+.gantt__row{display:flex;align-items:center;padding:0 10px;font-size:12px;border-bottom:1px solid var(--border-hairline)}
+.gantt__pane--chart .gantt__row{padding:0}
+.gantt__row--alt{background:var(--bg-inset)}
+.gantt__bar{position:absolute;top:50%;transform:translateY(-50%);border-radius:var(--r-pill);background:var(--info-wash);border:1px solid var(--info-fill);box-shadow:var(--e-1)}
+.gantt__bar--pinned{border-color:var(--accent-fill);background:var(--accent-wash)}
+.gantt__barlabel{position:absolute;top:50%;transform:translateY(-50%);font-size:10.5px;color:var(--text-faint);white-space:nowrap;font-family:var(--font-jetbrains-mono,monospace)}
+.gantt-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:44px 20px;border:1px dashed var(--border);border-radius:var(--r-md);background:var(--bg-inset)}
+.gantt-empty__glyph{width:34px;height:34px;color:var(--text-faint);opacity:.7}
+.gantt-empty__glyph svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .pop button,.pop a{all:unset;display:flex;justify-content:space-between;gap:14px;width:100%;box-sizing:border-box;cursor:pointer;padding:9px 11px;border-radius:var(--r-sm);font-size:12.5px;color:var(--text)}
 .pop button:hover,.pop a:hover{background:var(--accent-wash);color:var(--accent-text)}
 .pop button:disabled{opacity:.45;cursor:not-allowed}
@@ -164,6 +191,20 @@
 .fld{border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;background:var(--bg-surface-raised);font-family:inherit;width:100%}
 .fld:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px}
 
+/* Native <select> gets the same .fld box plus a real, on-brand chevron —
+   replacing the browser's own tiny/inconsistent dropdown arrow (S-notes
+   v135a475: "stylize the dropdowns"). appearance:none strips the native
+   arrow everywhere it's supported; the SVG background is the replacement,
+   sized up from a typical 16px glyph so it reads at a glance on a 2K
+   display per the same notes' "carat glyphs larger" ask. */
+select.fld{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  padding-right:34px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%23227C9D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='5 8 10 13 15 8'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;background-size:20px 20px}
+select.fld:hover{border-color:var(--border-strong);background-color:var(--bg-inset)}
+select.fld:disabled{cursor:not-allowed;opacity:.55}
+
 /* In-table editable cells — no visible box until hovered/focused, so a
    table full of editable values still reads as a clean table, not a form. */
 .tfld{border:1px solid transparent;border-radius:var(--r-xs);padding:4px 6px;margin:-4px -6px;font-size:13px;font-family:inherit;color:inherit;background:transparent;width:100%}
@@ -172,6 +213,27 @@
 .tfld.n{font-family:var(--font-data);font-variant-numeric:tabular-nums;text-align:right}
 .cf{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .lbl{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
+
+/* Expand/collapse carats — S-notes v135a475: "make the carat glyphs
+   larger. this is what i see on a 2k screen" — the ▸/▾ text glyphs were
+   inheriting whatever tiny size their row context used (10.5-11px);
+   normalized to one legible size everywhere they're used as a toggle
+   affordance rather than as a data character. */
+.carat{display:inline-block;font-size:15px;line-height:1;color:var(--text-dim)}
+
+/* on-brand hover tooltip (Tooltip.tsx) — S-notes v135a475: "stylize the
+   on hover element to make it match the app and be more stand out so its
+   like a tooltip" — replaces the browser's plain native title bubble. */
+.tt{position:relative;display:inline-flex}
+.tt__bubble{position:absolute;left:50%;transform:translateX(-50%);z-index:60;
+  background:var(--bg-shell-raised);color:var(--text-invert);border:1px solid var(--border-invert);
+  border-radius:var(--r-sm);box-shadow:var(--e-3);padding:7px 11px;font:400 12px/1.4 var(--font-body);
+  white-space:pre-line;max-width:280px;width:max-content;pointer-events:none}
+.tt__bubble--top{bottom:calc(100% + 8px)}
+.tt__bubble--bottom{top:calc(100% + 8px)}
+.tt__bubble::after{content:"";position:absolute;left:50%;transform:translateX(-50%);width:8px;height:8px;background:var(--bg-shell-raised);border:1px solid var(--border-invert)}
+.tt__bubble--top::after{bottom:-5px;border-top:none;border-left:none;clip-path:polygon(0 0,100% 0,100% 100%)}
+.tt__bubble--bottom::after{top:-5px;border-bottom:none;border-right:none;clip-path:polygon(0 0,0 100%,100% 100%)}
 
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none}
 .dot--hi{background:var(--success-fill)}.dot--mid{background:var(--accent-fill)}.dot--lo{background:var(--danger-fill)}
@@ -304,5 +366,12 @@
 
 /* ── overview: single container, project detail left / map+controls right ── */
 .ov2col{display:grid;grid-template-columns:1fr 340px;gap:28px}
+.ov2col-eq{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 
-@media(max-width:900px){.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.cf{grid-template-columns:1fr}.ov2col{grid-template-columns:1fr}}
+/* ── overview: top stat strip (S-notes v135a475 — "very rich" dashboard) ── */
+.statrow{display:flex;background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);overflow:hidden}
+.statrow__item{flex:1;padding:14px 20px;border-right:1px solid var(--border-hairline)}
+.statrow__item:last-child{border-right:none}
+.statrow__v{font:700 22px/1.15 var(--font-display);letter-spacing:-.01em;margin-top:6px;display:flex;align-items:baseline;gap:4px}
+
+@media(max-width:900px){.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.cf{grid-template-columns:1fr}.ov2col{grid-template-columns:1fr}.ov2col-eq{grid-template-columns:1fr}.statrow{flex-wrap:wrap}.statrow__item{flex:1 1 45%;border-bottom:1px solid var(--border-hairline)}}
