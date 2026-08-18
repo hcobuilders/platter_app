@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platter — Batch 7 Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-shell);color:var(--text-invert);font:400 15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(1100px 620px at 86% -10%,rgba(34,124,157,.24),transparent 62%),radial-gradient(820px 520px at 2% 104%,rgba(23,195,178,.1),transparent 60%);background-attachment:fixed}
+.doc{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.rail{border-right:1px solid var(--border-invert);padding:24px 0 80px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.rail .brand{display:flex;align-items:center;gap:10px;padding:0 20px 22px}
+.rail .brand b{font:700 20px/1 var(--font-display);letter-spacing:-.04em}
+.rail h4{font:500 10.5px/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fill);padding:16px 20px 8px;margin:0}
+.rail a{display:block;padding:8px 20px;color:var(--text-invert-dim);text-decoration:none;font-size:14px;border-left:2px solid transparent}
+.rail a:hover{color:var(--text-invert);background:var(--bg-shell-raised)}
+.rail a.on{color:var(--text-invert);border-left-color:var(--accent-fill);background:var(--bg-shell-raised)}
+.rail a i{font-style:normal;font:400 11px var(--font-data);color:var(--accent-fill);margin-right:8px}
+main{padding:clamp(24px,4vw,52px) clamp(20px,4vw,56px) 130px;max-width:1240px}
+.hdr{border-bottom:1px solid var(--border-invert);padding-bottom:22px}
+.eyebrow{font:500 10.5px/1 var(--font-data);letter-spacing:.15em;text-transform:uppercase;color:var(--accent-fill);margin:0 0 9px}
+.hdr h1{font:700 clamp(32px,5.2vw,49px)/1 var(--font-display);letter-spacing:-.035em;margin:0}
+.hdr p{color:var(--text-invert-dim);max-width:70ch;margin:14px 0 0}
+.hdr .flag{margin-top:16px;display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border-invert);border-left:2px solid var(--accent-fill);border-radius:var(--r-sm);background:var(--bg-shell-raised);max-width:70ch;font-size:12.5px;color:var(--text-invert-dim)}
+.hdr .flag b{color:var(--text-invert)}
+.screen{margin-top:62px;scroll-margin-top:20px}
+.screen>header{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--border-invert);padding-bottom:12px;margin-bottom:16px}
+.screen>header .no{font:400 12px var(--font-data);color:var(--accent-fill)}
+.screen>header h2{font:600 22px/1.1 var(--font-display);letter-spacing:-.02em;margin:0}
+.screen>header .job{color:var(--text-invert-dim);font-size:13px;flex-basis:100%;max-width:76ch}
+.tabs{display:flex;gap:3px;flex-wrap:wrap;margin:0 0 14px;padding:3px;background:var(--bg-shell-raised);border-radius:var(--r-pill);width:fit-content}
+.tabs button{all:unset;cursor:pointer;padding:7px 15px;font:500 10.5px/1 var(--font-data);letter-spacing:.07em;text-transform:uppercase;color:var(--text-invert-dim);border-radius:var(--r-pill)}
+.tabs button:hover{color:var(--text-invert)}
+.tabs button[aria-selected=true]{background:var(--accent-fill);color:var(--accent-on);font-weight:700}
+.tabs button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.frame{background:var(--bg-surface);color:var(--text);border-radius:var(--r-xl);overflow:hidden;position:relative;box-shadow:var(--e-3)}
+.state{display:none}.state.on{display:block}
+.body{padding:22px}
+.ann{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 26px}
+.ann ol{margin:0;padding:0}
+.ann li{list-style:none;display:grid;grid-template-columns:22px 1fr;gap:9px;padding:8px 0;font-size:13px;color:var(--text-invert-dim);border-top:1px solid var(--border-invert)}
+.ann b{color:var(--text-invert);font-weight:600}
+.pin{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--accent-fill);color:var(--accent-on);font:700 10px var(--font-data);margin-top:1px}
+.pin.onf{position:absolute;z-index:6;box-shadow:0 0 0 2.5px var(--bg-surface),0 2px 6px rgba(14,31,39,.3)}
+.callout{border-left:2px solid var(--accent-line);padding:2px 0 2px 16px;margin:26px 0 0;color:var(--text-invert-dim);font-size:14px;max-width:76ch}
+.callout b{color:var(--text-invert)}
+.lbl{font:500 10.5px/1 var(--font-data);letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);display:block}
+
+/* ── internal app chrome ── */
+.topnav{background:var(--bg-shell);color:var(--text-invert);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:11px 18px;gap:16px}
+.topnav .left{display:flex;gap:10px;align-items:center}
+.topnav .center{display:flex;gap:12px;align-items:center;justify-self:center}
+.topnav .right{display:flex;gap:16px;align-items:center;justify-self:end}
+.topnav .logo{display:flex;align-items:center;gap:8px}
+.topnav .crumb{font:400 11px/1 var(--font-data);color:var(--text-invert-faint)}
+.topnav .pname{font:600 15px/1 var(--font-display);letter-spacing:-.02em}
+.topnav nav{display:flex;gap:17px;font:500 10.5px/1 var(--font-data);letter-spacing:.09em;text-transform:uppercase;color:var(--text-invert-dim)}
+.topnav nav span.on{color:var(--accent-fill)}
+.avatar{width:27px;height:27px;border-radius:var(--r-pill);background:var(--info-fill);display:grid;place-items:center;font:600 10.5px var(--font-data);color:var(--c-white)}
+.wshell{display:grid;grid-template-columns:198px 1fr;min-height:460px}
+.pnav{border-right:1px solid var(--border);padding:14px 0}
+.pnav a{display:flex;align-items:center;gap:9px;padding:9px 16px;font:500 12.5px/1 var(--font-body);color:var(--text-dim);text-decoration:none;border-left:2px solid transparent}
+.pnav a.on{color:var(--text);border-left-color:var(--accent-strong);background:var(--bg-inset);font-weight:600}
+.pnav a:hover{color:var(--text);background:var(--bg-inset)}
+.pnav a .dot2{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;flex:none}
+.pnav a.on .dot2{opacity:1;background:var(--accent-strong)}
+.wmain{padding:20px 22px}
+.cmd{background:var(--bg-shell);border-top:1px solid rgba(0,0,0,.5);padding:10px 18px;display:flex;align-items:center;gap:12px;font:400 12.5px/1 var(--font-data);color:var(--text-invert-dim)}
+
+/* ── chip / status ── */
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:600;font-size:11px;line-height:1;
+  font-variation-settings:'wdth' var(--chip-wdth);font-stretch:condensed;letter-spacing:var(--track-chip);text-transform:uppercase;
+  padding:var(--chip-pad-y) var(--chip-pad-x);border-radius:var(--r-pill);border:1px solid var(--border-strong);color:var(--text-dim);white-space:nowrap}
+.chip--acc{border-color:var(--accent-line);background:var(--accent-wash);color:var(--accent-text)}
+.chip--info{border-color:rgba(34,124,157,.5);background:var(--info-wash);color:var(--info-text)}
+.chip--ok{border-color:rgba(18,164,151,.55);background:var(--success-wash);color:var(--success-text)}
+.chip--dgr{border-color:rgba(240,76,84,.5);background:var(--danger-wash);color:var(--danger-text)}
+.chip--risk{border:1.5px dashed var(--danger-line);background:transparent;color:var(--danger-text)}
+
+/* ── buttons / toggle ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 14px/1 var(--font-body);padding:10px 17px;min-height:36px;
+  border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text);cursor:pointer}
+.btn--pri{background:var(--bg-shell);color:var(--text-invert);border-color:var(--bg-shell)}
+.btn--acc{background:linear-gradient(135deg,var(--c-apricot-300),var(--accent-strong));color:var(--accent-on);border-color:var(--accent-line)}
+.btn--gh{background:transparent;border-color:transparent;color:var(--text-dim)}
+.btn--sm{padding:6px 13px;min-height:29px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── card / table ── */
+.card{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--e-1);padding:16px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface-raised);border-radius:var(--r-md);overflow:hidden}
+.tbl th{font:500 10.5px/1 var(--font-data);letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);text-align:left;
+  padding:11px 12px;border-bottom:1px solid var(--border-strong);background:var(--bg-inset);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border-hairline);vertical-align:top}
+.tbl th.n,.tbl td.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.tbl tbody tr:hover{background:var(--accent-wash)}
+.fld{border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;background:var(--bg-surface-raised)}
+.cf{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cclist{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;font-size:13px}
+
+/* ── new this batch: sub/vendor directory row, stat tile, tool card ── */
+.subrow{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:8px;background:var(--bg-surface-raised)}
+.subrow .sinit{width:34px;height:34px;border-radius:50%;background:var(--info-wash);color:var(--info-text);display:grid;place-items:center;font:600 12px var(--font-data);flex:none}
+.subrow .sname{font-weight:600;font-size:13.5px}
+.subrow .smeta{font-size:11.5px;color:var(--text-dim);margin-top:2px}
+.subrow .strades{display:flex;gap:5px;flex-wrap:wrap}
+.subrow .sstat{margin-left:auto;text-align:right;flex:none}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px}
+.stat .sv{font:700 26px/1 var(--font-display);letter-spacing:-.02em}
+.stat .sl{font:500 10.5px/1 var(--font-data);letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-top:6px}
+.stat .sd{font-size:11.5px;margin-top:4px}
+.stat .sd.up{color:var(--success-text)}
+.stat .sd.down{color:var(--danger-text)}
+.bars{display:flex;align-items:flex-end;gap:10px;height:120px;padding-top:10px}
+.bars .b{flex:1;background:linear-gradient(180deg,var(--accent-strong),var(--c-apricot-300));border-radius:4px 4px 0 0;position:relative;min-height:4px}
+.bars .b span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font:500 10px var(--font-data);color:var(--text-dim);margin-bottom:4px;white-space:nowrap}
+.bars .lbl2{text-align:center;font-size:10.5px;color:var(--text-faint);margin-top:6px}
+.toolcard{background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:8px}
+.toolcard .ti{width:32px;height:32px;border-radius:var(--r-sm);background:var(--accent-wash);color:var(--accent-text);display:grid;place-items:center;font-size:15px}
+.toolcard h5{margin:0;font:600 13.5px var(--font-display)}
+.toolcard p{margin:0;font-size:11.5px;color:var(--text-dim);flex:1}
+
+@media(max-width:900px){.doc{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border-invert)}.wshell{grid-template-columns:1fr}.pnav{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}.cf{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<aside class="rail">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="lg" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="3.4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4.5"/><rect x="9" y="37" width="18" height="18" rx="4.5"/><rect x="29" y="37" width="18" height="18" rx="4.5"/><rect x="37" y="9" width="18" height="18" rx="4.5" fill="url(#lg)"/></g></svg>
+    <b>Platter</b>
+  </div>
+  <h4>Batch 7 — Network, Data, Tools</h4>
+  <a href="#s71"><i>7.1</i>Network</a>
+  <a href="#s72"><i>7.2</i>Data</a>
+  <a href="#s73"><i>7.3</i>Tools</a>
+  <h4>Done (Step 1)</h4>
+  <a href="batch-1-intake-parse.html"><i>1.x</i>Intake &amp; parse</a>
+  <a href="batch-2-dashboard-shell.html"><i>2.x</i>Dashboard &amp; shell</a>
+  <a href="batch-3-project-workspace.html"><i>3.x</i>Workspace &amp; scope</a>
+  <a href="batch-4-itb-planroom.html"><i>4.x</i>ITB &amp; planroom</a>
+  <a href="batch-5-bidtab-budget.html"><i>5.x</i>Bid tab &amp; budget</a>
+  <a href="batch-6-settings.html"><i>6.x</i>Settings</a>
+  <h4>Next</h4>
+  <a href="#" style="opacity:.4">Owner review — first pass</a>
+</aside>
+
+<main>
+  <div class="hdr">
+    <p class="eyebrow">Wireframes · Batch 7 of 7 · unscoped, first pass</p>
+    <h1>Network, Data &amp; Tools</h1>
+    <p>Every internal screen has carried three inert labels in the top nav since Batch 2 — <span class="mono">Network</span>, <span class="mono">Data</span>, <span class="mono">Tools</span> — sitting next to a real, working <span class="mono">Settings</span> link. Nobody has ever specified what they hold: no D-## decision, no E-## edit, no Q-## open question covers them anywhere in <span class="mono">DECISION_LOG.md</span>, and the real Step 3 build (currently far ahead of these wireframes) left them exactly as inert as Batch 2 drew them.</p>
+    <div class="flag"><span>⚑</span><span><b>This batch is a proposal, not a spec.</b> With zero source material to work from, each of the three screens below is one plausible reading of its own label, grounded in data the real app already has (subs, bids, budgets, CSI codes, provenance). Treat every screen as a draft to edit or replace in Claude Design — not as a locked decision the way Batches 1–6 were once the owner approved them. Logged as <b>Q-17</b> in the decision log rather than silently assumed.</span></div>
+  </div>
+
+<!-- ═══════ 7.1 Network ═══════ -->
+<section class="screen" id="s71">
+  <header><span class="no">7.1</span><h2>Network</h2>
+    <span class="job">Proposed job: the one company-wide directory of subs &amp; vendors, distinct from any single project's bidder list — who they are, what trades they cover, and how they've performed across every project, not just the one you're looking at.</span></header>
+
+  <div class="tabs" role="tablist" data-g="a">
+    <button role="tab" aria-selected="true" data-t="a1">Directory</button>
+    <button role="tab" aria-selected="false" data-t="a2">Sub profile</button>
+    <button role="tab" aria-selected="false" data-t="a3">Add to network</button>
+  </div>
+
+  <div class="frame">
+    <div class="topnav">
+      <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n1" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n1)"/></g></svg></div><span class="crumb">/ Network /</span></div>
+      <div class="center"><span class="pname">Network</span></div>
+      <div class="right"><nav><span class="on">Network</span><span>Data</span><span>Tools</span><span>Settings</span></nav><div class="avatar">JL</div></div>
+    </div>
+    <div class="wshell">
+      <nav class="pnav">
+        <a class="on" href="#"><span class="dot2"></span>Directory</a>
+        <a href="#"><span class="dot2"></span>By trade</a>
+        <a href="#"><span class="dot2"></span>By region</a>
+      </nav>
+      <div class="wmain">
+
+        <div class="state on" id="a1" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">1</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="lbl" style="margin:0">142 subs &amp; vendors · showing 4</span><input class="fld" placeholder="Search by name, trade, CSI…" style="width:220px"></div>
+          <div class="subrow">
+            <div class="sinit">BC</div>
+            <div style="flex:1">
+              <div class="sname">Bayline Concrete</div>
+              <div class="smeta">Concrete · Div 03 · 6 active bids · 22 historical projects</div>
+            </div>
+            <div class="sstat"><span class="chip chip--ok">68% win rate</span></div>
+          </div>
+          <div class="subrow">
+            <div class="sinit">SS</div>
+            <div style="flex:1">
+              <div class="sname">Summit Steel Erectors</div>
+              <div class="smeta">Structural Steel · Div 05 · 3 active bids · 11 historical projects</div>
+            </div>
+            <div class="sstat"><span class="chip">41% win rate</span></div>
+          </div>
+          <div class="subrow">
+            <div class="sinit">DF</div>
+            <div style="flex:1">
+              <div class="sname">Drywall &amp; Framing Co.</div>
+              <div class="smeta">Drywall &amp; Framing · Div 09 · 5 active bids · 18 historical projects</div>
+            </div>
+            <div class="sstat"><span class="chip chip--dgr">2 flagged — non-responsive</span></div>
+          </div>
+          <div class="subrow" style="opacity:.6">
+            <div class="sinit">WH</div>
+            <div style="flex:1">
+              <div class="sname">West Henry Logistics</div>
+              <div class="smeta">General trades · no active bids · 1 historical project</div>
+            </div>
+            <div class="sstat"><span class="chip">—</span></div>
+          </div>
+          <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Win rate and flags are the two facts a directory adds that a single project's bidder list can't — same subs already exist per-project (<span class="mono">Subcontractor</span>, invited via ITB/Bid Tab today); this would be the first screen that rolls them up across every project instead.</p>
+        </div>
+
+        <div class="state" id="a2" style="position:relative;max-width:600px">
+          <span class="pin onf" style="left:-9px;top:8px">2</span>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+              <div style="display:flex;gap:12px;align-items:center"><div class="sinit" style="width:44px;height:44px;font-size:15px">BC</div><div><div style="font:600 15px var(--font-display)">Bayline Concrete</div><div class="smeta">bids@baylineconcrete.com · (352) 555-0184</div></div></div>
+              <span class="chip chip--ok">68% win rate</span>
+            </div>
+            <div class="statgrid" style="margin-bottom:14px">
+              <div class="stat"><div class="sv">22</div><div class="sl">Projects bid</div></div>
+              <div class="stat"><div class="sv">15</div><div class="sl">Awarded</div></div>
+              <div class="stat"><div class="sv">$4.2M</div><div class="sl">Total awarded</div></div>
+            </div>
+            <div class="lbl" style="margin-bottom:8px">Recent projects</div>
+            <table class="tbl">
+              <thead><tr><th>Project</th><th>Package</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>West Henry Logistics</td><td class="mono">3A Concrete</td><td><span class="chip chip--ok">Awarded</span></td></tr>
+                <tr><td>Lake Weir Medical</td><td class="mono">26A Concrete</td><td><span class="chip chip--dgr">Lost</span></td></tr>
+                <tr><td>Magnolia Commons</td><td class="mono">22A Concrete</td><td><span class="chip">Bidding</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="state" id="a3" style="position:relative;max-width:480px">
+          <span class="pin onf" style="left:-9px;top:8px">3</span>
+          <div class="cf" style="margin-bottom:12px"><div><div class="lbl">Company name</div><div class="fld" style="margin-top:5px;color:var(--text-faint)">—</div></div><div><div class="lbl">Primary contact</div><div class="fld" style="margin-top:5px;color:var(--text-faint)">—</div></div></div>
+          <div class="lbl" style="margin-bottom:6px">Trades</div>
+          <div style="display:flex;gap:6px;margin-bottom:14px"><span class="chip" style="border-style:dashed">＋ Add trade</span></div>
+          <span class="btn btn--acc">Add to network</span>
+          <p style="font-size:11.5px;color:var(--text-dim);margin-top:10px">A lighter version of this same form already exists per-project (adding a bidder to a package) — this would be the one place a sub enters the system once, then gets invited from any project's ITB instead of being re-typed each time.</p>
+        </div>
+
+      </div>
+    </div>
+    <div class="cmd"><span style="color:var(--accent-fill);font-weight:700">/</span> Type a command or a project number</div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Win rate and reliability flags are the payoff.</b> Every field shown already exists somewhere per-project — this screen's only new value is rolling it up across all of them.</span></li>
+  </ol><ol>
+    <li><span class="pin">2</span><span><b>Sub detail reuses the Bid Tab's own vocabulary</b> (awarded/lost/bidding chips) rather than inventing a new status set.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Open question:</b> does adding a sub here also need to create the per-project <span class="mono">Subcontractor</span> row, or does the network stay a separate roster subs get picked from when invited? Genuinely unresolved — flagged, not guessed.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 7.2 Data ═══════ -->
+<section class="screen" id="s72">
+  <header><span class="no">7.2</span><h2>Data</h2>
+    <span class="job">Proposed job: cross-project reporting — the metrics that only mean something once you're looking at more than one project at a time, which today live nowhere (every number in the app is scoped to a single project).</span></header>
+
+  <div class="tabs" role="tablist" data-g="b">
+    <button role="tab" aria-selected="true" data-t="b1">Overview</button>
+    <button role="tab" aria-selected="false" data-t="b2">Budget accuracy</button>
+    <button role="tab" aria-selected="false" data-t="b3">Export</button>
+  </div>
+
+  <div class="frame">
+    <div class="topnav">
+      <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n2" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n2)"/></g></svg></div><span class="crumb">/ Data /</span></div>
+      <div class="center"><span class="pname">Data</span></div>
+      <div class="right"><nav><span>Network</span><span class="on">Data</span><span>Tools</span><span>Settings</span></nav><div class="avatar">JL</div></div>
+    </div>
+    <div class="wshell">
+      <nav class="pnav">
+        <a class="on" href="#"><span class="dot2"></span>Overview</a>
+        <a href="#"><span class="dot2"></span>Budget accuracy</a>
+        <a href="#"><span class="dot2"></span>Export</a>
+      </nav>
+      <div class="wmain">
+
+        <div class="state on" id="b1" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">1</span>
+          <div style="display:flex;gap:10px;margin-bottom:14px"><span class="chip chip--acc">YTD 2026</span><span class="chip">Last 12 mo</span><span class="chip">All time</span></div>
+          <div class="statgrid">
+            <div class="stat"><div class="sv">37%</div><div class="sl">Win rate</div><div class="sd up">↑ 4pts vs prior year</div></div>
+            <div class="stat"><div class="sv">$61.4M</div><div class="sl">Total bid volume</div><div class="sd">across 9 active projects</div></div>
+            <div class="stat"><div class="sv">$22.7M</div><div class="sl">Awarded YTD</div><div class="sd up">↑ $3.1M vs prior year</div></div>
+            <div class="stat"><div class="sv">3.4</div><div class="sl">Avg bids per package</div><div class="sd down">↓ 0.3 vs prior year</div></div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <div class="lbl" style="margin-bottom:10px">Win rate by trade</div>
+            <div class="bars">
+              <div class="b" style="height:78%"><span>78%</span></div>
+              <div class="b" style="height:52%"><span>52%</span></div>
+              <div class="b" style="height:41%"><span>41%</span></div>
+              <div class="b" style="height:35%"><span>35%</span></div>
+              <div class="b" style="height:29%"><span>29%</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);margin-top:2px">
+              <div class="lbl2">Concrete</div><div class="lbl2">Steel</div><div class="lbl2">Drywall</div><div class="lbl2">Electrical</div><div class="lbl2">Mech.</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Every number here already exists per-project (Bid Tab totals, Budget awards, package bidder counts) — this tab aggregates, it doesn't compute anything new.</p>
+        </div>
+
+        <div class="state" id="b2" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">2</span>
+          <div class="lbl" style="margin-bottom:10px">Estimate vs. leveled vs. awarded — variance by division</div>
+          <table class="tbl">
+            <thead><tr><th>Division</th><th class="n">Estimated</th><th class="n">Leveled</th><th class="n">Awarded</th><th class="n">Variance</th></tr></thead>
+            <tbody>
+              <tr><td>03 — Concrete</td><td class="n">$4,850,000</td><td class="n">$4,920,000</td><td class="n">$4,890,000</td><td class="n" style="color:var(--success-text)">+0.8%</td></tr>
+              <tr><td>05 — Structural Steel</td><td class="n">$2,100,000</td><td class="n">$2,340,000</td><td class="n">$2,310,000</td><td class="n" style="color:var(--danger-text)">+10.0%</td></tr>
+              <tr><td>09 — Drywall &amp; Framing</td><td class="n">$1,760,000</td><td class="n">$1,705,000</td><td class="n">$1,690,000</td><td class="n" style="color:var(--success-text)">−4.0%</td></tr>
+              <tr><td>26 — Electrical</td><td class="n">$3,200,000</td><td class="n">$3,280,000</td><td class="n">$3,255,000</td><td class="n" style="color:var(--danger-text)">+1.7%</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:12px;color:var(--text-dim);margin-top:10px">Directly extends the Leveled Price work just shipped in the Bid Tab (S-batch #70) — this is that same number, rolled up by CSI division across every project instead of read one package at a time.</p>
+        </div>
+
+        <div class="state" id="b3" style="position:relative;max-width:480px">
+          <span class="pin onf" style="left:-9px;top:8px">3</span>
+          <div class="card">
+            <div class="lbl" style="margin-bottom:8px">Metrics</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"><span class="chip chip--acc">Win rate</span><span class="chip chip--acc">Bid volume</span><span class="chip">Budget variance</span><span class="chip">Schedule adherence</span></div>
+            <div class="cf" style="margin-bottom:14px"><div><div class="lbl">From</div><div class="fld" style="margin-top:5px">2026-01-01</div></div><div><div class="lbl">To</div><div class="fld" style="margin-top:5px">2026-08-18</div></div></div>
+            <span class="btn btn--acc">Export CSV</span>
+          </div>
+          <p style="font-size:11.5px;color:var(--text-dim);margin-top:10px">Reuses the same client-side CSV export pattern already built once and shared everywhere else in the app (S-batch #67's <span class="mono">ExportCsvButton</span>), not a new export mechanism.</p>
+        </div>
+
+      </div>
+    </div>
+    <div class="cmd"><span style="color:var(--accent-fill);font-weight:700">/</span> Type a command or a project number</div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Nothing here is a new calculation</b> — every stat is an aggregate of a number the app already computes per-project. That's a deliberate constraint, not a limitation: it keeps this tab from becoming a second source of truth.</span></li>
+  </ol><ol>
+    <li><span class="pin">2</span><span><b>Directly extends #70's Leveled Price</b> rather than introducing a competing budget-accuracy concept.</span></li>
+  </ol><ol>
+    <li><span class="pin">3</span><span><b>Open question:</b> which metrics actually matter for a report like this is a business question, not a design one — the four shown are a starting guess, not a final list.</span></li>
+  </ol></div>
+</section>
+
+<!-- ═══════ 7.3 Tools ═══════ -->
+<section class="screen" id="s73">
+  <header><span class="no">7.3</span><h2>Tools</h2>
+    <span class="job">Proposed job: a home for small utilities that don't belong to any one project — some already exist in scattered form (the <span class="mono">/csi</span> command palette) and would just get a permanent address here instead of being command-only.</span></header>
+
+  <div class="tabs" role="tablist" data-g="c">
+    <button role="tab" aria-selected="true" data-t="c1">Tool hub</button>
+    <button role="tab" aria-selected="false" data-t="c2">CSI lookup</button>
+    <button role="tab" aria-selected="false" data-t="c3">$/sf calculator</button>
+  </div>
+
+  <div class="frame">
+    <div class="topnav">
+      <div class="left"><div class="logo"><svg viewBox="0 0 64 64" width="19" height="19"><defs><linearGradient id="n3" x1="37" y1="9" x2="55" y2="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF9F1C"/><stop offset="1" stop-color="#FE6D73"/></linearGradient></defs><g fill="none" stroke="#FEF9EF" stroke-width="4" stroke-linejoin="round"><rect x="9" y="17" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><rect x="29" y="37" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4" fill="url(#n3)"/></g></svg></div><span class="crumb">/ Tools /</span></div>
+      <div class="center"><span class="pname">Tools</span></div>
+      <div class="right"><nav><span>Network</span><span>Data</span><span class="on">Tools</span><span>Settings</span></nav><div class="avatar">JL</div></div>
+    </div>
+    <div class="wshell" style="grid-template-columns:1fr">
+      <div class="wmain">
+
+        <div class="state on" id="c1" style="position:relative">
+          <span class="pin onf" style="left:-9px;top:8px">1</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+            <div class="toolcard"><div class="ti">§</div><h5>CSI code lookup</h5><p>Search MasterFormat divisions &amp; codes. Already exists as the <span class="mono">/csi</span> palette — this promotes it to a standalone reference page.</p><span class="btn btn--sm" style="width:fit-content">Open</span></div>
+            <div class="toolcard"><div class="ti">÷</div><h5>$/sf calculator</h5><p>Quick cost-per-square-foot math against a target budget, using the square footage field just added for the Bid Tab (#70).</p><span class="btn btn--sm" style="width:fit-content">Open</span></div>
+            <div class="toolcard"><div class="ti">%</div><h5>Escalation calculator</h5><p>Apply an annual escalation rate across a bid date range for budgeting long-lead or delayed-award scenarios.</p><span class="btn btn--sm" style="width:fit-content;opacity:.5" aria-disabled="true">Not started</span></div>
+            <div class="toolcard"><div class="ti">◈</div><h5>AI parse review</h5><p>Cross-project view of AI-parsed fields awaiting verification — surfaces the provenance groundwork already laid (#37), not yet a real workflow.</p><span class="btn btn--sm" style="width:fit-content;opacity:.5" aria-disabled="true">Not started</span></div>
+          </div>
+          <p style="font-size:12px;color:var(--text-dim);margin-top:14px">A grid of small, single-purpose utilities rather than one big page — new tools get added as cards, not as new nested tabs.</p>
+        </div>
+
+        <div class="state" id="c2" style="position:relative;max-width:520px">
+          <span class="pin onf" style="left:-9px;top:8px">2</span>
+          <input class="fld" placeholder="Search CSI codes or division names…" style="width:100%;margin-bottom:12px">
+          <table class="tbl">
+            <thead><tr><th class="mono">Code</th><th>Description</th><th>Division</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">03 30 00</td><td>Cast-in-Place Concrete</td><td>03 — Concrete</td></tr>
+              <tr><td class="mono">05 12 00</td><td>Structural Steel Framing</td><td>05 — Metals</td></tr>
+              <tr><td class="mono">09 21 00</td><td>Plaster &amp; Gypsum Board Assemblies</td><td>09 — Finishes</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:11.5px;color:var(--text-dim);margin-top:10px">Same MasterFormat dataset already powering scope-line autocomplete (S-batch #16) — no new data source, just a browsable page instead of only an inline autocomplete.</p>
+        </div>
+
+        <div class="state" id="c3" style="position:relative;max-width:420px">
+          <span class="pin onf" style="left:-9px;top:8px">3</span>
+          <div class="card">
+            <div class="cf" style="margin-bottom:12px"><div><div class="lbl">Total ($)</div><div class="fld" style="margin-top:5px">2,400,000</div></div><div><div class="lbl">Square footage</div><div class="fld" style="margin-top:5px">18,000</div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border-hairline)"><span class="lbl" style="margin:0">Result</span><span style="font:700 20px var(--font-display)">$133.33/sf</span></div>
+          </div>
+          <p style="font-size:11.5px;color:var(--text-dim);margin-top:10px">Same math as the Bid Tab's per-package $/sf figure (#70) — this is a standalone version for a number that isn't attached to any one package, e.g. a whole-project budget check.</p>
+        </div>
+
+      </div>
+    </div>
+    <div class="cmd"><span style="color:var(--accent-fill);font-weight:700">/</span> Type a command or a project number</div>
+  </div>
+
+  <div class="ann"><ol>
+    <li><span class="pin">1</span><span><b>Cards, not tabs.</b> A grid scales to a tenth tool without a redesign; a tab bar doesn't. Two cards are shown disabled-with-reason (D-37's pattern from the original Step 1 batches) rather than omitted, since they trace to real, already-scoped groundwork (#37) rather than being invented for this batch.</span></span></li>
+  </ol><ol>
+    <li><span class="pin">2</span><span><b>Zero new data.</b> Both working tools (2, 3) are read-only surfaces over data and math the real app already has — lowest-risk pair to build first if this batch is approved piecemeal.</span></li>
+  </ol></div>
+</section>
+
+<p class="callout"><b>What Batch 7 is and isn't.</b> Unlike Batches 1–6, this one wasn't requested screen-by-screen against a stated job — it's a response to three labels that have sat unbuilt in the top nav since the app's earliest wireframe. Every screen stays deliberately tethered to data and mechanics the real Step 3 build already has (subs &amp; bids, budget variance, CSI codes, the #70 $/sf math, the #37 provenance groundwork) rather than inventing new backend concepts sight-unseen. Nothing here is a locked decision — logged as <b>Q-17</b> in <span class="mono">DECISION_LOG.md</span> — and every screen is meant to be opened in Claude Design and changed, not implemented as drawn.</p>
+
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.tabs[role=tablist]').forEach(function(g){
+  g.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-t]'); if(!b) return;
+    g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected','false')});
+    b.setAttribute('aria-selected','true');
+    var frame=g.nextElementSibling;
+    frame.querySelectorAll('.state').forEach(function(s){s.classList.remove('on')});
+    var t=frame.querySelector('#'+b.dataset.t); if(t) t.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>
